@@ -1,0 +1,202 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL_PROD")
+  directUrl = env("DIRECT_URL")
+}
+
+model Pokemon {
+  id           Int                  @id
+  apiName      String               @unique
+  height       Int
+  weight       Int
+  sprite       String?
+  stats        PokemonStats?
+  translations PokemonTranslation[]
+  types        PokemonType[]
+  moves        PokemonMove[]
+  abilities    PokemonAbility[]
+}
+
+model PokemonTranslation {
+  id          Int     @id @default(autoincrement())
+  pokemonId   Int
+  language    String
+  name        String
+  description String?
+  genus       String?
+  pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
+
+  @@unique([pokemonId, language])
+}
+
+model PokemonStats {
+  pokemonId      Int     @id
+  hp             Int
+  attack         Int
+  defense        Int
+  specialAttack  Int
+  specialDefense Int
+  speed          Int
+  pokemon        Pokemon @relation(fields: [pokemonId], references: [id])
+}
+
+model Type {
+  id      Int    @id
+  apiName String @unique
+
+  translations TypeTranslation[]
+
+  pokemon PokemonType[]
+  moves   Move[]
+}
+
+model TypeTranslation {
+  id Int @id @default(autoincrement())
+
+  typeId Int
+
+  language String
+
+  name String
+
+  type Type @relation(fields: [typeId], references: [id])
+
+  @@unique([typeId, language])
+}
+
+model PokemonType {
+  pokemonId Int
+  typeId    Int
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  type    Type    @relation(fields: [typeId], references: [id])
+
+  @@id([pokemonId, typeId])
+}
+
+model Move {
+  id           Int               @id
+  apiName      String            @unique
+  typeId       Int
+  power        Int?
+  accuracy     Int?
+  pp           Int?
+  damageClass  String?
+  priority     Int?
+  effectChance Int?
+  effect       String?
+  translations MoveTranslation[]
+  type         Type              @relation(fields: [typeId], references: [id])
+  learnedBy    PokemonMove[]
+}
+
+model MoveTranslation {
+  id          Int     @id @default(autoincrement())
+  moveId      Int
+  language    String
+  name        String
+  description String?
+  move        Move    @relation(fields: [moveId], references: [id])
+
+  @@unique([moveId, language])
+}
+
+model PokemonMove {
+  pokemonId Int
+  moveId    Int
+
+  learnMethod String?
+  level       Int?
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+
+  move Move @relation(fields: [moveId], references: [id])
+
+  @@id([pokemonId, moveId])
+}
+
+model Ability {
+  id           Int                  @id
+  apiName      String               @unique
+  effect       String?
+  translations AbilityTranslation[]
+  pokemon      PokemonAbility[]
+}
+
+model AbilityTranslation {
+  id          Int     @id @default(autoincrement())
+  abilityId   Int
+  language    String
+  name        String
+  description String?
+  ability     Ability @relation(fields: [abilityId], references: [id])
+
+  @@unique([abilityId, language])
+}
+
+model PokemonAbility {
+  pokemonId Int
+  abilityId Int
+
+  isHidden Boolean @default(false)
+  slot     Int?
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  ability Ability @relation(fields: [abilityId], references: [id])
+
+  @@id([pokemonId, abilityId])
+}
+
+model item {
+  id           Int               @id
+  apiName      String            @unique
+  cost         Int?
+  flingPower   Int?
+  flingEffect  String?
+  category     String?
+  effect       String?
+  sprite       String?
+  translations ItemTranslation[]
+  berry        Berry?
+}
+
+model ItemTranslation {
+  id          Int     @id @default(autoincrement())
+  itemId      Int
+  language    String
+  name        String
+  description String?
+  item        item    @relation(fields: [itemId], references: [id])
+
+  @@unique([itemId, language])
+}
+
+model Berry {
+  id               Int           @id
+  apiName          String        @unique
+  itemId           Int?          @unique
+  growthTime       Int?
+  maxHarvest       Int?
+  naturalGiftPower Int?
+  naturalGiftType  String?
+  size             Int?
+  smoothness       Int?
+  soilDryness      Int?
+  firmness         String?
+  item             item?         @relation(fields: [itemId], references: [id])
+  flavors          BerryFlavor[]
+}
+
+model BerryFlavor {
+  id      Int    @id @default(autoincrement())
+  berryId Int
+  flavor  String
+  potency Int
+  berry   Berry  @relation(fields: [berryId], references: [id])
+
+  @@unique([berryId, flavor])
+}

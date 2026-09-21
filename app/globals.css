@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+@theme {
+  --color-pokemon-normal: #a8a77a;
+  --color-pokemon-fire: #ee8130;
+  --color-pokemon-water: #6390f0;
+  --color-pokemon-electric: #f7d02c;
+  --color-pokemon-grass: #7ac74c;
+  --color-pokemon-ice: #96d9d6;
+
+  --color-pokemon-fighting: #c22e28;
+  --color-pokemon-poison: #a33ea1;
+  --color-pokemon-ground: #e2bf65;
+  --color-pokemon-flying: #a98ff3;
+
+  --color-pokemon-psychic: #f95587;
+  --color-pokemon-bug: #a6b91a;
+  --color-pokemon-rock: #b6a136;
+  --color-pokemon-ghost: #735797;
+
+  --color-pokemon-dragon: #6f35fc;
+  --color-pokemon-dark: #705746;
+  --color-pokemon-steel: #b7b7ce;
+  --color-pokemon-fairy: #d685ad;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -20,7 +44,44 @@
 }
 
 body {
-  background: var(--background);
+  /* background: var(--background); */
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.scrollbar-red {
+  scrollbar-width: thin;
+  scrollbar-color: #ef4444 transparent;
+}
+
+.scrollbar-red::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-red::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-red::-webkit-scrollbar-thumb {
+  background-color: #ef4444;
+  border-radius: 9999px;
+}
+
+.scrollbar-red::-webkit-scrollbar-thumb:hover {
+  background-color: #dc2626;
 }
