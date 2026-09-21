@@ -1,7 +1,18 @@
 import { prisma } from "@/server/db/prisma";
-import { mapPokemon } from "@/server/pokemon/pokemon.mapper";
+import { mapPokemon, MappedPokemon } from "@/server/pokemon/pokemon.mapper";
 
-export async function getDashboardData() {
+export interface DashboardData {
+  stats: {
+    pokemonCount: number;
+    typeCount: number;
+    moveCount: number;
+    berryCount: number;
+    abilityCount: number;
+  };
+  pokemon: MappedPokemon[];
+}
+
+export async function getDashboardData(): Promise<DashboardData> {
   const pokemonCount = await prisma.pokemon.count();
 
   const typeCount = await prisma.type.count();

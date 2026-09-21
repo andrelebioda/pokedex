@@ -4,6 +4,7 @@ import Link from "next/link";
 import PokemonImage from "@/components/pokemon/PokemonImage";
 import { getPokemonTypeClass } from "@/config/pokemonTypes";
 import { getDashboardData } from "@/server/dashboard/dashboard.service";
+import { MappedPokemon } from "@/server/pokemon/pokemon.mapper";
 
 export default async function Dashboard() {
   const { stats, pokemon } = await getDashboardData();
@@ -97,7 +98,7 @@ export default async function Dashboard() {
         </div>
 
         <div className="mb-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {pokemon.map((poke) => (
+          {pokemon.map((poke: MappedPokemon) => (
             <Link
               href={`/pokemon/${poke.id}`}
               key={poke.id}
