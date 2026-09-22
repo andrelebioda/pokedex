@@ -7,6 +7,8 @@ import { getPokemonTypeClass } from "@/config/pokemonTypes";
 import { getDashboardData } from "@/server/dashboard/dashboard.service";
 import { MappedPokemon } from "@/server/pokemon/pokemon.mapper";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Übersicht – PokéLab",
   description: "Forschungszentrum für Pokémon-Daten: Statistiken und aktuelle Einträge aus dem Pokédex, den Attacken, Fähigkeiten und Beeren.",
