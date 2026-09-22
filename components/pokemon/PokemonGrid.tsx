@@ -116,7 +116,7 @@ export default function PokemonGrid({
 
   return (
     <div>
-      <div className="grid gap-6 md:grid-cols-2 2xl:grid-cols-5 xl:grid-cols-4 grid-cols-1 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5 grid-cols-1">
         {pokemon.map((poke) => (
           <PokemonCard key={poke.id} pokemon={poke} />
         ))}

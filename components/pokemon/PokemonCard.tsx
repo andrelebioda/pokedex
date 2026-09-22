@@ -36,45 +36,46 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
         hover:shadow-red-500/10
       "
     >
-      {/* Bild */}
-      <div
-        className="
+      <div className="grid gap-4 grid-cols-2 sm:grid-cols-1">
+        {/* Bild */}
+        <div
+          className="
           flex
           justify-center
           rounded-xl
           bg-slate-800/50
-          p-4
-        "
-      >
-        <PokemonImage src={pokemon.image} alt={pokemon.name} />
-      </div>
+          py-4"
+        >
+          <PokemonImage src={pokemon.image} alt={pokemon.name} />
+        </div>
 
-      {/* Info */}
-      <div className="mt-4">
-        <strong className="text-md text-slate-500">#{String(pokemon.id).padStart(3, "0")}</strong>
+        {/* Info */}
+        <div className="mt-4">
+          <strong className="text-md text-slate-500">#{String(pokemon.id).padStart(3, "0")}</strong>
 
-        <h3 className="text-xl font-bold text-white">{pokemon.name}</h3>
+          <h3 className="text-xl font-bold text-white">{pokemon.name}</h3>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          {pokemon.types.map((type) => (
-            <span
-              key={type.slug}
-              className={`
-                  flex
-                  h-6
-                  w-20
-                  items-center
-                  justify-center
-                  rounded-full
-                  text-xs
-                  font-semibold
-                  text-white
-                  ${getPokemonTypeClass(type.slug)}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {pokemon.types.map((type) => (
+              <span
+                key={type.slug}
+                className={`
+              flex
+              h-6
+              w-20
+              items-center
+              justify-center
+              rounded-full
+              text-xs
+              font-semibold
+              text-white
+              ${getPokemonTypeClass(type.slug)}
                 `}
-            >
-              {type.name}
-            </span>
-          ))}
+              >
+                {type.name}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </Link>
