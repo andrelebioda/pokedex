@@ -13,15 +13,13 @@ export interface DashboardData {
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
-  const pokemonCount = await prisma.pokemon.count();
-
-  const typeCount = await prisma.type.count();
-
-  const moveCount = await prisma.move.count();
-
-  const berryCount = await prisma.berry.count();
-
-  const abilityCount = await prisma.ability.count();
+  const [pokemonCount, typeCount, moveCount, berryCount, abilityCount] = await Promise.all([
+    prisma.pokemon.count(),
+    prisma.type.count(),
+    prisma.move.count(),
+    prisma.berry.count(),
+    prisma.ability.count(),
+  ]);
 
   const randomIds = Array.from({ length: 8 }, () => Math.floor(Math.random() * pokemonCount) + 1);
 
@@ -65,6 +63,8 @@ export async function getDashboardData(): Promise<DashboardData> {
         },
       },
     },
+
+    relationLoadStrategy: "join",
   });
 
   return {

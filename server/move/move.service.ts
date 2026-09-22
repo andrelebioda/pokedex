@@ -95,6 +95,8 @@ export async function getMoveList(filters: MoveListFilters = {}): Promise<Mapped
         },
       },
     },
+
+    relationLoadStrategy: "join",
   });
 
   return moves
@@ -159,6 +161,8 @@ export async function getPokemonForMove(moveId: number): Promise<MoveLearner[]> 
         },
       },
     },
+
+    relationLoadStrategy: "join",
   });
 
   return learners

@@ -59,6 +59,8 @@ export async function getAbilityList(filters: AbilityListFilters = {}): Promise<
         },
       },
     },
+
+    relationLoadStrategy: "join",
   });
 
   return abilities
@@ -119,6 +121,8 @@ export async function getPokemonForAbility(abilityId: number): Promise<AbilityPo
         },
       },
     },
+
+    relationLoadStrategy: "join",
   });
 
   return entries

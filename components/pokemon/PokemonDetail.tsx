@@ -2,17 +2,19 @@
 
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import AbilityGrid from "@/components/ability/AbilityGrid";
 import MoveGrid from "@/components/move/MoveGrid";
 import PokemonImage from "@/components/pokemon/PokemonImage";
 import PokemonStatsRadar from "@/components/pokemon/PokemonStatsRadar";
 import { getPokemonTypeClass } from "@/config/pokemonTypes";
-import { mapPokemon } from "@/server/pokemon/pokemon.mapper";
+import { mapPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
 
 type PokemonDetailData = NonNullable<ReturnType<typeof mapPokemon>>;
 type PokemonStats = NonNullable<PokemonDetailData["stats"]>;
+
+type MovesState = { status: "idle" | "loading" | "error" } | { status: "ready"; moves: MappedPokemonMove[] };
 
 interface PokemonDetailProps {
   pokemon: PokemonDetailData;
@@ -52,10 +54,25 @@ const STAT_KEYS_CHART = Object.keys(STAT_CHART) as (keyof PokemonStats)[];
 
 export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
   const [tab, setTab] = useState<TabId>("stats");
+  const [movesState, setMovesState] = useState<MovesState>({ status: "idle" });
+  const movesRequestedRef = useRef(false);
+
+  useEffect(() => {
+    if (tab !== "moves" || movesRequestedRef.current) return;
+    movesRequestedRef.current = true;
+
+    fetch(`/api/pokemon/${pokemon.id}/moves`)
+      .then((response) => {
+        if (!response.ok) throw new Error("Fehler beim Laden");
+        return response.json();
+      })
+      .then((data) => setMovesState({ status: "ready", moves: data.moves }))
+      .catch(() => setMovesState({ status: "error" }));
+  }, [tab, pokemon.id]);
 
   const statsTotal = pokemon.stats ? Object.values(pokemon.stats).reduce((sum: number, value: number) => sum + value, 0) : null;
 
-  const moveTableItems = (pokemon.moves ?? []).map((move) => ({
+  const moveTableItems = (movesState.status === "ready" ? movesState.moves : []).map((move) => ({
     id: move.id,
     nameDe: move.name,
     type: move.type,
@@ -185,7 +202,7 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
             `}
           >
             {t.label}
-            {t.id === "moves" && pokemon.moves ? ` (${pokemon.moves.length})` : ""}
+            {t.id === "moves" && movesState.status === "ready" ? ` (${movesState.moves.length})` : ""}
             {t.id === "abilities" && pokemon.abilities ? ` (${pokemon.abilities.length})` : ""}
           </button>
         ))}
@@ -237,7 +254,11 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
         ))}
 
       {tab === "moves" &&
-        (moveTableItems.length > 0 ? (
+        (movesState.status === "loading" || movesState.status === "idle" ? (
+          <p className="text-center text-slate-400">Lade Attacken…</p>
+        ) : movesState.status === "error" ? (
+          <p className="text-center text-red-400">Fehler beim Laden der Attacken.</p>
+        ) : moveTableItems.length > 0 ? (
           <MoveGrid moves={moveTableItems} showLearnMethod showPokemonInfo={false} />
         ) : (
           <p className="text-slate-500">Keine Attacken verfügbar.</p>

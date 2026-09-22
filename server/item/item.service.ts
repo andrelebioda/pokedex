@@ -131,6 +131,8 @@ export async function getItemsForGroup(groupSlug: string, filters: ItemListFilte
         },
       },
     },
+
+    relationLoadStrategy: "join",
   });
 
   const mappedItems: MappedItem[] = items

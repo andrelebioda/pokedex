@@ -94,6 +94,8 @@ export async function getAllBerries(filters: BerryListFilters = {}): Promise<Map
         select: { flavor: true, potency: true },
       },
     },
+
+    relationLoadStrategy: "join",
   });
 
   return berries
