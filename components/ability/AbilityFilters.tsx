@@ -7,22 +7,25 @@ import FilterSearchInput from "@/components/filters/FilterSearchInput";
 import MultiSelectFilter from "@/components/filters/MultiSelectFilter";
 import ResetFiltersButton from "@/components/filters/ResetFiltersButton";
 import SortSelect from "@/components/filters/SortSelect";
-import { TypeOption } from "@/components/pokemon/PokemonFilters";
-import { MoveSort } from "@/server/move/move.service";
+import { AbilityHiddenFilter, AbilitySort } from "@/server/ability/ability.service";
 
-const SORT_OPTIONS: { value: MoveSort; label: string }[] = [
+const SORT_OPTIONS: { value: AbilitySort; label: string }[] = [
   { value: "name", label: "Name" },
-  { value: "type", label: "Typ" },
+  { value: "count", label: "Anzahl Pokémon" },
 ];
 
-interface MoveFiltersProps {
-  types: TypeOption[];
+const HIDDEN_OPTIONS: { value: AbilityHiddenFilter; label: string }[] = [
+  { value: "hidden", label: "Versteckt möglich" },
+  { value: "visible", label: "Nicht versteckt" },
+];
+
+interface AbilityFiltersProps {
   search: string;
-  selectedTypes: string[];
-  sort: MoveSort;
+  selectedHidden: AbilityHiddenFilter[];
+  sort: AbilitySort;
 }
 
-export default function MoveFilters({ types, search, selectedTypes, sort }: MoveFiltersProps) {
+export default function AbilityFilters({ search, selectedHidden, sort }: AbilityFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -35,19 +38,19 @@ export default function MoveFilters({ types, search, selectedTypes, sort }: Move
   }
 
   const updateFilters = useCallback(
-    (next: { search?: string; types?: string[]; sort?: MoveSort }) => {
+    (next: { search?: string; hidden?: AbilityHiddenFilter[]; sort?: AbilitySort }) => {
       const nextSearch = next.search ?? search;
-      const nextTypes = next.types ?? selectedTypes;
+      const nextHidden = next.hidden ?? selectedHidden;
       const nextSort = next.sort ?? sort;
 
       const params = new URLSearchParams();
       if (nextSearch) params.set("search", nextSearch);
-      if (nextTypes.length > 0) params.set("types", nextTypes.join(","));
+      if (nextHidden.length > 0) params.set("hidden", nextHidden.join(","));
       if (nextSort !== "name") params.set("sort", nextSort);
 
       router.push(params.size > 0 ? `${pathname}?${params.toString()}` : pathname);
     },
-    [search, selectedTypes, sort, pathname, router],
+    [search, selectedHidden, sort, pathname, router],
   );
 
   useEffect(() => {
@@ -61,27 +64,27 @@ export default function MoveFilters({ types, search, selectedTypes, sort }: Move
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInput]);
 
-  function toggleType(slug: string) {
-    const nextTypes = selectedTypes.includes(slug) ? selectedTypes.filter((value) => value !== slug) : [...selectedTypes, slug];
+  function toggleHidden(value: string) {
+    const option = value as AbilityHiddenFilter;
+    const nextHidden = selectedHidden.includes(option) ? selectedHidden.filter((entry) => entry !== option) : [...selectedHidden, option];
 
-    updateFilters({ types: nextTypes });
+    updateFilters({ hidden: nextHidden });
   }
 
-  const hasActiveFilters = search.length > 0 || selectedTypes.length > 0 || sort !== "name";
-
-  const sortedTypes = types.filter((option) => option.name !== "???").sort((a, b) => a.name.localeCompare(b.name));
+  const hasActiveFilters = search.length > 0 || selectedHidden.length > 0 || sort !== "name";
 
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex flex-wrap items-center gap-2.5">
         <MultiSelectFilter
-          label="Typen"
-          allLabel="Alle Typen"
-          options={sortedTypes.map((option) => ({ value: option.slug, label: option.name }))}
-          selected={selectedTypes}
-          onToggle={toggleType}
-          contentClassName="w-96"
-          triggerClassName="w-32"
+          label="ausgewählt"
+          allLabel="Versteckt & sichtbar"
+          options={HIDDEN_OPTIONS}
+          selected={selectedHidden}
+          onToggle={toggleHidden}
+          columns={1}
+          contentClassName="w-60"
+          triggerClassName="w-48"
         />
 
         <SortSelect value={sort} options={SORT_OPTIONS} onChange={(value) => updateFilters({ sort: value })} />
@@ -97,7 +100,7 @@ export default function MoveFilters({ types, search, selectedTypes, sort }: Move
           />
         )}
 
-        <FilterSearchInput value={searchInput} onChange={setSearchInput} placeholder="Attacke suchen…" className="lg:w-64" />
+        <FilterSearchInput value={searchInput} onChange={setSearchInput} placeholder="Fähigkeit suchen…" className="lg:w-64" />
       </div>
     </div>
   );

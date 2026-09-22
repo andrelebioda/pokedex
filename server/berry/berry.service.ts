@@ -27,12 +27,16 @@ export interface MappedBerry {
   flavors: MappedBerryFlavor[];
 }
 
+export type BerrySort = "name" | "growth";
+
 interface BerryListFilters {
   search?: string;
+  types?: string[];
+  sort?: BerrySort;
 }
 
 export async function getAllBerries(filters: BerryListFilters = {}): Promise<MappedBerry[]> {
-  const { search } = filters;
+  const { search, types: selectedTypes, sort = "name" } = filters;
 
   const types = await prisma.type.findMany({
     select: {
@@ -64,6 +68,14 @@ export async function getAllBerries(filters: BerryListFilters = {}): Promise<Map
           }
         : {}),
     },
+
+    ...(selectedTypes && selectedTypes.length > 0
+      ? {
+          naturalGiftType: {
+            in: selectedTypes,
+          },
+        }
+      : {}),
   };
 
   const berries = await prisma.berry.findMany({
@@ -123,7 +135,16 @@ export async function getAllBerries(filters: BerryListFilters = {}): Promise<Map
         }))
         .sort((a, b) => b.potency - a.potency),
     }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => {
+      if (sort === "growth") {
+        if (a.growthTime == null) return 1;
+        if (b.growthTime == null) return -1;
+
+        return a.growthTime - b.growthTime || a.name.localeCompare(b.name);
+      }
+
+      return a.name.localeCompare(b.name);
+    });
 }
 
 export async function getBerryCount() {

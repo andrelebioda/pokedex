@@ -2,8 +2,13 @@ import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/server/db/prisma";
 
+export type AbilitySort = "name" | "count";
+export type AbilityHiddenFilter = "hidden" | "visible";
+
 export interface AbilityListFilters {
   search?: string;
+  hidden?: AbilityHiddenFilter[];
+  sort?: AbilitySort;
 }
 
 export interface MappedAbilityListItem {
@@ -17,7 +22,10 @@ export interface MappedAbilityListItem {
 }
 
 export async function getAbilityList(filters: AbilityListFilters = {}): Promise<MappedAbilityListItem[]> {
-  const { search } = filters;
+  const { search, hidden, sort = "name" } = filters;
+
+  const wantsHidden = hidden?.includes("hidden") ?? false;
+  const wantsVisible = hidden?.includes("visible") ?? false;
 
   const where: Prisma.AbilityWhereInput = {
     ...(search
@@ -30,6 +38,22 @@ export async function getAbilityList(filters: AbilityListFilters = {}): Promise<
                 mode: "insensitive",
               },
             },
+          },
+        }
+      : {}),
+
+    ...(wantsHidden && !wantsVisible
+      ? {
+          pokemon: {
+            some: { isHidden: true },
+          },
+        }
+      : {}),
+
+    ...(wantsVisible && !wantsHidden
+      ? {
+          pokemon: {
+            none: { isHidden: true },
           },
         }
       : {}),
@@ -76,7 +100,11 @@ export async function getAbilityList(filters: AbilityListFilters = {}): Promise<
       pokemonCount: ability.pokemon.length,
       hasHidden: ability.pokemon.some((entry) => entry.isHidden),
     }))
-    .sort((a, b) => a.nameDe.localeCompare(b.nameDe));
+    .sort((a, b) => {
+      if (sort === "count") return b.pokemonCount - a.pokemonCount || a.nameDe.localeCompare(b.nameDe);
+
+      return a.nameDe.localeCompare(b.nameDe);
+    });
 }
 
 export interface AbilityPokemon {

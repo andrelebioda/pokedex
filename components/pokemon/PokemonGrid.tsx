@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import PokemonCard, { PokemonListItem } from "@/components/pokemon/PokemonCard";
+import { PokemonSort } from "@/server/pokemon/pokemon.service";
 
 const LIMIT = 50;
 
@@ -11,10 +12,19 @@ interface PokemonGridProps {
   initialHasMore: boolean;
   search?: string;
   types?: string[];
+  generations?: number[];
+  sort?: PokemonSort;
 }
 
-export default function PokemonGrid({ initialPokemon, initialHasMore, search = "", types = [] }: PokemonGridProps) {
-  const filterKey = `${search}::${types.join(",")}`;
+export default function PokemonGrid({
+  initialPokemon,
+  initialHasMore,
+  search = "",
+  types = [],
+  generations = [],
+  sort = "number",
+}: PokemonGridProps) {
+  const filterKey = `${search}::${types.join(",")}::${generations.join(",")}::${sort}`;
 
   const [pokemon, setPokemon] = useState(initialPokemon);
   const [page, setPage] = useState(1);
@@ -56,6 +66,8 @@ export default function PokemonGrid({ initialPokemon, initialHasMore, search = "
       const params = new URLSearchParams({ page: String(nextPage), limit: String(LIMIT) });
       if (search) params.set("search", search);
       if (types.length > 0) params.set("types", types.join(","));
+      if (generations.length > 0) params.set("generations", generations.join(","));
+      if (sort !== "number") params.set("sort", sort);
 
       const response = await fetch(`/api/pokemon?${params.toString()}`);
 
@@ -78,7 +90,7 @@ export default function PokemonGrid({ initialPokemon, initialHasMore, search = "
     } finally {
       setLoading(false);
     }
-  }, [page, search, types]);
+  }, [page, search, types, generations, sort]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;

@@ -10,35 +10,32 @@ interface BerryCardProps {
 
 export default function BerryCard({ berry }: BerryCardProps) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 transition hover:border-slate-700">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-slate-800/50">
-            <ItemImage src={berry.image} alt={berry.name} size={48} />
-          </div>
-          <div>
-            <h3 className="font-semibold text-white text-lg">{berry.name}</h3>
-            {berry.description && <p className="mt-1 text-[14px] text-slate-400">{berry.description}</p>}
-          </div>
+    <div className="relative rounded-xl border border-slate-800 bg-slate-900 p-4 transition hover:border-slate-700 sm:pb-16">
+      <div className="grid grid-cols-[auto_1fr] gap-4 sm:pb-2">
+        <div className="h-16 w-16 shrink-0 rounded-lg bg-slate-800/50">
+          <ItemImage src={berry.image} alt={berry.name} size={56} />
         </div>
 
-        {/* <div className="flex shrink-0 items-center gap-1.5">
-          {berry.naturalGiftPower != null && berry.naturalGiftType && (
-            <span
-              title="Beerenkräfte"
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white ${getPokemonTypeClass(berry.naturalGiftType)}`}
-            >
-              {berry.naturalGiftPower} ({berry.naturalGiftTypeName})
-            </span>
-          )}
+        <div className="min-w-0">
+          <h3 className="font-semibold text-white text-lg">{berry.name}</h3>
+          {berry.description && <p className="mt-1 text-[14px] text-slate-400">{berry.description}</p>}
+        </div>
+      </div>
 
-          {berry.growthTime != null && (
-            <span title="Wachstum" className="flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-1 text-xs text-slate-300">
-              <Timer size={12} />
-              {berry.growthTime} Std.
-            </span>
-          )}
-        </div> */}
+      <div className="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-slate-700 sm:absolute sm:right-4 sm:bottom-4 sm:left-4">
+        {berry.naturalGiftPower != null && berry.naturalGiftType && (
+          <span
+            title="Beerenkräfte"
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white ${getPokemonTypeClass(berry.naturalGiftType)}`}
+          >
+            {berry.naturalGiftPower} ({berry.naturalGiftTypeName})
+          </span>
+        )}
+
+        <span className="flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300" title="Wachstum">
+          <Timer size={12} className="mr-1" />
+          {berry.growthTime != null ? `${berry.growthTime} Std.` : "-"}
+        </span>
       </div>
     </div>
   );

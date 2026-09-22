@@ -15,6 +15,7 @@ model Pokemon {
   height       Int
   weight       Int
   sprite       String?
+  generation   Int?
   stats        PokemonStats?
   translations PokemonTranslation[]
   types        PokemonType[]

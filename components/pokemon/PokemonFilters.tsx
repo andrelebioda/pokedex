@@ -1,23 +1,46 @@
 "use client";
 
-import { Search, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { getPokemonTypeClass } from "@/config/pokemonTypes";
+import FilterSearchInput from "@/components/filters/FilterSearchInput";
+import MultiSelectFilter from "@/components/filters/MultiSelectFilter";
+import ResetFiltersButton from "@/components/filters/ResetFiltersButton";
+import SortSelect from "@/components/filters/SortSelect";
+import { PokemonSort } from "@/server/pokemon/pokemon.service";
 
 export interface TypeOption {
   slug: string;
   name: string;
 }
 
+const SORT_OPTIONS: { value: PokemonSort; label: string }[] = [
+  { value: "number", label: "Nummer" },
+  { value: "name", label: "Name" },
+  { value: "type", label: "Typ" },
+];
+
+const GENERATION_OPTIONS = [
+  { value: "1", label: "Gen. 1" },
+  { value: "2", label: "Gen. 2" },
+  { value: "3", label: "Gen. 3" },
+  { value: "4", label: "Gen. 4" },
+  { value: "5", label: "Gen. 5" },
+  { value: "6", label: "Gen. 6" },
+  { value: "7", label: "Gen. 7" },
+  { value: "8", label: "Gen. 8" },
+  { value: "9", label: "Gen. 9" },
+];
+
 interface PokemonFiltersProps {
   types: TypeOption[];
   search: string;
   selectedTypes: string[];
+  selectedGenerations: number[];
+  sort: PokemonSort;
 }
 
-export default function PokemonFilters({ types, search, selectedTypes }: PokemonFiltersProps) {
+export default function PokemonFilters({ types, search, selectedTypes, selectedGenerations, sort }: PokemonFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -30,17 +53,21 @@ export default function PokemonFilters({ types, search, selectedTypes }: Pokemon
   }
 
   const updateFilters = useCallback(
-    (next: { search?: string; types?: string[] }) => {
+    (next: { search?: string; types?: string[]; generations?: number[]; sort?: PokemonSort }) => {
       const nextSearch = next.search ?? search;
       const nextTypes = next.types ?? selectedTypes;
+      const nextGenerations = next.generations ?? selectedGenerations;
+      const nextSort = next.sort ?? sort;
 
       const params = new URLSearchParams();
       if (nextSearch) params.set("search", nextSearch);
       if (nextTypes.length > 0) params.set("types", nextTypes.join(","));
+      if (nextGenerations.length > 0) params.set("generations", nextGenerations.join(","));
+      if (nextSort !== "number") params.set("sort", nextSort);
 
       router.push(params.size > 0 ? `${pathname}?${params.toString()}` : pathname);
     },
-    [search, selectedTypes, pathname, router],
+    [search, selectedTypes, selectedGenerations, sort, pathname, router],
   );
 
   useEffect(() => {
@@ -59,113 +86,56 @@ export default function PokemonFilters({ types, search, selectedTypes }: Pokemon
     updateFilters({ types: nextTypes });
   }
 
-  const hasActiveFilters = search.length > 0 || selectedTypes.length > 0;
+  function toggleGeneration(value: string) {
+    const generation = Number(value);
+    const nextGenerations = selectedGenerations.includes(generation)
+      ? selectedGenerations.filter((entry) => entry !== generation)
+      : [...selectedGenerations, generation];
+
+    updateFilters({ generations: nextGenerations });
+  }
+
+  const hasActiveFilters = search.length > 0 || selectedTypes.length > 0 || selectedGenerations.length > 0 || sort !== "number";
+
+  const sortedTypes = types.filter((option) => option.name !== "???").sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search
-            className="
-              pointer-events-none
-              absolute
-              top-1/2
-              left-4
-              -translate-y-1/2
-              text-slate-500
-            "
-            size={18}
-          />
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-wrap items-center gap-2.5">
+        <MultiSelectFilter
+          label="Generationen"
+          allLabel="Alle Generationen"
+          options={GENERATION_OPTIONS}
+          selected={selectedGenerations.map(String)}
+          onToggle={toggleGeneration}
+          contentClassName="w-80"
+          triggerClassName="w-42"
+        />
 
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="Pokémon suchen…"
-            className="
-              w-full
-              rounded-xl
-              border
-              border-slate-800
-              bg-slate-900
-              py-3
-              pr-4
-              pl-11
-              text-white
-              placeholder:text-slate-500
-              focus:border-red-500
-              focus:outline-none
-            "
-          />
-        </div>
+        <MultiSelectFilter
+          label="Typen"
+          allLabel="Alle Typen"
+          options={sortedTypes.map((option) => ({ value: option.slug, label: option.name }))}
+          selected={selectedTypes}
+          onToggle={toggleType}
+          contentClassName="w-96"
+          triggerClassName="w-32"
+        />
 
+        <SortSelect value={sort} options={SORT_OPTIONS} onChange={(value) => updateFilters({ sort: value })} />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2.5">
         {hasActiveFilters && (
-          <button
-            type="button"
+          <ResetFiltersButton
             onClick={() => {
               setSearchInput("");
               router.push(pathname);
             }}
-            className="
-              flex
-              items-center
-              gap-1.5
-              rounded-xl
-              border
-              border-slate-800
-              bg-slate-900
-              px-4
-              py-3
-              text-sm
-              text-slate-300
-              transition
-              hover:border-slate-700
-              hover:text-white
-            "
-          >
-            <X size={16} />
-            Filter zurücksetzen
-          </button>
+          />
         )}
-      </div>
 
-      <div className="flex flex-wrap gap-2">
-        {types
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((option) => {
-            return option.name != "???";
-          })
-          .map((option) => {
-            const active = selectedTypes.includes(option.slug);
-
-            return (
-              <button
-                key={option.slug}
-                type="button"
-                onClick={() => toggleType(option.slug)}
-                aria-pressed={active}
-                className={`
-                flex
-                items-center
-                gap-2
-                rounded-full
-                border
-                px-3
-                py-1.5
-                text-xs
-                font-semibold
-                transition-all
-                ${
-                  active
-                    ? `border-transparent text-white shadow-lg ${getPokemonTypeClass(option.slug)}`
-                    : "border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:text-white"
-                }
-              `}
-              >
-                {option.name}
-              </button>
-            );
-          })}
+        <FilterSearchInput value={searchInput} onChange={setSearchInput} placeholder="Suchen…" className="lg:w-84" />
       </div>
     </div>
   );

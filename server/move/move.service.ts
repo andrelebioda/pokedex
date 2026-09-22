@@ -2,11 +2,14 @@ import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/server/db/prisma";
 
+export type MoveSort = "name" | "type";
+
 export interface MoveListFilters {
   search?: string;
   types?: string[];
   minPower?: number;
   maxPower?: number;
+  sort?: MoveSort;
 }
 
 export interface MappedMoveListItem {
@@ -25,7 +28,7 @@ export interface MappedMoveListItem {
 }
 
 export async function getMoveList(filters: MoveListFilters = {}): Promise<MappedMoveListItem[]> {
-  const { search, types, minPower, maxPower } = filters;
+  const { search, types, minPower, maxPower, sort = "name" } = filters;
 
   const where: Prisma.MoveWhereInput = {
     ...(search
@@ -114,7 +117,11 @@ export async function getMoveList(filters: MoveListFilters = {}): Promise<Mapped
       priority: move.priority,
       description: move.translations.find((t) => t.language === "de")?.description ?? move.translations.find((t) => t.language === "en")?.description ?? move.effect,
     }))
-    .sort((a, b) => a.nameDe.localeCompare(b.nameDe));
+    .sort((a, b) => {
+      if (sort === "type") return a.type.localeCompare(b.type) || a.nameDe.localeCompare(b.nameDe);
+
+      return a.nameDe.localeCompare(b.nameDe);
+    });
 }
 
 export interface MoveLearner {

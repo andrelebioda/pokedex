@@ -8,21 +8,21 @@ import MultiSelectFilter from "@/components/filters/MultiSelectFilter";
 import ResetFiltersButton from "@/components/filters/ResetFiltersButton";
 import SortSelect from "@/components/filters/SortSelect";
 import { TypeOption } from "@/components/pokemon/PokemonFilters";
-import { MoveSort } from "@/server/move/move.service";
+import { BerrySort } from "@/server/berry/berry.service";
 
-const SORT_OPTIONS: { value: MoveSort; label: string }[] = [
+const SORT_OPTIONS: { value: BerrySort; label: string }[] = [
   { value: "name", label: "Name" },
-  { value: "type", label: "Typ" },
+  { value: "growth", label: "Wachstum" },
 ];
 
-interface MoveFiltersProps {
+interface BerryFiltersProps {
   types: TypeOption[];
   search: string;
   selectedTypes: string[];
-  sort: MoveSort;
+  sort: BerrySort;
 }
 
-export default function MoveFilters({ types, search, selectedTypes, sort }: MoveFiltersProps) {
+export default function BerryFilters({ types, search, selectedTypes, sort }: BerryFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -35,7 +35,7 @@ export default function MoveFilters({ types, search, selectedTypes, sort }: Move
   }
 
   const updateFilters = useCallback(
-    (next: { search?: string; types?: string[]; sort?: MoveSort }) => {
+    (next: { search?: string; types?: string[]; sort?: BerrySort }) => {
       const nextSearch = next.search ?? search;
       const nextTypes = next.types ?? selectedTypes;
       const nextSort = next.sort ?? sort;
@@ -97,7 +97,7 @@ export default function MoveFilters({ types, search, selectedTypes, sort }: Move
           />
         )}
 
-        <FilterSearchInput value={searchInput} onChange={setSearchInput} placeholder="Attacke suchen…" className="lg:w-64" />
+        <FilterSearchInput value={searchInput} onChange={setSearchInput} placeholder="Beere suchen…" className="lg:w-64" />
       </div>
     </div>
   );

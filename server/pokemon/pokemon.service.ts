@@ -4,13 +4,17 @@ import { cache } from "react";
 import { prisma } from "@/server/db/prisma";
 import { mapPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
 
+export type PokemonSort = "number" | "name" | "type";
+
 interface PokemonListFilters {
   search?: string;
   types?: string[];
+  generations?: number[];
+  sort?: PokemonSort;
 }
 
 export async function getPokemonList(page = 1, limit = 50, filters: PokemonListFilters = {}) {
-  const { search, types } = filters;
+  const { search, types, generations, sort = "number" } = filters;
 
   const where: Prisma.PokemonWhereInput = {
     ...(search
@@ -40,15 +44,18 @@ export async function getPokemonList(page = 1, limit = 50, filters: PokemonListF
           },
         }
       : {}),
+
+    ...(generations && generations.length > 0
+      ? {
+          generation: {
+            in: generations,
+          },
+        }
+      : {}),
   };
 
   const pokemon = await prisma.pokemon.findMany({
     where,
-    skip: (page - 1) * limit,
-    take: limit + 1,
-    orderBy: {
-      id: "asc",
-    },
 
     select: {
       id: true,
@@ -85,10 +92,26 @@ export async function getPokemonList(page = 1, limit = 50, filters: PokemonListF
     relationLoadStrategy: "join",
   });
 
-  const hasMore = pokemon.length > limit;
+  const mapped = pokemon.map(mapPokemon);
+
+  mapped.sort((a, b) => {
+    if (sort === "name") return a.name.localeCompare(b.name);
+
+    if (sort === "type") {
+      const typeA = a.types[0]?.name ?? "";
+      const typeB = b.types[0]?.name ?? "";
+      return typeA.localeCompare(typeB) || a.id - b.id;
+    }
+
+    return a.id - b.id;
+  });
+
+  const start = (page - 1) * limit;
+  const pageItems = mapped.slice(start, start + limit);
+  const hasMore = start + limit < mapped.length;
 
   return {
-    pokemon: pokemon.slice(0, limit).map(mapPokemon),
+    pokemon: pageItems,
     hasMore,
   };
 }

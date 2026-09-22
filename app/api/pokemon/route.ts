@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPokemonList } from "@/server/pokemon/pokemon.service";
+import { getPokemonList, PokemonSort } from "@/server/pokemon/pokemon.service";
+
+const VALID_SORTS: PokemonSort[] = ["number", "name", "type"];
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -13,8 +15,16 @@ export async function GET(request: NextRequest) {
       ?.split(",")
       .map((value) => value.trim())
       .filter(Boolean) || undefined;
+  const generations =
+    searchParams
+      .get("generations")
+      ?.split(",")
+      .map((value) => Number(value.trim()))
+      .filter((value) => Number.isInteger(value) && value > 0) || undefined;
+  const sortParam = searchParams.get("sort");
+  const sort = VALID_SORTS.includes(sortParam as PokemonSort) ? (sortParam as PokemonSort) : undefined;
 
-  const { pokemon, hasMore } = await getPokemonList(page, limit, { search, types });
+  const { pokemon, hasMore } = await getPokemonList(page, limit, { search, types, generations, sort });
 
   return NextResponse.json({ pokemon, hasMore, page });
 }

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 
 import BerryCard from "@/components/berry/BerryCard";
-import BerrySearch from "@/components/berry/BerrySearch";
+import BerryFilters from "@/components/berry/BerryFilters";
 import StickyBar from "@/components/layout/StickyBar";
-import { getAllBerries } from "@/server/berry/berry.service";
+import { getAllBerries, BerrySort } from "@/server/berry/berry.service";
+import { getAllTypes } from "@/server/type/type.service";
 
 export const dynamic = "force-dynamic";
 
@@ -12,19 +13,28 @@ export const metadata: Metadata = {
   description: "Alle Beeren mit ihren Beerenkräften, Wachstumszeit und weiteren Eigenschaften.",
 };
 
+const VALID_SORTS: BerrySort[] = ["name", "growth"];
+
 interface BerriesPageProps {
-  searchParams: Promise<{ search?: string }>;
+  searchParams: Promise<{ search?: string; types?: string; sort?: string }>;
 }
 
 export default async function BerriesPage({ searchParams }: BerriesPageProps) {
-  const { search = "" } = await searchParams;
+  const { search = "", types: typesParam = "", sort: sortParam } = await searchParams;
 
-  const berries = await getAllBerries({ search });
+  const selectedTypes = typesParam
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  const sort = VALID_SORTS.includes(sortParam as BerrySort) ? (sortParam as BerrySort) : "name";
+
+  const [berries, types] = await Promise.all([getAllBerries({ search, types: selectedTypes, sort }), getAllTypes()]);
 
   return (
     <div>
       <StickyBar className="-mt-8 mb-8">
-        <BerrySearch search={search} />
+        <BerryFilters types={types} search={search} selectedTypes={selectedTypes} sort={sort} />
       </StickyBar>
 
       <section>

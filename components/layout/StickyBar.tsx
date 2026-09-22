@@ -43,7 +43,7 @@ export default function StickyBar({ children, className = "" }: StickyBarProps) 
         ${className}
       `}
       >
-        <div className="py-4">{children}</div>
+        <div className="py-6">{children}</div>
       </div>
     </>
   );
