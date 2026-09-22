@@ -1,10 +1,16 @@
 import { Database, Layers, Swords, Cherry } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import PokemonImage from "@/components/pokemon/PokemonImage";
 import { getPokemonTypeClass } from "@/config/pokemonTypes";
 import { getDashboardData } from "@/server/dashboard/dashboard.service";
 import { MappedPokemon } from "@/server/pokemon/pokemon.mapper";
+
+export const metadata: Metadata = {
+  title: "Übersicht – PokéLab",
+  description: "Forschungszentrum für Pokémon-Daten: Statistiken und aktuelle Einträge aus dem Pokédex, den Attacken, Fähigkeiten und Beeren.",
+};
 
 export default async function Dashboard() {
   const { stats, pokemon } = await getDashboardData();
@@ -40,7 +46,7 @@ export default async function Dashboard() {
     <div className="space-y-10">
       {/* Header */}
       <section>
-        <h1 className="text-5xl font-bold text-white">Willkommen im PokéLabs 👋</h1>
+        <h1 className="text-5xl font-bold text-white">Willkommen im PokéLabs</h1>
 
         <p className="mt-3 text-xl text-slate-400">Forschungszentrum für Pokémon-Daten, Moves und Fähigkeiten.</p>
       </section>

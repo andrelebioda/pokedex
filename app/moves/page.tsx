@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import StickyBar from "@/components/layout/StickyBar";
 import MoveFilters from "@/components/move/MoveFilters";
 import MoveGrid from "@/components/move/MoveGrid";
@@ -5,6 +7,11 @@ import { getMoveList } from "@/server/move/move.service";
 import { getAllTypes } from "@/server/type/type.service";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Attacken",
+  description: "Durchsuche alle Attacken mit Stärke, Genauigkeit, AP und den Pokémon, die sie erlernen können.",
+};
 
 interface MovesPageProps {
   searchParams: Promise<{ search?: string; types?: string }>;

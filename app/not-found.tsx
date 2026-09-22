@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Seite nicht gefunden",
+  description: "Diese Seite existiert nicht. Zurück zur Übersicht oder zum Pokédex.",
+};
 
 export default function NotFound() {
   return (

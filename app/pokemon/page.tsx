@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
+
 import PokemonFilters from "@/components/pokemon/PokemonFilters";
 import PokemonGrid from "@/components/pokemon/PokemonGrid";
 import { getPokemonList } from "@/server/pokemon/pokemon.service";
 import { getAllTypes } from "@/server/type/type.service";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Pokémon",
+  description: "Durchsuche alle Pokémon nach Name oder Typ und finde Details zu Werten, Attacken und Fähigkeiten.",
+};
 
 interface PokemonPageProps {
   searchParams: Promise<{ search?: string; types?: string }>;

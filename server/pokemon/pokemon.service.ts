@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { cache } from "react";
 
 import { prisma } from "@/server/db/prisma";
 import { mapPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
@@ -92,7 +93,7 @@ export async function getPokemonList(page = 1, limit = 50, filters: PokemonListF
   };
 }
 
-export async function getSinglePokemon(id: number) {
+export const getSinglePokemon = cache(async function getSinglePokemon(id: number) {
   const pokemon = await prisma.pokemon.findUnique({
     where: {
       id: id,
@@ -167,7 +168,7 @@ export async function getSinglePokemon(id: number) {
   if (!pokemon) return null;
 
   return mapPokemon(pokemon);
-}
+});
 
 export async function getMovesForPokemon(pokemonId: number): Promise<MappedPokemonMove[]> {
   const moves = await prisma.pokemonMove.findMany({

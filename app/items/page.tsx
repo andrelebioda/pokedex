@@ -1,9 +1,15 @@
 import { Backpack, Boxes, CircleDot, Dumbbell, HeartPulse, Music, Sparkles, Swords, Trophy, UtensilsCrossed, LucideIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getItemGroupOverview } from "@/server/item/item.service";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Items",
+  description: "Alle Items im Überblick, gruppiert nach Kategorien wie Bälle, Heilung, Kampfitems und mehr.",
+};
 
 const groupIcons: Record<string, LucideIcon> = {
   balls: CircleDot,

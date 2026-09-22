@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
+
 import BerryCard from "@/components/berry/BerryCard";
 import BerrySearch from "@/components/berry/BerrySearch";
 import StickyBar from "@/components/layout/StickyBar";
 import { getAllBerries } from "@/server/berry/berry.service";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Beeren",
+  description: "Alle Beeren mit ihren Beerenkräften, Wachstumszeit und weiteren Eigenschaften.",
+};
 
 interface BerriesPageProps {
   searchParams: Promise<{ search?: string }>;

@@ -1,4 +1,5 @@
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -12,6 +13,20 @@ export const dynamic = "force-dynamic";
 interface ItemGroupPageProps {
   params: Promise<{ group: string }>;
   searchParams: Promise<{ search?: string; categories?: string }>;
+}
+
+export async function generateMetadata({ params }: ItemGroupPageProps): Promise<Metadata> {
+  const { group: groupSlug } = await params;
+
+  const group = getItemCategoryGroupBySlug(groupSlug);
+  if (!group) {
+    return { title: "Kategorie nicht gefunden" };
+  }
+
+  return {
+    title: `${group.name} – Items`,
+    description: `Alle Items der Kategorie ${group.name} im Überblick.`,
+  };
 }
 
 export default async function ItemGroupPage({ params, searchParams }: ItemGroupPageProps) {

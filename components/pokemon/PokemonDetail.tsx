@@ -202,8 +202,8 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
             `}
           >
             {t.label}
-            {t.id === "moves" && movesState.status === "ready" ? ` (${movesState.moves.length})` : ""}
-            {t.id === "abilities" && pokemon.abilities ? ` (${pokemon.abilities.length})` : ""}
+            {/* {t.id === "moves" && movesState.status === "ready" ? ` (${movesState.moves.length})` : ""}
+            {t.id === "abilities" && pokemon.abilities ? ` (${pokemon.abilities.length})` : ""} */}
           </button>
         ))}
       </div>

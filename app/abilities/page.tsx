@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
+
 import AbilityGrid from "@/components/ability/AbilityGrid";
 import AbilitySearch from "@/components/ability/AbilitySearch";
 import StickyBar from "@/components/layout/StickyBar";
 import { getAbilityList } from "@/server/ability/ability.service";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Fähigkeiten",
+  description: "Alle Fähigkeiten im Überblick inklusive der Pokémon, die sie besitzen können.",
+};
 
 interface AbilitiesPageProps {
   searchParams: Promise<{ search?: string }>;

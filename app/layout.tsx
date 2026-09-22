@@ -1,8 +1,23 @@
+import type { Metadata } from "next";
+
 //CSS
 import "./globals.css";
 
 //Components
 import Navigation from "@/components/layout/Navigation";
+
+export const metadata: Metadata = {
+  title: {
+    default: "PokéLab – Pokémon Research Database",
+    template: "%s – PokéLab",
+  },
+  description: "Durchsuche Pokémon, Attacken, Fähigkeiten, Items und Beeren mit deutschen Übersetzungen und detaillierten Werten.",
+  openGraph: {
+    siteName: "PokéLab",
+    type: "website",
+    locale: "de_DE",
+  },
+};
 
 export default function RootLayout({
   children,
