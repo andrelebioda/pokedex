@@ -10,7 +10,6 @@ export const itemCategoryGroups: ItemCategoryGroupDefinition[] = [
     slug: "balls",
     name: "Bälle & Fanghilfen",
     categories: ["apricorn-balls", "apricorn-box", "special-balls", "standard-balls", "catching-bonus", "in-a-pinch"],
-    flat: true,
   },
   {
     slug: "healing",

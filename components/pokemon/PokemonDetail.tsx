@@ -170,7 +170,7 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
   }));
 
   return (
-    <div className="space-y-8 px-4 py-6">
+    <div className="pt-6">
       <Link
         href="/pokemon"
         className="
@@ -181,6 +181,8 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
           text-slate-400
           transition
           hover:text-white
+          ml-4
+          mb-6
         "
       >
         <ArrowLeft size={16} />
@@ -195,6 +197,8 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
           border-slate-800
           bg-slate-900
           shadow-lg
+          mx-4
+          mb-4
         "
       >
         <div className="grid gap-8 p-8 lg:grid-cols-[360px_1fr] lg:items-center">
@@ -259,7 +263,7 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
         </div>
       </div>
 
-      <div className="sticky top-16 z-20 -mx-4 flex gap-2 overflow-x-auto border-b border-slate-800 bg-slate-950 px-4 lg:static lg:mx-0 lg:px-0">
+      <div className="sticky top-16 z-20 flex justify-center gap-2 overflow-x-auto border-b border-slate-800 bg-slate-950 mb-6 lg:top-0">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -283,7 +287,7 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
 
       {tab === "stats" &&
         (pokemon.stats ? (
-          <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <div className="grid gap-6 lg:grid-cols-[1fr_1fr] mx-4">
             <div className="flex items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 p-6">
               <PokemonStatsRadar stats={pokemon.stats} labels={STAT_CHART} order={STAT_KEYS_CHART} max={STAT_MAX} />
             </div>
@@ -317,8 +321,10 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
         ))}
 
       {tab === "moves" && (
-        <div className="space-y-6">
-          <FilterSearchInput value={movesSearchInput} onChange={setMovesSearchInput} placeholder="Attacke suchen…" className="sm:w-72" />
+        <div>
+          <div className="flex items-center justify-between gap-4 px-4">
+            <FilterSearchInput value={movesSearchInput} onChange={setMovesSearchInput} placeholder="Attacke suchen…" className="sm:w-72" />
+          </div>
 
           {moveTableItems.length > 0 ? (
             <MoveGrid moves={moveTableItems} showLearnMethod showPokemonInfo={false} />

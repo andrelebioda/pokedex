@@ -104,7 +104,7 @@ export default async function Dashboard() {
         <div className="mb-8">
           <h2 className="pb-1.5 text-[20px] md:text-3xl font-bold text-white">Pokémon Datenbank</h2>
 
-          <p className="text-[14px] md:text-md text-slate-400">Aktuelle Einträge aus dem Pokédex</p>
+          <p className="text-[14px] md:text-lg text-slate-400">Aktuelle Einträge aus dem Pokédex</p>
         </div>
 
         <div className="mb-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">

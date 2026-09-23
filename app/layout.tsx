@@ -34,7 +34,7 @@ export default function RootLayout({
         <div className="min-h-screen min-[1200px]:grid min-[1200px]:grid-cols-[240px_1fr]">
           <Navigation />
 
-          <main className="px-2 pb-6 md:pb-8 md:px-6">{children}</main>
+          <main className="pb-6 md:pb-8 md:px-6">{children}</main>
         </div>
       </body>
     </html>
