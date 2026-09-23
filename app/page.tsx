@@ -54,21 +54,23 @@ export default async function Dashboard() {
         <p className="mt-3 text-[16px] md:text-[22px] text-slate-400 w-full xl:w-[85%]">
           Hier findest du umfangreiche Informationen zu allen Pokémon, Attacken, Fähigkeiten, Items und Beeren. Die Seite ist ein reines Fanprojekt
           von mir und befindet sich noch in der Entwicklung. In nächster Zeit sind unter anderem folgende Features geplant:
-          <table className="list-disc list-inside mt-2 text-slate-400">
-            <tr className="mb-1 block">
+        </p>
+        <table className="list-disc list-inside mt-2 text-slate-400">
+          <tbody>
+            <tr className="mb-1 block text-[16px] md:text-[22px]">
               <td className="pr-2 align-top">●</td>
               <td>Team Builder</td>
             </tr>
-            <tr className="mb-1 block">
+            <tr className="mb-1 block text-[16px] md:text-[22px]">
               <td className="pr-2 align-top">●</td>
               <td>EVs/IVs-Rechner</td>
             </tr>
-            <tr className="mb-1 block">
+            <tr className="mb-1 block text-[16px] md:text-[22px]">
               <td className="pr-2 align-top">●</td>
               <td>Der Bereich „Meine Pokémon“ geplant, in dem du deine favorisierten Pokémon sammeln kannst.</td>
             </tr>
-          </table>
-        </p>
+          </tbody>
+        </table>
       </section>
 
       {/* Statistik */}
