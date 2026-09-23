@@ -67,7 +67,7 @@ export default async function Dashboard() {
             </tr>
             <tr className="mb-1 block text-[16px] md:text-[22px]">
               <td className="pr-2 align-top">●</td>
-              <td>Der Bereich „Meine Pokémon“ geplant, in dem du deine favorisierten Pokémon sammeln kannst.</td>
+              <td>Der Bereich „Meine Pokémon“, in dem du deine favorisierten Pokémon sammeln kannst.</td>
             </tr>
           </tbody>
         </table>
