@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Pokémon",
   description: "Durchsuche alle Pokémon nach Name oder Typ und finde Details zu Werten, Attacken und Fähigkeiten.",
+  alternates: { canonical: "/pokemon" },
 };
 
 const VALID_SORTS: PokemonSort[] = ["number-asc", "number-desc", "name-asc", "name-desc", "type-asc", "type-desc"];

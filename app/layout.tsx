@@ -11,13 +11,17 @@ import { cn } from "@/lib/utils";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.pokelabs.de"),
   title: {
-    default: "PokéLab – Pokémon Research Database",
-    template: "%s – PokéLab",
+    default: "PokéLabs – Pokémon Research Database",
+    template: "%s – PokéLabs",
   },
   description: "Durchsuche Pokémon, Attacken, Fähigkeiten, Items und Beeren mit deutschen Übersetzungen und detaillierten Werten.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    siteName: "PokéLab",
+    siteName: "PokéLabs",
     type: "website",
     locale: "de_DE",
   },

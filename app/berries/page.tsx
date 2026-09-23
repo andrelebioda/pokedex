@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Beeren",
   description: "Alle Beeren mit ihren Beerenkräften, Wachstumszeit und weiteren Eigenschaften.",
+  alternates: { canonical: "/berries" },
 };
 
 const VALID_SORTS: BerrySort[] = ["name-asc", "name-desc", "growth-asc", "growth-desc", "power-asc", "power-desc"];

@@ -10,8 +10,9 @@ import { MappedPokemon } from "@/server/pokemon/pokemon.mapper";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Übersicht – PokéLab",
+  title: "Übersicht – PokéLabs",
   description: "Forschungszentrum für Pokémon-Daten: Statistiken und aktuelle Einträge aus dem Pokédex, den Attacken, Fähigkeiten und Beeren.",
+  alternates: { canonical: "/" },
 };
 
 export default async function Dashboard() {

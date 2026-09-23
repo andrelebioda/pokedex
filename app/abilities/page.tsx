@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Fähigkeiten",
   description: "Alle Fähigkeiten im Überblick inklusive der Pokémon, die sie besitzen können.",
+  alternates: { canonical: "/abilities" },
 };
 
 const LIMIT = 50;

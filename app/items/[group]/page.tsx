@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: ItemGroupPageProps): Promise<
   return {
     title: `${group.name} – Items`,
     description: `Alle Items der Kategorie ${group.name} im Überblick.`,
+    alternates: { canonical: `/items/${groupSlug}` },
   };
 }
 

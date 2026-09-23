@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Items",
   description: "Alle Items im Überblick, gruppiert nach Kategorien wie Bälle, Heilung, Kampfitems und mehr.",
+  alternates: { canonical: "/items" },
 };
 
 const groupIcons: Record<string, LucideIcon> = {

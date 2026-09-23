@@ -26,6 +26,7 @@ export async function generateMetadata({ params }: PokemonDetailPageProps): Prom
   return {
     title,
     description,
+    alternates: { canonical: `/pokemon/${pokemon.id}` },
     openGraph: { title, description },
   };
 }
