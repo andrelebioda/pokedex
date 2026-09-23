@@ -50,7 +50,11 @@ export default async function Dashboard() {
       <section>
         <h1 className="text-2xl md:text-5xl font-bold text-white">Willkommen im PokéLabs</h1>
 
-        <p className="mt-3 text-[14px] md:text-xl text-slate-400">Forschungszentrum für Pokémon-Daten, Moves und Fähigkeiten.</p>
+        <p className="mt-3 text-[14px] md:text-xl text-slate-400 w-[80%]">
+          Hier findest du umfangreiche Informationen zu allen Pokémon, Attacken, Fähigkeiten, Items und Beeren. Wir bauen PokéLabs stetig weiter aus –
+          als Nächstes sind unter anderem ein Team Builder, ein EV/IV-Rechner sowie der Bereich „Meine Pokémon“ geplant, in dem du deine favorisierten
+          Pokémon sammeln kannst.
+        </p>
       </section>
 
       {/* Statistik */}

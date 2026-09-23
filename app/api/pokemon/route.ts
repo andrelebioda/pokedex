@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPokemonList, PokemonSort } from "@/server/pokemon/pokemon.service";
 
-const VALID_SORTS: PokemonSort[] = ["number", "name", "type"];
+const VALID_SORTS: PokemonSort[] = ["number-asc", "number-desc", "name-asc", "name-desc", "type-asc", "type-desc"];
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

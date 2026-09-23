@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/server/db/prisma";
 
-export type MoveSort = "name" | "type";
+export type MoveSort = "name-asc" | "name-desc" | "type-asc" | "type-desc" | "power-asc" | "power-desc";
 
 export interface MoveListFilters {
   search?: string;
@@ -33,7 +33,7 @@ export interface MoveListResult {
 }
 
 export async function getMoveList(page = 1, limit = 50, filters: MoveListFilters = {}): Promise<MoveListResult> {
-  const { search, types, minPower, maxPower, sort = "name" } = filters;
+  const { search, types, minPower, maxPower, sort = "name-asc" } = filters;
 
   const where: Prisma.MoveWhereInput = {
     ...(search
@@ -123,9 +123,18 @@ export async function getMoveList(page = 1, limit = 50, filters: MoveListFilters
       description: move.translations.find((t) => t.language === "de")?.description ?? move.translations.find((t) => t.language === "en")?.description ?? move.effect,
     }))
     .sort((a, b) => {
-      if (sort === "type") return a.type.localeCompare(b.type) || a.nameDe.localeCompare(b.nameDe);
+      if (sort === "type-asc" || sort === "type-desc") {
+        const compare = a.type.localeCompare(b.type);
+        return (sort === "type-desc" ? -compare : compare) || a.nameDe.localeCompare(b.nameDe);
+      }
 
-      return a.nameDe.localeCompare(b.nameDe);
+      if (sort === "power-asc" || sort === "power-desc") {
+        const compare = (a.power ?? -1) - (b.power ?? -1);
+        return (sort === "power-desc" ? -compare : compare) || a.nameDe.localeCompare(b.nameDe);
+      }
+
+      const compare = a.nameDe.localeCompare(b.nameDe);
+      return sort === "name-desc" ? -compare : compare;
     });
 
   const start = (page - 1) * limit;

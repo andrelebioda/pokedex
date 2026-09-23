@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "Durchsuche alle Pokémon nach Name oder Typ und finde Details zu Werten, Attacken und Fähigkeiten.",
 };
 
-const VALID_SORTS: PokemonSort[] = ["number", "name", "type"];
+const VALID_SORTS: PokemonSort[] = ["number-asc", "number-desc", "name-asc", "name-desc", "type-asc", "type-desc"];
 
 interface PokemonPageProps {
   searchParams: Promise<{ search?: string; types?: string; generations?: string; sort?: string }>;
@@ -32,7 +32,7 @@ export default async function PokemonPage({ searchParams }: PokemonPageProps) {
     .map((value) => Number(value.trim()))
     .filter((value) => Number.isInteger(value) && value > 0);
 
-  const sort = VALID_SORTS.includes(sortParam as PokemonSort) ? (sortParam as PokemonSort) : "number";
+  const sort = VALID_SORTS.includes(sortParam as PokemonSort) ? (sortParam as PokemonSort) : "number-asc";
 
   const [{ pokemon, hasMore }, types] = await Promise.all([
     getPokemonList(1, 50, { search, types: selectedTypes, generations: selectedGenerations, sort }),

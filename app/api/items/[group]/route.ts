@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getItemsForGroup } from "@/server/item/item.service";
+import { getItemsForGroup, ItemSort } from "@/server/item/item.service";
+
+const VALID_SORTS: ItemSort[] = ["name-asc", "name-desc"];
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ group: string }> }) {
   const { group } = await params;
@@ -15,8 +17,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       ?.split(",")
       .map((value) => value.trim())
       .filter(Boolean) || undefined;
+  const sortParam = searchParams.get("sort");
+  const sort = VALID_SORTS.includes(sortParam as ItemSort) ? (sortParam as ItemSort) : undefined;
 
-  const result = await getItemsForGroup(group, page, limit, { search, categories });
+  const result = await getItemsForGroup(group, page, limit, { search, categories, sort });
 
   if (!result) {
     return NextResponse.json({ error: "Kategorie nicht gefunden" }, { status: 404 });

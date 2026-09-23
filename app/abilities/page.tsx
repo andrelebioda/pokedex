@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 const LIMIT = 50;
-const VALID_SORTS: AbilitySort[] = ["name", "count"];
+const VALID_SORTS: AbilitySort[] = ["name-asc", "name-desc", "count-asc", "count-desc"];
 const VALID_HIDDEN: AbilityHiddenFilter[] = ["hidden", "visible"];
 
 interface AbilitiesPageProps {
@@ -28,7 +28,7 @@ export default async function AbilitiesPage({ searchParams }: AbilitiesPageProps
     .map((value) => value.trim())
     .filter((value): value is AbilityHiddenFilter => VALID_HIDDEN.includes(value as AbilityHiddenFilter));
 
-  const sort = VALID_SORTS.includes(sortParam as AbilitySort) ? (sortParam as AbilitySort) : "name";
+  const sort = VALID_SORTS.includes(sortParam as AbilitySort) ? (sortParam as AbilitySort) : "name-asc";
 
   const { abilities, hasMore } = await getAbilityList(1, LIMIT, { search, hidden: selectedHidden, sort });
 

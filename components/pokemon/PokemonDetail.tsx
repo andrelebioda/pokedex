@@ -263,7 +263,7 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
         </div>
       </div>
 
-      <div className="sticky top-16 z-20 flex justify-center gap-2 overflow-x-auto border-b border-slate-800 bg-slate-950 mb-6 lg:top-0">
+      <div className="sticky top-16 z-20 flex justify-center gap-2 overflow-x-auto border-b border-slate-800 bg-slate-950 mb-6 xl:top-0">
         {TABS.map((t) => (
           <button
             key={t.id}

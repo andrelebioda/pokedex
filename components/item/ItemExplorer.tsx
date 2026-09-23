@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import ItemCard from "@/components/item/ItemCard";
-import { MappedItem } from "@/server/item/item.service";
+import { ItemSort, MappedItem } from "@/server/item/item.service";
 
 const LIMIT = 60;
 
@@ -14,6 +14,7 @@ interface ItemExplorerProps {
   hideHeader?: boolean;
   search?: string;
   categories?: string[];
+  sort?: ItemSort;
 }
 
 export default function ItemExplorer({
@@ -23,8 +24,9 @@ export default function ItemExplorer({
   hideHeader = false,
   search = "",
   categories = [],
+  sort = "name-asc",
 }: ItemExplorerProps) {
-  const filterKey = `${groupSlug}::${search}::${categories.join(",")}`;
+  const filterKey = `${groupSlug}::${search}::${categories.join(",")}::${sort}`;
 
   const [items, setItems] = useState(initialItems);
   const [page, setPage] = useState(1);
@@ -63,6 +65,7 @@ export default function ItemExplorer({
       const params = new URLSearchParams({ page: String(nextPage), limit: String(LIMIT) });
       if (search) params.set("search", search);
       if (categories.length > 0) params.set("categories", categories.join(","));
+      if (sort !== "name-asc") params.set("sort", sort);
 
       const response = await fetch(`/api/items/${groupSlug}?${params.toString()}`);
       if (!response.ok) throw new Error("Items konnten nicht geladen werden");
@@ -82,7 +85,7 @@ export default function ItemExplorer({
     } finally {
       setLoading(false);
     }
-  }, [page, search, categories, groupSlug]);
+  }, [page, search, categories, groupSlug, sort]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;

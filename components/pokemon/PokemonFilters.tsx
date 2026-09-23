@@ -3,8 +3,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import FilterCheckboxGroup from "@/components/filters/FilterCheckboxGroup";
+import FilterModal from "@/components/filters/FilterModal";
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
-import MultiSelectFilter from "@/components/filters/MultiSelectFilter";
 import ResetFiltersButton from "@/components/filters/ResetFiltersButton";
 import SortSelect from "@/components/filters/SortSelect";
 import { PokemonSort } from "@/server/pokemon/pokemon.service";
@@ -14,10 +16,19 @@ export interface TypeOption {
   name: string;
 }
 
-const SORT_OPTIONS: { value: PokemonSort; label: string }[] = [
-  { value: "number", label: "Nummer" },
-  { value: "name", label: "Name" },
-  { value: "type", label: "Typ" },
+const SORT_GROUPS: { value: PokemonSort; label: string }[][] = [
+  [
+    { value: "number-asc", label: "Nummer (↑)" },
+    { value: "number-desc", label: "Nummer (↓)" },
+  ],
+  [
+    { value: "name-asc", label: "Name (A-Z)" },
+    { value: "name-desc", label: "Name (Z-A)" },
+  ],
+  [
+    { value: "type-asc", label: "Typ (A-Z)" },
+    { value: "type-desc", label: "Typ (Z-A)" },
+  ],
 ];
 
 const GENERATION_OPTIONS = [
@@ -52,6 +63,10 @@ export default function PokemonFilters({ types, search, selectedTypes, selectedG
     setSearchInput(search);
   }
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pendingTypes, setPendingTypes] = useState(selectedTypes);
+  const [pendingGenerations, setPendingGenerations] = useState(selectedGenerations);
+
   const updateFilters = useCallback(
     (next: { search?: string; types?: string[]; generations?: number[]; sort?: PokemonSort }) => {
       const nextSearch = next.search ?? search;
@@ -63,7 +78,7 @@ export default function PokemonFilters({ types, search, selectedTypes, selectedG
       if (nextSearch) params.set("search", nextSearch);
       if (nextTypes.length > 0) params.set("types", nextTypes.join(","));
       if (nextGenerations.length > 0) params.set("generations", nextGenerations.join(","));
-      if (nextSort !== "number") params.set("sort", nextSort);
+      if (nextSort !== "number-asc") params.set("sort", nextSort);
 
       router.push(params.size > 0 ? `${pathname}?${params.toString()}` : pathname);
     },
@@ -80,61 +95,82 @@ export default function PokemonFilters({ types, search, selectedTypes, selectedG
     return () => clearTimeout(timeout);
   }, [searchInput, search, updateFilters]);
 
-  function toggleType(slug: string) {
-    const nextTypes = selectedTypes.includes(slug) ? selectedTypes.filter((value) => value !== slug) : [...selectedTypes, slug];
+  function handleModalOpenChange(open: boolean) {
+    if (open) {
+      setPendingTypes(selectedTypes);
+      setPendingGenerations(selectedGenerations);
+    }
 
-    updateFilters({ types: nextTypes });
+    setModalOpen(open);
   }
 
-  function toggleGeneration(value: string) {
+  function togglePendingType(slug: string) {
+    setPendingTypes((prev) => (prev.includes(slug) ? prev.filter((value) => value !== slug) : [...prev, slug]));
+  }
+
+  function togglePendingGeneration(value: string) {
     const generation = Number(value);
-    const nextGenerations = selectedGenerations.includes(generation)
-      ? selectedGenerations.filter((entry) => entry !== generation)
-      : [...selectedGenerations, generation];
-
-    updateFilters({ generations: nextGenerations });
+    setPendingGenerations((prev) => (prev.includes(generation) ? prev.filter((entry) => entry !== generation) : [...prev, generation]));
   }
 
-  const hasActiveFilters = search.length > 0 || selectedTypes.length > 0 || selectedGenerations.length > 0 || sort !== "number";
+  const hasActiveFilters = search.length > 0 || selectedTypes.length > 0 || selectedGenerations.length > 0 || sort !== "number-asc";
+  const activeFilterCount = selectedTypes.length + selectedGenerations.length;
 
   const sortedTypes = types.filter((option) => option.name !== "???").sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <div className="flex flex-wrap items-center gap-2.5">
-        <MultiSelectFilter
-          label="Generationen"
-          allLabel="Alle Generationen"
-          options={GENERATION_OPTIONS}
-          selected={selectedGenerations.map(String)}
-          onToggle={toggleGeneration}
-          contentClassName="w-80"
-          triggerClassName="w-42"
-        />
+    <div className="flex flex-row gap-3 items-center justify-between">
+      <div className="flex items-center gap-2.5">
+        <FilterModal
+          open={modalOpen}
+          onOpenChange={handleModalOpenChange}
+          activeCount={activeFilterCount}
+          onApply={() => updateFilters({ types: pendingTypes, generations: pendingGenerations })}
+          onReset={() => {
+            setPendingTypes([]);
+            setPendingGenerations([]);
+            updateFilters({ types: [], generations: [] });
+          }}
+        >
+          <Accordion type="multiple" defaultValue={["generations", "types"]}>
+            <AccordionItem value="generations">
+              <AccordionTrigger className="text-white">
+                Generationen
+                {pendingGenerations.length > 0 && <span className="ml-2 text-xs text-slate-500">({pendingGenerations.length})</span>}
+              </AccordionTrigger>
 
-        <MultiSelectFilter
-          label="Typen"
-          allLabel="Alle Typen"
-          options={sortedTypes.map((option) => ({ value: option.slug, label: option.name }))}
-          selected={selectedTypes}
-          onToggle={toggleType}
-          contentClassName="w-96"
-          triggerClassName="w-32"
-        />
+              <AccordionContent>
+                <FilterCheckboxGroup
+                  options={GENERATION_OPTIONS}
+                  selected={pendingGenerations.map(String)}
+                  onToggle={togglePendingGeneration}
+                  columns={3}
+                />
+              </AccordionContent>
+            </AccordionItem>
 
-        <SortSelect value={sort} options={SORT_OPTIONS} onChange={(value) => updateFilters({ sort: value })} />
+            <AccordionItem value="types">
+              <AccordionTrigger className="text-white">
+                Typen
+                {pendingTypes.length > 0 && <span className="ml-2 text-xs text-slate-500">({pendingTypes.length})</span>}
+              </AccordionTrigger>
+
+              <AccordionContent>
+                <FilterCheckboxGroup
+                  options={sortedTypes.map((option) => ({ value: option.slug, label: option.name }))}
+                  selected={pendingTypes}
+                  onToggle={togglePendingType}
+                  columns={3}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </FilterModal>
+
+        <SortSelect value={sort} groups={SORT_GROUPS} onChange={(value) => updateFilters({ sort: value })} />
       </div>
 
       <div className="flex flex-wrap items-center gap-2.5">
-        {hasActiveFilters && (
-          <ResetFiltersButton
-            onClick={() => {
-              setSearchInput("");
-              router.push(pathname);
-            }}
-          />
-        )}
-
         <FilterSearchInput value={searchInput} onChange={setSearchInput} placeholder="Suchen…" className="lg:w-84" />
       </div>
     </div>

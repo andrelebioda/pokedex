@@ -20,7 +20,7 @@ export default function AbilityExplorer({
   initialHasMore,
   search = "",
   hidden = [],
-  sort = "name",
+  sort = "name-asc",
 }: AbilityExplorerProps) {
   const filterKey = `${search}::${hidden.join(",")}::${sort}`;
 
@@ -61,7 +61,7 @@ export default function AbilityExplorer({
       const params = new URLSearchParams({ page: String(nextPage), limit: String(LIMIT) });
       if (search) params.set("search", search);
       if (hidden.length > 0) params.set("hidden", hidden.join(","));
-      if (sort !== "name") params.set("sort", sort);
+      if (sort !== "name-asc") params.set("sort", sort);
 
       const response = await fetch(`/api/abilities?${params.toString()}`);
       if (!response.ok) throw new Error("Fähigkeiten konnten nicht geladen werden");

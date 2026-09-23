@@ -1,6 +1,15 @@
 "use client";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ChevronDown } from "lucide-react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { pillTrigger } from "@/components/filters/filterStyles";
 
 export interface SortOption<T extends string> {
@@ -10,26 +19,49 @@ export interface SortOption<T extends string> {
 
 interface SortSelectProps<T extends string> {
   value: T;
-  options: SortOption<T>[];
+  groups: SortOption<T>[][];
   onChange: (value: T) => void;
 }
 
-export default function SortSelect<T extends string>({ value, options, onChange }: SortSelectProps<T>) {
-  return (
-    <Select value={value} onValueChange={(next) => onChange(next as T)}>
-      <SelectTrigger
-        className={`${pillTrigger} py-5 focus-visible:ring-0 [&>svg]:text-slate-500 border-slate-800 bg-slate-900 text-slate-200 hover:bg-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-900`}
-      >
-        Sortieren: <SelectValue />
-      </SelectTrigger>
+export default function SortSelect<T extends string>({ value, groups, onChange }: SortSelectProps<T>) {
+  const activeLabel = groups.flat().find((option) => option.value === value)?.label ?? "";
 
-      <SelectContent className="border-slate-800 bg-slate-900 text-slate-200">
-        {options.map((option) => (
-          <SelectItem key={option.value} value={option.value} className="text-slate-300 focus:bg-slate-800 focus:text-white">
-            {option.label}
-          </SelectItem>
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button type="button" className={`${pillTrigger} whitespace-nowrap pr-8`}>
+          {activeLabel}
+          <ChevronDown size={16} className="absolute right-3 text-slate-500" />
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="start" className="mt-2 w-56 border-slate-800 bg-slate-900 text-slate-200">
+        <DropdownMenuLabel className="text-slate-500">Sortieren nach</DropdownMenuLabel>
+
+        {groups.map((group, groupIndex) => (
+          <div key={groupIndex}>
+            {groupIndex > 0 && <DropdownMenuSeparator className="bg-slate-800" />}
+
+            {group.map((option) => {
+              const active = option.value === value;
+
+              return (
+                <DropdownMenuItem
+                  key={option.value}
+                  onSelect={(event) => event.preventDefault()}
+                  onClick={() => onChange(option.value)}
+                  className="gap-2.5 py-1.5 text-slate-300 focus:bg-slate-800 focus:text-white"
+                >
+                  <span className="flex size-3.5 shrink-0 items-center justify-center">
+                    {active && <span className="size-1.5 rounded-full bg-white" />}
+                  </span>
+                  {option.label}
+                </DropdownMenuItem>
+              );
+            })}
+          </div>
         ))}
-      </SelectContent>
-    </Select>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

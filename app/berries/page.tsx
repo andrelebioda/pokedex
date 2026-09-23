@@ -13,28 +13,34 @@ export const metadata: Metadata = {
   description: "Alle Beeren mit ihren Beerenkräften, Wachstumszeit und weiteren Eigenschaften.",
 };
 
-const VALID_SORTS: BerrySort[] = ["name", "growth"];
+const VALID_SORTS: BerrySort[] = ["name-asc", "name-desc", "growth-asc", "growth-desc", "power-asc", "power-desc"];
 
 interface BerriesPageProps {
-  searchParams: Promise<{ search?: string; types?: string; sort?: string }>;
+  searchParams: Promise<{ search?: string; types?: string; sort?: string; minPower?: string; maxPower?: string }>;
 }
 
 export default async function BerriesPage({ searchParams }: BerriesPageProps) {
-  const { search = "", types: typesParam = "", sort: sortParam } = await searchParams;
+  const { search = "", types: typesParam = "", sort: sortParam, minPower: minPowerParam, maxPower: maxPowerParam } = await searchParams;
 
   const selectedTypes = typesParam
     .split(",")
     .map((value) => value.trim())
     .filter(Boolean);
 
-  const sort = VALID_SORTS.includes(sortParam as BerrySort) ? (sortParam as BerrySort) : "name";
+  const sort = VALID_SORTS.includes(sortParam as BerrySort) ? (sortParam as BerrySort) : "name-asc";
 
-  const [berries, types] = await Promise.all([getAllBerries({ search, types: selectedTypes, sort }), getAllTypes()]);
+  const minPower = minPowerParam && Number.isFinite(Number(minPowerParam)) ? Number(minPowerParam) : undefined;
+  const maxPower = maxPowerParam && Number.isFinite(Number(maxPowerParam)) ? Number(maxPowerParam) : undefined;
+
+  const [berries, types] = await Promise.all([
+    getAllBerries({ search, types: selectedTypes, sort, minPower, maxPower }),
+    getAllTypes(),
+  ]);
 
   return (
     <div>
       <StickyBar>
-        <BerryFilters types={types} search={search} selectedTypes={selectedTypes} sort={sort} />
+        <BerryFilters types={types} search={search} selectedTypes={selectedTypes} sort={sort} minPower={minPower} maxPower={maxPower} />
       </StickyBar>
 
       <section>

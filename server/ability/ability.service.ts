@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/server/db/prisma";
 
-export type AbilitySort = "name" | "count";
+export type AbilitySort = "name-asc" | "name-desc" | "count-asc" | "count-desc";
 export type AbilityHiddenFilter = "hidden" | "visible";
 
 export interface AbilityListFilters {
@@ -27,7 +27,7 @@ export interface AbilityListResult {
 }
 
 export async function getAbilityList(page = 1, limit = 50, filters: AbilityListFilters = {}): Promise<AbilityListResult> {
-  const { search, hidden, sort = "name" } = filters;
+  const { search, hidden, sort = "name-asc" } = filters;
 
   const wantsHidden = hidden?.includes("hidden") ?? false;
   const wantsVisible = hidden?.includes("visible") ?? false;
@@ -106,9 +106,13 @@ export async function getAbilityList(page = 1, limit = 50, filters: AbilityListF
       hasHidden: ability.pokemon.some((entry) => entry.isHidden),
     }))
     .sort((a, b) => {
-      if (sort === "count") return b.pokemonCount - a.pokemonCount || a.nameDe.localeCompare(b.nameDe);
+      if (sort === "count-asc" || sort === "count-desc") {
+        const compare = a.pokemonCount - b.pokemonCount;
+        return (sort === "count-desc" ? -compare : compare) || a.nameDe.localeCompare(b.nameDe);
+      }
 
-      return a.nameDe.localeCompare(b.nameDe);
+      const compare = a.nameDe.localeCompare(b.nameDe);
+      return sort === "name-desc" ? -compare : compare;
     });
 
   const start = (page - 1) * limit;

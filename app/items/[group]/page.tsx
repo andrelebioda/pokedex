@@ -7,15 +7,16 @@ import ItemExplorer from "@/components/item/ItemExplorer";
 import ItemFilters from "@/components/item/ItemFilters";
 import StickyBar from "@/components/layout/StickyBar";
 import { getItemCategoryGroupBySlug } from "@/config/itemCategories";
-import { getGroupCategoryOptions, getItemsForGroup } from "@/server/item/item.service";
+import { getGroupCategoryOptions, getItemsForGroup, ItemSort } from "@/server/item/item.service";
 
 export const dynamic = "force-dynamic";
 
 const LIMIT = 60;
+const VALID_SORTS: ItemSort[] = ["name-asc", "name-desc"];
 
 interface ItemGroupPageProps {
   params: Promise<{ group: string }>;
-  searchParams: Promise<{ search?: string; categories?: string }>;
+  searchParams: Promise<{ search?: string; categories?: string; sort?: string }>;
 }
 
 export async function generateMetadata({ params }: ItemGroupPageProps): Promise<Metadata> {
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: ItemGroupPageProps): Promise<
 
 export default async function ItemGroupPage({ params, searchParams }: ItemGroupPageProps) {
   const { group: groupSlug } = await params;
-  const { search = "", categories: categoriesParam = "" } = await searchParams;
+  const { search = "", categories: categoriesParam = "", sort: sortParam } = await searchParams;
 
   const group = getItemCategoryGroupBySlug(groupSlug);
   if (!group) {
@@ -46,7 +47,9 @@ export default async function ItemGroupPage({ params, searchParams }: ItemGroupP
     .map((value) => value.trim())
     .filter(Boolean);
 
-  const result = await getItemsForGroup(groupSlug, 1, LIMIT, { search, categories: selectedCategories });
+  const sort = VALID_SORTS.includes(sortParam as ItemSort) ? (sortParam as ItemSort) : "name-asc";
+
+  const result = await getItemsForGroup(groupSlug, 1, LIMIT, { search, categories: selectedCategories, sort });
   if (!result) {
     notFound();
   }
@@ -83,7 +86,7 @@ export default async function ItemGroupPage({ params, searchParams }: ItemGroupP
       </div>
 
       <StickyBar>
-        <ItemFilters categories={categoryOptions} search={search} selectedCategories={selectedCategories} />
+        <ItemFilters categories={categoryOptions} search={search} selectedCategories={selectedCategories} sort={sort} />
       </StickyBar>
 
       <ItemExplorer
@@ -93,6 +96,7 @@ export default async function ItemGroupPage({ params, searchParams }: ItemGroupP
         hideHeader={group.flat}
         search={search}
         categories={selectedCategories}
+        sort={sort}
       />
     </div>
   );

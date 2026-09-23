@@ -4,7 +4,7 @@ import { cache } from "react";
 import { prisma } from "@/server/db/prisma";
 import { mapPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
 
-export type PokemonSort = "number" | "name" | "type";
+export type PokemonSort = "number-asc" | "number-desc" | "name-asc" | "name-desc" | "type-asc" | "type-desc";
 
 interface PokemonListFilters {
   search?: string;
@@ -14,7 +14,7 @@ interface PokemonListFilters {
 }
 
 export async function getPokemonList(page = 1, limit = 50, filters: PokemonListFilters = {}) {
-  const { search, types, generations, sort = "number" } = filters;
+  const { search, types, generations, sort = "number-asc" } = filters;
 
   const where: Prisma.PokemonWhereInput = {
     ...(search
@@ -95,15 +95,17 @@ export async function getPokemonList(page = 1, limit = 50, filters: PokemonListF
   const mapped = pokemon.map(mapPokemon);
 
   mapped.sort((a, b) => {
-    if (sort === "name") return a.name.localeCompare(b.name);
+    if (sort === "name-asc") return a.name.localeCompare(b.name);
+    if (sort === "name-desc") return b.name.localeCompare(a.name);
 
-    if (sort === "type") {
+    if (sort === "type-asc" || sort === "type-desc") {
       const typeA = a.types[0]?.name ?? "";
       const typeB = b.types[0]?.name ?? "";
-      return typeA.localeCompare(typeB) || a.id - b.id;
+      const compare = typeA.localeCompare(typeB);
+      return (sort === "type-desc" ? -compare : compare) || a.id - b.id;
     }
 
-    return a.id - b.id;
+    return sort === "number-desc" ? b.id - a.id : a.id - b.id;
   });
 
   const start = (page - 1) * limit;

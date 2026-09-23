@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getAbilityList, AbilityHiddenFilter, AbilitySort } from "@/server/ability/ability.service";
 
-const VALID_SORTS: AbilitySort[] = ["name", "count"];
+const VALID_SORTS: AbilitySort[] = ["name-asc", "name-desc", "count-asc", "count-desc"];
 const VALID_HIDDEN: AbilityHiddenFilter[] = ["hidden", "visible"];
 
 export async function GET(request: NextRequest) {

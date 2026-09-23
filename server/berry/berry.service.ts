@@ -27,16 +27,18 @@ export interface MappedBerry {
   flavors: MappedBerryFlavor[];
 }
 
-export type BerrySort = "name" | "growth";
+export type BerrySort = "name-asc" | "name-desc" | "growth-asc" | "growth-desc" | "power-asc" | "power-desc";
 
 interface BerryListFilters {
   search?: string;
   types?: string[];
   sort?: BerrySort;
+  minPower?: number;
+  maxPower?: number;
 }
 
 export async function getAllBerries(filters: BerryListFilters = {}): Promise<MappedBerry[]> {
-  const { search, types: selectedTypes, sort = "name" } = filters;
+  const { search, types: selectedTypes, sort = "name-asc", minPower, maxPower } = filters;
 
   const types = await prisma.type.findMany({
     select: {
@@ -73,6 +75,15 @@ export async function getAllBerries(filters: BerryListFilters = {}): Promise<Map
       ? {
           naturalGiftType: {
             in: selectedTypes,
+          },
+        }
+      : {}),
+
+    ...(minPower != null || maxPower != null
+      ? {
+          naturalGiftPower: {
+            ...(minPower != null ? { gte: minPower } : {}),
+            ...(maxPower != null ? { lte: maxPower } : {}),
           },
         }
       : {}),
@@ -125,7 +136,7 @@ export async function getAllBerries(filters: BerryListFilters = {}): Promise<Map
       firmness: formatBerryFirmness(berry.firmness),
       naturalGiftPower: berry.naturalGiftPower,
       naturalGiftType: berry.naturalGiftType,
-      naturalGiftTypeName: berry.naturalGiftType ? typeNameBySlug.get(berry.naturalGiftType) ?? berry.naturalGiftType : null,
+      naturalGiftTypeName: berry.naturalGiftType ? (typeNameBySlug.get(berry.naturalGiftType) ?? berry.naturalGiftType) : null,
       flavors: berry.flavors
         .filter((flavor) => flavor.potency > 0)
         .map((flavor) => ({
@@ -136,14 +147,24 @@ export async function getAllBerries(filters: BerryListFilters = {}): Promise<Map
         .sort((a, b) => b.potency - a.potency),
     }))
     .sort((a, b) => {
-      if (sort === "growth") {
+      if (sort === "growth-asc" || sort === "growth-desc") {
         if (a.growthTime == null) return 1;
         if (b.growthTime == null) return -1;
 
-        return a.growthTime - b.growthTime || a.name.localeCompare(b.name);
+        const compare = a.growthTime - b.growthTime;
+        return (sort === "growth-desc" ? -compare : compare) || a.name.localeCompare(b.name);
       }
 
-      return a.name.localeCompare(b.name);
+      if (sort === "power-asc" || sort === "power-desc") {
+        if (a.naturalGiftPower == null) return 1;
+        if (b.naturalGiftPower == null) return -1;
+
+        const compare = a.naturalGiftPower - b.naturalGiftPower;
+        return (sort === "power-desc" ? -compare : compare) || a.name.localeCompare(b.name);
+      }
+
+      const compare = a.name.localeCompare(b.name);
+      return sort === "name-desc" ? -compare : compare;
     });
 }
 

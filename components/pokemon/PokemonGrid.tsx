@@ -22,7 +22,7 @@ export default function PokemonGrid({
   search = "",
   types = [],
   generations = [],
-  sort = "number",
+  sort = "number-asc",
 }: PokemonGridProps) {
   const filterKey = `${search}::${types.join(",")}::${generations.join(",")}::${sort}`;
 
@@ -67,7 +67,7 @@ export default function PokemonGrid({
       if (search) params.set("search", search);
       if (types.length > 0) params.set("types", types.join(","));
       if (generations.length > 0) params.set("generations", generations.join(","));
-      if (sort !== "number") params.set("sort", sort);
+      if (sort !== "number-asc") params.set("sort", sort);
 
       const response = await fetch(`/api/pokemon?${params.toString()}`);
 

@@ -32,7 +32,8 @@ export default function StickyBar({ children, className = "" }: StickyBarProps) 
         ref={ref}
         className={`
         sticky
-        top-0
+        top-16
+        xl:top-0
         z-20
         border-b
         border-slate-800
@@ -42,7 +43,7 @@ export default function StickyBar({ children, className = "" }: StickyBarProps) 
         ${className}
       `}
       >
-        <div className="py-6">{children}</div>
+        <div className="py-4 xl:py-6">{children}</div>
       </div>
     </>
   );

@@ -13,10 +13,20 @@ interface MoveExplorerProps {
   search?: string;
   types?: string[];
   sort?: MoveSort;
+  minPower?: number;
+  maxPower?: number;
 }
 
-export default function MoveExplorer({ initialMoves, initialHasMore, search = "", types = [], sort = "name" }: MoveExplorerProps) {
-  const filterKey = `${search}::${types.join(",")}::${sort}`;
+export default function MoveExplorer({
+  initialMoves,
+  initialHasMore,
+  search = "",
+  types = [],
+  sort = "name-asc",
+  minPower,
+  maxPower,
+}: MoveExplorerProps) {
+  const filterKey = `${search}::${types.join(",")}::${sort}::${minPower ?? ""}::${maxPower ?? ""}`;
 
   const [moves, setMoves] = useState(initialMoves);
   const [page, setPage] = useState(1);
@@ -55,7 +65,9 @@ export default function MoveExplorer({ initialMoves, initialHasMore, search = ""
       const params = new URLSearchParams({ page: String(nextPage), limit: String(LIMIT) });
       if (search) params.set("search", search);
       if (types.length > 0) params.set("types", types.join(","));
-      if (sort !== "name") params.set("sort", sort);
+      if (sort !== "name-asc") params.set("sort", sort);
+      if (minPower != null) params.set("minPower", String(minPower));
+      if (maxPower != null) params.set("maxPower", String(maxPower));
 
       const response = await fetch(`/api/moves?${params.toString()}`);
       if (!response.ok) throw new Error("Attacken konnten nicht geladen werden");
@@ -75,7 +87,7 @@ export default function MoveExplorer({ initialMoves, initialHasMore, search = ""
     } finally {
       setLoading(false);
     }
-  }, [page, search, types, sort]);
+  }, [page, search, types, sort, minPower, maxPower]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;

@@ -26,9 +26,12 @@ export interface ItemGroupOverview {
   categories: ItemCategoryOption[];
 }
 
+export type ItemSort = "name-asc" | "name-desc";
+
 interface ItemListFilters {
   search?: string;
   categories?: string[];
+  sort?: ItemSort;
 }
 
 const hasImage: Prisma.itemWhereInput = {
@@ -89,7 +92,7 @@ export async function getItemsForGroup(
   const group = getItemCategoryGroupBySlug(groupSlug);
   if (!group) return null;
 
-  const { search, categories } = filters;
+  const { search, categories, sort = "name-asc" } = filters;
 
   const restrictedCategories = categories?.length ? categories.filter((category) => group.categories.includes(category)) : [];
 
@@ -156,7 +159,8 @@ export async function getItemsForGroup(
       if (categoryCompare !== 0) return categoryCompare;
     }
 
-    return a.name.localeCompare(b.name);
+    const nameCompare = a.name.localeCompare(b.name);
+    return sort === "name-desc" ? -nameCompare : nameCompare;
   });
 
   const start = (page - 1) * limit;
