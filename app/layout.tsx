@@ -13,8 +13,8 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.pokelabs.de"),
   title: {
-    default: "PokéLabs – Pokémon Research Database",
-    template: "%s – PokéLabs",
+    default: "PokéLabs - Pokémon Research Database",
+    template: "%s - PokéLabs",
   },
   description: "Durchsuche Pokémon, Attacken, Fähigkeiten, Items und Beeren mit deutschen Übersetzungen und detaillierten Werten.",
   alternates: {

@@ -73,9 +73,9 @@ export default function Navigation() {
   const logo = (
     <Link href="/" className="flex items-center gap-3">
       <div className="flex items-center gap-3">
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white min-[1200px]:h-12 min-[1200px]:w-12">
+        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white min-[1200px]:h-10 min-[1200px]:w-10">
           <div className="absolute top-0 left-0 h-1/2 w-full bg-red-600" />
-          <div className="absolute h-10 w-10 rounded-full border-4 border-slate-900 min-[1200px]:h-12 min-[1200px]:w-12" />
+          <div className="absolute h-8 w-8 rounded-full min-[1200px]:h-10 min-[1200px]:w-10" />
           <div className="z-10 h-4 w-4 rounded-full border-4 border-slate-900 bg-white min-[1200px]:h-5 min-[1200px]:w-5" />
           <div className="absolute top-1/2 h-1 w-full bg-slate-900" />
         </div>

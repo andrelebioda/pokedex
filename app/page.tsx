@@ -10,7 +10,7 @@ import { MappedPokemon } from "@/server/pokemon/pokemon.mapper";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Übersicht – PokéLabs",
+  title: "Übersicht - PokéLabs",
   description: "Forschungszentrum für Pokémon-Daten: Statistiken und aktuelle Einträge aus dem Pokédex, den Attacken, Fähigkeiten und Beeren.",
   alternates: { canonical: "/" },
 };
@@ -46,15 +46,28 @@ export default async function Dashboard() {
   ];
 
   return (
-    <div className="space-y-10 px-4 py-6">
+    <div className="space-y-10 px-4 pt-6">
       {/* Header */}
       <section>
-        <h1 className="text-2xl md:text-5xl font-bold text-white">Willkommen im PokéLabs</h1>
+        <h1 className="text-2xl md:text-5xl font-bold text-white mb-3">Willkommen im PokéLabs</h1>
 
-        <p className="mt-3 text-[14px] md:text-xl text-slate-400 w-[80%]">
-          Hier findest du umfangreiche Informationen zu allen Pokémon, Attacken, Fähigkeiten, Items und Beeren. Wir bauen PokéLabs stetig weiter aus –
-          als Nächstes sind unter anderem ein Team Builder, ein EV/IV-Rechner sowie der Bereich „Meine Pokémon“ geplant, in dem du deine favorisierten
-          Pokémon sammeln kannst.
+        <p className="mt-3 text-[16px] md:text-[22px] text-slate-400 w-full xl:w-[85%]">
+          Hier findest du umfangreiche Informationen zu allen Pokémon, Attacken, Fähigkeiten, Items und Beeren. Die Seite ist ein reines Fanprojekt
+          von mir und befindet sich noch in der Entwicklung. In nächster Zeit sind unter anderem folgende Features geplant:
+          <table className="list-disc list-inside mt-2 text-slate-400">
+            <tr className="mb-1 block">
+              <td className="pr-2 align-top">●</td>
+              <td>Team Builder</td>
+            </tr>
+            <tr className="mb-1 block">
+              <td className="pr-2 align-top">●</td>
+              <td>EVs/IVs-Rechner</td>
+            </tr>
+            <tr className="mb-1 block">
+              <td className="pr-2 align-top">●</td>
+              <td>Der Bereich „Meine Pokémon“ geplant, in dem du deine favorisierten Pokémon sammeln kannst.</td>
+            </tr>
+          </table>
         </p>
       </section>
 
@@ -109,10 +122,10 @@ export default async function Dashboard() {
         <div className="mb-8">
           <h2 className="pb-1.5 text-[20px] md:text-3xl font-bold text-white">Pokémon Datenbank</h2>
 
-          <p className="text-[14px] md:text-lg text-slate-400">Aktuelle Einträge aus dem Pokédex</p>
+          <p className="text-[16px] md:text-lg text-slate-400">Aktuelle Einträge aus dem Pokédex</p>
         </div>
 
-        <div className="mb-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {pokemon.map((poke: MappedPokemon) => (
             <Link
               href={`/pokemon/${poke.id}`}
