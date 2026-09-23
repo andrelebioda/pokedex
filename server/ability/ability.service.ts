@@ -21,7 +21,12 @@ export interface MappedAbilityListItem {
   hasHidden: boolean;
 }
 
-export async function getAbilityList(filters: AbilityListFilters = {}): Promise<MappedAbilityListItem[]> {
+export interface AbilityListResult {
+  abilities: MappedAbilityListItem[];
+  hasMore: boolean;
+}
+
+export async function getAbilityList(page = 1, limit = 50, filters: AbilityListFilters = {}): Promise<AbilityListResult> {
   const { search, hidden, sort = "name" } = filters;
 
   const wantsHidden = hidden?.includes("hidden") ?? false;
@@ -87,7 +92,7 @@ export async function getAbilityList(filters: AbilityListFilters = {}): Promise<
     relationLoadStrategy: "join",
   });
 
-  return abilities
+  const mapped = abilities
     .map((ability) => ({
       id: ability.id,
       nameDe: ability.translations.find((t) => t.language === "de")?.name ?? ability.apiName,
@@ -105,6 +110,12 @@ export async function getAbilityList(filters: AbilityListFilters = {}): Promise<
 
       return a.nameDe.localeCompare(b.nameDe);
     });
+
+  const start = (page - 1) * limit;
+  const pageItems = mapped.slice(start, start + limit);
+  const hasMore = start + limit < mapped.length;
+
+  return { abilities: pageItems, hasMore };
 }
 
 export interface AbilityPokemon {

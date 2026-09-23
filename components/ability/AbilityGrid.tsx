@@ -51,7 +51,7 @@ export default function AbilityGrid({ abilities, showPokemonInfo = true }: Abili
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3 px-4 py-6">
         {abilities.map((ability) => (
           <AbilityCard key={ability.id} ability={ability} showPokemonInfo={showPokemonInfo} onShowPokemon={handleShowPokemon} />
         ))}

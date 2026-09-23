@@ -1,11 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { getMovesForPokemon } from "@/server/pokemon/pokemon.service";
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const moves = await getMovesForPokemon(Number(id));
+  const searchParams = request.nextUrl.searchParams;
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit")) || 30));
+  const search = searchParams.get("search")?.trim() || undefined;
 
-  return NextResponse.json({ moves });
+  const { moves, hasMore } = await getMovesForPokemon(Number(id), page, limit, { search });
+
+  return NextResponse.json({ moves, hasMore });
 }

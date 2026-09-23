@@ -58,7 +58,7 @@ export default function MoveGrid({ moves, showLearnMethod = false, showPokemonIn
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3 ">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3 px-4 py-6">
         {moves.map((move) => (
           <MoveCard key={move.id} move={move} showLearnMethod={showLearnMethod} showPokemonInfo={showPokemonInfo} onShowPokemon={handleShowPokemon} />
         ))}

@@ -33,7 +33,7 @@ export default async function BerriesPage({ searchParams }: BerriesPageProps) {
 
   return (
     <div>
-      <StickyBar className="-mt-8 mb-8">
+      <StickyBar>
         <BerryFilters types={types} search={search} selectedTypes={selectedTypes} sort={sort} />
       </StickyBar>
 
@@ -41,7 +41,7 @@ export default async function BerriesPage({ searchParams }: BerriesPageProps) {
         {berries.length === 0 ? (
           <p className="text-center text-slate-500">Keine Beeren gefunden.</p>
         ) : (
-          <div className="grid grid-cols-1 gap-4 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3 px-4 py-6">
             {berries.map((berry) => (
               <BerryCard key={berry.id} berry={berry} />
             ))}

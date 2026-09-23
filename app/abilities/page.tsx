@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
+import AbilityExplorer from "@/components/ability/AbilityExplorer";
 import AbilityFilters from "@/components/ability/AbilityFilters";
-import AbilityGrid from "@/components/ability/AbilityGrid";
 import StickyBar from "@/components/layout/StickyBar";
 import { getAbilityList, AbilityHiddenFilter, AbilitySort } from "@/server/ability/ability.service";
 
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   description: "Alle Fähigkeiten im Überblick inklusive der Pokémon, die sie besitzen können.",
 };
 
+const LIMIT = 50;
 const VALID_SORTS: AbilitySort[] = ["name", "count"];
 const VALID_HIDDEN: AbilityHiddenFilter[] = ["hidden", "visible"];
 
@@ -29,16 +30,16 @@ export default async function AbilitiesPage({ searchParams }: AbilitiesPageProps
 
   const sort = VALID_SORTS.includes(sortParam as AbilitySort) ? (sortParam as AbilitySort) : "name";
 
-  const abilities = await getAbilityList({ search, hidden: selectedHidden, sort });
+  const { abilities, hasMore } = await getAbilityList(1, LIMIT, { search, hidden: selectedHidden, sort });
 
   return (
     <div>
-      <StickyBar className="-mt-8 mb-8">
+      <StickyBar className="">
         <AbilityFilters search={search} selectedHidden={selectedHidden} sort={sort} />
       </StickyBar>
 
       <section>
-        <AbilityGrid abilities={abilities} />
+        <AbilityExplorer initialAbilities={abilities} initialHasMore={hasMore} search={search} hidden={selectedHidden} sort={sort} />
       </section>
     </div>
   );

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import PokemonDetail from "@/components/pokemon/PokemonDetail";
-import { getSinglePokemon } from "@/server/pokemon/pokemon.service";
+import { getMovesForPokemon, getSinglePokemon } from "@/server/pokemon/pokemon.service";
 
 export const dynamic = "force-dynamic";
 
@@ -39,5 +39,7 @@ export default async function PokemonDetailPage({ params }: PokemonDetailPagePro
     notFound();
   }
 
-  return <PokemonDetail pokemon={pokemon} />;
+  const { moves: initialMoves, hasMore: initialMovesHasMore } = await getMovesForPokemon(Number(id), 1, 30);
+
+  return <PokemonDetail pokemon={pokemon} initialMoves={initialMoves} initialMovesHasMore={initialMovesHasMore} />;
 }

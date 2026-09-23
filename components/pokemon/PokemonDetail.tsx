@@ -2,9 +2,10 @@
 
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import AbilityGrid from "@/components/ability/AbilityGrid";
+import FilterSearchInput from "@/components/filters/FilterSearchInput";
 import MoveGrid from "@/components/move/MoveGrid";
 import PokemonImage from "@/components/pokemon/PokemonImage";
 import PokemonStatsRadar from "@/components/pokemon/PokemonStatsRadar";
@@ -14,14 +15,13 @@ import { mapPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
 type PokemonDetailData = NonNullable<ReturnType<typeof mapPokemon>>;
 type PokemonStats = NonNullable<PokemonDetailData["stats"]>;
 
-type MovesState = { status: "idle" | "loading" | "error" } | { status: "ready"; moves: MappedPokemonMove[] };
-
 interface PokemonDetailProps {
   pokemon: PokemonDetailData;
+  initialMoves: MappedPokemonMove[];
+  initialMovesHasMore: boolean;
 }
 
 const TABS = [
-  // { id: "overview", label: "Übersicht" },
   { id: "stats", label: "Stats" },
   { id: "moves", label: "Attacken" },
   { id: "abilities", label: "Fähigkeiten" },
@@ -48,31 +48,106 @@ const STAT_CHART: Record<keyof PokemonStats, string> = {
 };
 
 const STAT_MAX = 255;
+const MOVES_LIMIT = 30;
 
 const STAT_KEYS = Object.keys(STAT_LABELS) as (keyof PokemonStats)[];
 const STAT_KEYS_CHART = Object.keys(STAT_CHART) as (keyof PokemonStats)[];
 
-export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
+export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMore }: PokemonDetailProps) {
   const [tab, setTab] = useState<TabId>("stats");
-  const [movesState, setMovesState] = useState<MovesState>({ status: "idle" });
-  const movesRequestedRef = useRef(false);
+
+  const [movesSearchInput, setMovesSearchInput] = useState("");
+  const [movesSearch, setMovesSearch] = useState("");
+  const [moves, setMoves] = useState<MappedPokemonMove[]>(initialMoves);
+  const [movesPage, setMovesPage] = useState(1);
+  const [movesHasMore, setMovesHasMore] = useState(initialMovesHasMore);
+  const [movesLoading, setMovesLoading] = useState(false);
+  const [movesError, setMovesError] = useState(false);
+
+  const movesLoadingRef = useRef(movesLoading);
+  const movesHasMoreRef = useRef(movesHasMore);
 
   useEffect(() => {
-    if (tab !== "moves" || movesRequestedRef.current) return;
-    movesRequestedRef.current = true;
+    movesLoadingRef.current = movesLoading;
+    movesHasMoreRef.current = movesHasMore;
+  }, [movesLoading, movesHasMore]);
 
-    fetch(`/api/pokemon/${pokemon.id}/moves`)
-      .then((response) => {
+  useEffect(() => {
+    const timeout = setTimeout(() => setMovesSearch(movesSearchInput), 300);
+    return () => clearTimeout(timeout);
+  }, [movesSearchInput]);
+
+  const fetchMoves = useCallback(
+    async (pageToLoad: number, search: string, append: boolean) => {
+      setMovesLoading(true);
+      setMovesError(false);
+
+      try {
+        const params = new URLSearchParams({ page: String(pageToLoad), limit: String(MOVES_LIMIT) });
+        if (search) params.set("search", search);
+
+        const response = await fetch(`/api/pokemon/${pokemon.id}/moves?${params.toString()}`);
         if (!response.ok) throw new Error("Fehler beim Laden");
-        return response.json();
-      })
-      .then((data) => setMovesState({ status: "ready", moves: data.moves }))
-      .catch(() => setMovesState({ status: "error" }));
-  }, [tab, pokemon.id]);
+
+        const data = await response.json();
+
+        setMovesPage(pageToLoad);
+        setMovesHasMore(data.hasMore);
+        setMoves((prev) => {
+          if (!append) return data.moves;
+
+          const existingIds = new Set(prev.map((move) => move.id));
+          const newItems = (data.moves as MappedPokemonMove[]).filter((move) => !existingIds.has(move.id));
+          return [...prev, ...newItems];
+        });
+      } catch {
+        setMovesError(true);
+      } finally {
+        setMovesLoading(false);
+      }
+    },
+    [pokemon.id],
+  );
+
+  const movesMountedRef = useRef(false);
+
+  useEffect(() => {
+    if (!movesMountedRef.current) {
+      movesMountedRef.current = true;
+      return;
+    }
+
+    fetchMoves(1, movesSearch, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [movesSearch]);
+
+  const loadMoreMoves = useCallback(() => {
+    if (movesLoadingRef.current || !movesHasMoreRef.current) return;
+
+    fetchMoves(movesPage + 1, movesSearch, true);
+  }, [fetchMoves, movesPage, movesSearch]);
+
+  const movesSentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const sentinel = movesSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMoreMoves();
+      },
+      { rootMargin: "400px" },
+    );
+
+    observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [loadMoreMoves, tab]);
 
   const statsTotal = pokemon.stats ? Object.values(pokemon.stats).reduce((sum: number, value: number) => sum + value, 0) : null;
 
-  const moveTableItems = (movesState.status === "ready" ? movesState.moves : []).map((move) => ({
+  const moveTableItems = moves.map((move) => ({
     id: move.id,
     nameDe: move.name,
     type: move.type,
@@ -95,7 +170,7 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 py-6">
       <Link
         href="/pokemon"
         className="
@@ -184,7 +259,7 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
         </div>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto border-b border-slate-800">
+      <div className="sticky top-16 z-20 -mx-4 flex gap-2 overflow-x-auto border-b border-slate-800 bg-slate-950 px-4 lg:static lg:mx-0 lg:px-0">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -202,21 +277,9 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
             `}
           >
             {t.label}
-            {/* {t.id === "moves" && movesState.status === "ready" ? ` (${movesState.moves.length})` : ""}
-            {t.id === "abilities" && pokemon.abilities ? ` (${pokemon.abilities.length})` : ""} */}
           </button>
         ))}
       </div>
-
-      {/* {tab === "overview" && (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          {pokemon.description ? (
-            <p className="leading-relaxed text-slate-300">{pokemon.description}</p>
-          ) : (
-            <p className="text-slate-500">Keine Beschreibung verfügbar.</p>
-          )}
-        </div>
-      )} */}
 
       {tab === "stats" &&
         (pokemon.stats ? (
@@ -253,16 +316,32 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
           <p className="text-slate-500">Keine Statistiken verfügbar.</p>
         ))}
 
-      {tab === "moves" &&
-        (movesState.status === "loading" || movesState.status === "idle" ? (
-          <p className="text-center text-slate-400">Lade Attacken…</p>
-        ) : movesState.status === "error" ? (
-          <p className="text-center text-red-400">Fehler beim Laden der Attacken.</p>
-        ) : moveTableItems.length > 0 ? (
-          <MoveGrid moves={moveTableItems} showLearnMethod showPokemonInfo={false} />
-        ) : (
-          <p className="text-slate-500">Keine Attacken verfügbar.</p>
-        ))}
+      {tab === "moves" && (
+        <div className="space-y-6">
+          <FilterSearchInput value={movesSearchInput} onChange={setMovesSearchInput} placeholder="Attacke suchen…" className="sm:w-72" />
+
+          {moveTableItems.length > 0 ? (
+            <MoveGrid moves={moveTableItems} showLearnMethod showPokemonInfo={false} />
+          ) : !movesLoading ? (
+            <p className="text-slate-500">Keine Attacken gefunden.</p>
+          ) : null}
+
+          {movesHasMore && (
+            <div ref={movesSentinelRef} className="flex justify-center">
+              {movesLoading && <p className="text-slate-400">Lade weitere Attacken…</p>}
+
+              {movesError && (
+                <button
+                  onClick={() => fetchMoves(movesPage + 1, movesSearch, true)}
+                  className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-slate-300 hover:border-slate-700 hover:text-white"
+                >
+                  Erneut versuchen
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {tab === "abilities" &&
         (abilityGridItems.length > 0 ? (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import StickyBar from "@/components/layout/StickyBar";
 import PokemonFilters from "@/components/pokemon/PokemonFilters";
 import PokemonGrid from "@/components/pokemon/PokemonGrid";
 import { getPokemonList, PokemonSort } from "@/server/pokemon/pokemon.service";
@@ -40,25 +41,11 @@ export default async function PokemonPage({ searchParams }: PokemonPageProps) {
 
   return (
     <div>
-      <div
-        className="
-          sticky
-          top-0
-          z-10
-          -mx-8
-          -mt-8
-          border-b
-          border-slate-800
-          bg-slate-950/95
-          px-8
-          py-6
-          backdrop-blur
-        "
-      >
+      <StickyBar>
         <PokemonFilters types={types} search={search} selectedTypes={selectedTypes} selectedGenerations={selectedGenerations} sort={sort} />
-      </div>
+      </StickyBar>
 
-      <section className="mt-8">
+      <section>
         <PokemonGrid
           initialPokemon={pokemon}
           initialHasMore={hasMore}

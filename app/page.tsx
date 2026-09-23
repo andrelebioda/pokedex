@@ -45,16 +45,16 @@ export default async function Dashboard() {
   ];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 px-4 py-6">
       {/* Header */}
       <section>
-        <h1 className="text-5xl font-bold text-white">Willkommen im PokéLabs</h1>
+        <h1 className="text-2xl md:text-5xl font-bold text-white">Willkommen im PokéLabs</h1>
 
-        <p className="mt-3 text-xl text-slate-400">Forschungszentrum für Pokémon-Daten, Moves und Fähigkeiten.</p>
+        <p className="mt-3 text-[14px] md:text-xl text-slate-400">Forschungszentrum für Pokémon-Daten, Moves und Fähigkeiten.</p>
       </section>
 
       {/* Statistik */}
-      <section className="mb-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <section className="mb-12 grid gap-6 grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => {
           const Icon = card.icon;
 
@@ -67,7 +67,8 @@ export default async function Dashboard() {
                 border
                 border-slate-800
                 bg-slate-900
-                p-6
+                p-3
+                md:p-6
                 shadow-lg
                 transition
                 hover:border-slate-700
@@ -77,14 +78,15 @@ export default async function Dashboard() {
                   <div>
                     <p className="pb-2 text-sm text-slate-400">{card.title}</p>
 
-                    <strong className="text-4xl text-white">{card.value}</strong>
+                    <strong className="text-2xl md:text-4xl text-white">{card.value}</strong>
                   </div>
 
                   <div
                     className="
                     rounded-xl
                     bg-red-500/10
-                    p-3
+                    p-2
+                    md:p-3
                     text-red-400
                   "
                   >
@@ -100,9 +102,9 @@ export default async function Dashboard() {
       {/* Pokemon */}
       <section>
         <div className="mb-8">
-          <h2 className="pb-1.5 text-3xl font-bold text-white">Pokémon Datenbank</h2>
+          <h2 className="pb-1.5 text-[20px] md:text-3xl font-bold text-white">Pokémon Datenbank</h2>
 
-          <p className="text-md text-slate-400">Aktuelle Einträge aus dem Pokédex</p>
+          <p className="text-[14px] md:text-md text-slate-400">Aktuelle Einträge aus dem Pokédex</p>
         </div>
 
         <div className="mb-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -116,30 +118,35 @@ export default async function Dashboard() {
                 border
                 border-slate-800
                 bg-slate-900
-                p-5
+                p-4
                 shadow-lg
                 transition-all
                 hover:-translate-y-1
                 hover:border-slate-700
                 hover:shadow-xl
                 hover:shadow-red-500/10
+                grid
+                grid-cols-2
+                justify-between
+                md:grid-cols-1
               "
             >
               {/* Bild */}
               <div
                 className="
                   flex
-                  justify-center
+                  md:justify-center
                   rounded-xl
                   bg-slate-800/50
-                  p-4
+                  p-2
+                  md:p-4
                 "
               >
                 <PokemonImage src={poke.image} alt={poke.name} />
               </div>
 
               {/* Info */}
-              <div className="mt-4">
+              <div className="mt-4 ml-4 md:ml-0">
                 <strong className="text-md text-slate-500">#{String(poke.id).padStart(3, "0")}</strong>
 
                 <h3 className="text-xl font-bold text-white">{poke.name}</h3>

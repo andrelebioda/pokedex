@@ -18,12 +18,6 @@ export interface MappedItem {
   effect: string | null;
 }
 
-export interface ItemCategoryGroup {
-  category: string;
-  categoryName: string;
-  items: MappedItem[];
-}
-
 export interface ItemGroupOverview {
   slug: string;
   name: string;
@@ -80,7 +74,18 @@ export function getGroupCategoryOptions(groupSlug: string): ItemCategoryOption[]
   }));
 }
 
-export async function getItemsForGroup(groupSlug: string, filters: ItemListFilters = {}): Promise<ItemCategoryGroup[] | null> {
+export interface ItemListResult {
+  items: MappedItem[];
+  hasMore: boolean;
+  total: number;
+}
+
+export async function getItemsForGroup(
+  groupSlug: string,
+  page = 1,
+  limit = 60,
+  filters: ItemListFilters = {},
+): Promise<ItemListResult | null> {
   const group = getItemCategoryGroupBySlug(groupSlug);
   if (!group) return null;
 
@@ -135,34 +140,28 @@ export async function getItemsForGroup(groupSlug: string, filters: ItemListFilte
     relationLoadStrategy: "join",
   });
 
-  const mappedItems: MappedItem[] = items
-    .map((item) => ({
-      id: item.id,
-      name: item.translations[0]?.name ?? item.apiName,
-      slug: item.apiName,
-      image: item.sprite,
-      category: item.category,
-      categoryName: item.category ? formatItemCategoryLabel(item.category) : null,
-      effect: item.translations[0]?.description ?? item.effect,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const mappedItems: MappedItem[] = items.map((item) => ({
+    id: item.id,
+    name: item.translations[0]?.name ?? item.apiName,
+    slug: item.apiName,
+    image: item.sprite,
+    category: item.category,
+    categoryName: item.category ? formatItemCategoryLabel(item.category) : null,
+    effect: item.translations[0]?.description ?? item.effect,
+  }));
 
-  if (group.flat) {
-    return [{ category: group.slug, categoryName: group.name, items: mappedItems }];
-  }
-
-  const groups = new Map<string, ItemCategoryGroup>();
-
-  for (const item of mappedItems) {
-    const category = item.category ?? "other";
-    const categoryName = item.categoryName ?? "Sonstige";
-
-    if (!groups.has(category)) {
-      groups.set(category, { category, categoryName, items: [] });
+  mappedItems.sort((a, b) => {
+    if (!group.flat) {
+      const categoryCompare = (a.categoryName ?? "").localeCompare(b.categoryName ?? "");
+      if (categoryCompare !== 0) return categoryCompare;
     }
 
-    groups.get(category)!.items.push(item);
-  }
+    return a.name.localeCompare(b.name);
+  });
 
-  return Array.from(groups.values()).sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+  const start = (page - 1) * limit;
+  const pageItems = mappedItems.slice(start, start + limit);
+  const hasMore = start + limit < mappedItems.length;
+
+  return { items: pageItems, hasMore, total: mappedItems.length };
 }

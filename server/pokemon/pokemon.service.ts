@@ -193,9 +193,41 @@ export const getSinglePokemon = cache(async function getSinglePokemon(id: number
   return mapPokemon(pokemon);
 });
 
-export async function getMovesForPokemon(pokemonId: number): Promise<MappedPokemonMove[]> {
+export interface PokemonMovesResult {
+  moves: MappedPokemonMove[];
+  hasMore: boolean;
+}
+
+export async function getMovesForPokemon(
+  pokemonId: number,
+  page = 1,
+  limit = 30,
+  filters: { search?: string } = {},
+): Promise<PokemonMovesResult> {
+  const { search } = filters;
+
+  const where: Prisma.PokemonMoveWhereInput = {
+    pokemonId,
+
+    ...(search
+      ? {
+          move: {
+            translations: {
+              some: {
+                language: "de",
+                name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        }
+      : {}),
+  };
+
   const moves = await prisma.pokemonMove.findMany({
-    where: { pokemonId },
+    where,
     select: {
       learnMethod: true,
       level: true,
@@ -241,19 +273,27 @@ export async function getMovesForPokemon(pokemonId: number): Promise<MappedPokem
     relationLoadStrategy: "join",
   });
 
-  return moves.map((pokemonMove) => ({
-    id: pokemonMove.move.id,
-    name: pokemonMove.move.translations[0]?.name ?? pokemonMove.move.apiName,
-    slug: pokemonMove.move.apiName,
-    description: pokemonMove.move.translations[0]?.description ?? null,
-    type: pokemonMove.move.type.translations[0]?.name ?? pokemonMove.move.type.apiName,
-    typeSlug: pokemonMove.move.type.apiName,
-    power: pokemonMove.move.power,
-    accuracy: pokemonMove.move.accuracy,
-    pp: pokemonMove.move.pp,
-    damageClass: pokemonMove.move.damageClass,
-    priority: pokemonMove.move.priority,
-    learnMethod: pokemonMove.learnMethod,
-    level: pokemonMove.level,
-  }));
+  const mapped = moves
+    .map((pokemonMove) => ({
+      id: pokemonMove.move.id,
+      name: pokemonMove.move.translations[0]?.name ?? pokemonMove.move.apiName,
+      slug: pokemonMove.move.apiName,
+      description: pokemonMove.move.translations[0]?.description ?? null,
+      type: pokemonMove.move.type.translations[0]?.name ?? pokemonMove.move.type.apiName,
+      typeSlug: pokemonMove.move.type.apiName,
+      power: pokemonMove.move.power,
+      accuracy: pokemonMove.move.accuracy,
+      pp: pokemonMove.move.pp,
+      damageClass: pokemonMove.move.damageClass,
+      priority: pokemonMove.move.priority,
+      learnMethod: pokemonMove.learnMethod,
+      level: pokemonMove.level,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const start = (page - 1) * limit;
+  const pageItems = mapped.slice(start, start + limit);
+  const hasMore = start + limit < mapped.length;
+
+  return { moves: pageItems, hasMore };
 }

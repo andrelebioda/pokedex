@@ -131,32 +131,6 @@ export default function Navigation() {
           <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Datenbank</p>
 
           <NavLinks />
-
-          {/* <p className="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">System</p>
-
-          <div className="space-y-2">
-            {secondaryNavigation.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="
-                    flex items-center gap-3 rounded-xl px-4 py-3
-                    text-slate-300
-                    hover:bg-slate-800
-                    hover:text-white
-                    transition
-                  "
-                >
-                  <Icon size={20} />
-
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
-          </div> */}
         </nav>
 
         {/* Footer */}

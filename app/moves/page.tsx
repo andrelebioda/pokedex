@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 import StickyBar from "@/components/layout/StickyBar";
+import MoveExplorer from "@/components/move/MoveExplorer";
 import MoveFilters from "@/components/move/MoveFilters";
-import MoveGrid from "@/components/move/MoveGrid";
 import { getMoveList, MoveSort } from "@/server/move/move.service";
 import { getAllTypes } from "@/server/type/type.service";
 
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   description: "Durchsuche alle Attacken mit Stärke, Genauigkeit, AP und den Pokémon, die sie erlernen können.",
 };
 
+const LIMIT = 50;
 const VALID_SORTS: MoveSort[] = ["name", "type"];
 
 interface MovesPageProps {
@@ -29,16 +30,19 @@ export default async function MovesPage({ searchParams }: MovesPageProps) {
 
   const sort = VALID_SORTS.includes(sortParam as MoveSort) ? (sortParam as MoveSort) : "name";
 
-  const [moves, types] = await Promise.all([getMoveList({ search, types: selectedTypes, sort }), getAllTypes()]);
+  const [{ moves, hasMore }, types] = await Promise.all([
+    getMoveList(1, LIMIT, { search, types: selectedTypes, sort }),
+    getAllTypes(),
+  ]);
 
   return (
     <div>
-      <StickyBar className="-mt-8 mb-8">
+      <StickyBar>
         <MoveFilters types={types} search={search} selectedTypes={selectedTypes} sort={sort} />
       </StickyBar>
 
       <section>
-        <MoveGrid moves={moves} />
+        <MoveExplorer initialMoves={moves} initialHasMore={hasMore} search={search} types={selectedTypes} sort={sort} />
       </section>
     </div>
   );

@@ -28,7 +28,7 @@ export default async function ItemsPage() {
   const groups = await getItemGroupOverview();
 
   return (
-    <div>
+    <div className="pt-6 px-4">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white">Items</h1>
 
@@ -75,9 +75,7 @@ export default async function ItemsPage() {
 
               <h3 className="mt-4 text-xl font-bold text-white">{group.name}</h3>
 
-              <p className="mt-1 text-sm text-slate-400">
-                {group.categoryCount === 1 ? "1 Kategorie" : `${group.categoryCount} Kategorien`}
-              </p>
+              <p className="mt-1 text-sm text-slate-400">{group.categoryCount === 1 ? "1 Kategorie" : `${group.categoryCount} Kategorien`}</p>
 
               <p className="mt-3 text-xs text-slate-500">{group.categories.map((category) => category.name).join(" · ")}</p>
             </Link>

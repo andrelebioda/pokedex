@@ -27,7 +27,12 @@ export interface MappedMoveListItem {
   description: string | null;
 }
 
-export async function getMoveList(filters: MoveListFilters = {}): Promise<MappedMoveListItem[]> {
+export interface MoveListResult {
+  moves: MappedMoveListItem[];
+  hasMore: boolean;
+}
+
+export async function getMoveList(page = 1, limit = 50, filters: MoveListFilters = {}): Promise<MoveListResult> {
   const { search, types, minPower, maxPower, sort = "name" } = filters;
 
   const where: Prisma.MoveWhereInput = {
@@ -102,7 +107,7 @@ export async function getMoveList(filters: MoveListFilters = {}): Promise<Mapped
     relationLoadStrategy: "join",
   });
 
-  return moves
+  const mapped = moves
     .map((move) => ({
       id: move.id,
       nameDe: move.translations.find((t) => t.language === "de")?.name ?? move.apiName,
@@ -122,6 +127,12 @@ export async function getMoveList(filters: MoveListFilters = {}): Promise<Mapped
 
       return a.nameDe.localeCompare(b.nameDe);
     });
+
+  const start = (page - 1) * limit;
+  const pageItems = mapped.slice(start, start + limit);
+  const hasMore = start + limit < mapped.length;
+
+  return { moves: pageItems, hasMore };
 }
 
 export interface MoveLearner {
