@@ -48,7 +48,6 @@ export default function SortSelect<T extends string>({ value, groups, onChange }
               return (
                 <DropdownMenuItem
                   key={option.value}
-                  onSelect={(event) => event.preventDefault()}
                   onClick={() => onChange(option.value)}
                   className="gap-2.5 py-1.5 text-slate-300 focus:bg-slate-800 focus:text-white"
                 >
