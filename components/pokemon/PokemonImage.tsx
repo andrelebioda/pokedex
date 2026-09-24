@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import { CSSProperties, ReactNode, useState } from "react";
 import Image from "next/image";
 
 interface PokemonImageProps {
@@ -11,6 +9,39 @@ interface PokemonImageProps {
   size?: number;
   // Füllt ein quadratisches Feld in voller Breite des Elternelements statt einer festen Höhe
   fluid?: boolean;
+}
+
+interface PlaceholderProps {
+  style: CSSProperties;
+  pulse?: boolean;
+  children?: ReactNode;
+}
+
+// Heller Glas-Kreis mit angedeutetem Pokéball, passt auf die farbigen Karten
+function Placeholder({ style, pulse = false, children }: PlaceholderProps) {
+  return (
+    <div
+      style={style}
+      className={`
+        relative
+        flex
+        items-center
+        justify-center
+        overflow-hidden
+        rounded-full
+        border
+        border-white/20
+        bg-white/10
+        shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]
+        backdrop-blur-md
+        ${pulse ? "animate-pulse" : ""}
+      `}
+    >
+      <div aria-hidden className="absolute inset-x-0 top-1/2 h-[6%] -translate-y-1/2 bg-white/15" />
+      <div aria-hidden className="absolute top-1/2 left-1/2 size-[28%] -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white/20 bg-white/10" />
+      {children && <span className="relative text-4xl">{children}</span>}
+    </div>
+  );
 }
 
 export default function PokemonImage({ src, alt, size = 150, fluid = false }: PokemonImageProps) {
@@ -23,38 +54,20 @@ export default function PokemonImage({ src, alt, size = 150, fluid = false }: Po
   const containerClass = fluid ? "aspect-square" : "";
   const containerStyle = fluid ? undefined : { height: containerHeight };
 
+  // Bleibt rund und schrumpft, wenn der Platz schmaler ist als der Durchmesser
+  const placeholderStyle: CSSProperties = { width: fluid ? "70%" : skeletonSize, maxWidth: "100%", aspectRatio: "1" };
+
   if (!src || error) {
     return (
       <div className={`flex w-full items-center justify-center ${containerClass}`} style={containerStyle}>
-        <div
-          className="
-            flex
-            items-center
-            justify-center
-            rounded-full
-            bg-slate-100
-            text-4xl
-          "
-          style={fluid ? { height: "70%", width: "70%" } : { height: skeletonSize, width: skeletonSize }}
-        >
-          🥚
-        </div>
+        <Placeholder style={placeholderStyle}>🥚</Placeholder>
       </div>
     );
   }
 
   return (
     <div className={`relative flex w-full items-center justify-center ${containerClass}`} style={containerStyle}>
-      {!loaded && (
-        <Skeleton
-          width={fluid ? "70%" : skeletonSize}
-          height={fluid ? "70%" : skeletonSize}
-          containerClassName={fluid ? "flex h-full w-full items-center justify-center" : undefined}
-          borderRadius={20}
-          baseColor="#1e293b"
-          highlightColor="#334155"
-        />
-      )}
+      {!loaded && <Placeholder style={placeholderStyle} pulse />}
 
       <Image
         src={src}
