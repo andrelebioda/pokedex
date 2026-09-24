@@ -6,6 +6,7 @@ export const glassCard = `
   relative
   isolate
   overflow-hidden
+  contain-paint
   rounded-3xl
   border
   border-white/10
@@ -16,6 +17,8 @@ export const glassCard = `
   duration-300
   hover:border-[color-mix(in_oklab,var(--accent)_60%,transparent)]
   hover:shadow-[0_12px_40px_-12px_color-mix(in_oklab,var(--accent)_70%,transparent)]
+  [mask-image:radial-gradient(white,white)]
+  [-webkit-mask-image:-webkit-radial-gradient(white,white)]
 `;
 
 export const glassPanel = `
