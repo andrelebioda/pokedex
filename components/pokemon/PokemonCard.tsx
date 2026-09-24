@@ -82,7 +82,7 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
       </span>
 
       {/* Bild */}
-      <div className="relative flex w-2/5 shrink-0 items-center justify-center py-2 sm:w-full sm:pt-6 sm:pb-2">
+      <div className="relative flex w-1/3 shrink-0 items-center justify-center py-2 sm:w-full sm:pt-6 sm:pb-2">
         <div
           aria-hidden
           className="
@@ -116,9 +116,10 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
           border
           border-white/15
           bg-white/10
-          p-3
+          p-2.5
           shadow-[inset_0_1px_0_rgb(255_255_255/0.15)]
           backdrop-blur-md
+          min-[400px]:p-3
           sm:p-4
         "
       >
@@ -126,18 +127,19 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
 
         <h3 className="truncate text-xl font-bold text-white">{pokemon.name}</h3>
 
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex gap-1.5">
           {pokemon.types.map((type) => (
             <span
               key={type.slug}
               className={`
                 flex
                 h-7
+                min-w-0
                 items-center
-                gap-1.5
+                gap-1
                 rounded-full
                 py-1
-                pr-3
+                pr-2.5
                 pl-1
                 text-xs
                 font-semibold
@@ -148,8 +150,8 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
                 ${getPokemonTypeClass(type.slug)}
               `}
             >
-              <img src={getPokemonTypeIconPath(type.slug)} alt="" className="size-5 rounded-full ring-2 ring-white/40" />
-              {type.name}
+              <img src={getPokemonTypeIconPath(type.slug)} alt="" className="size-5 shrink-0 rounded-full ring-2 ring-white/40" />
+              <span className="truncate">{type.name}</span>
             </span>
           ))}
         </div>
