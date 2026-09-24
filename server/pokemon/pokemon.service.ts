@@ -71,6 +71,7 @@ export async function getPokemonList(page = 1, limit = 50, filters: PokemonListF
       },
 
       types: {
+        orderBy: { slot: "asc" },
         select: {
           type: {
             select: {
@@ -144,6 +145,7 @@ export const getSinglePokemon = cache(async function getSinglePokemon(id: number
       stats: true,
 
       types: {
+        orderBy: { slot: "asc" },
         select: {
           type: {
             select: {

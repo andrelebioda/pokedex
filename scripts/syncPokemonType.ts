@@ -29,6 +29,7 @@ async function syncPokemonTypes(id: number) {
       data: {
         pokemonId: id,
         typeId: Number(typeId),
+        slot: typeData.slot,
       },
     });
 

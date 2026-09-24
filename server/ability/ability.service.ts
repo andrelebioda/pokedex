@@ -149,6 +149,7 @@ export async function getPokemonForAbility(abilityId: number): Promise<AbilityPo
           },
 
           types: {
+            orderBy: { slot: "asc" },
             select: {
               type: {
                 select: {
