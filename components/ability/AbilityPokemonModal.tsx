@@ -1,10 +1,11 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { CSSProperties, useEffect } from "react";
 
 import AbilityPokemonList from "@/components/ability/AbilityPokemonList";
 import { AbilityGridItem, AbilityLearnerState } from "@/components/ability/AbilityGrid";
+import { sections } from "@/config/sections";
 
 interface AbilityPokemonModalProps {
   ability: AbilityGridItem;
@@ -24,15 +25,16 @@ export default function AbilityPokemonModal({ ability, state, onClose }: Ability
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="flex max-h-[80vh] w-full max-w-2xl flex-col rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl"
+        style={{ "--accent": sections.abilities.accent } as CSSProperties}
+        className="relative flex max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/5 bg-slate-900 shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-white/5 bg-[linear-gradient(135deg,color-mix(in_oklab,var(--accent)_25%,transparent),transparent_70%)] px-6 py-4">
           <div>
             <h2 className="text-lg font-bold text-white">{ability.nameDe}</h2>
             <p className="text-sm text-slate-400">Pokémon, die diese Fähigkeit haben können</p>
@@ -41,7 +43,8 @@ export default function AbilityPokemonModal({ ability, state, onClose }: Ability
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            aria-label="Schließen"
+            className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
           >
             <X size={20} />
           </button>

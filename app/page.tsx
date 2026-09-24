@@ -1,9 +1,10 @@
 import type { CSSProperties } from "react";
-import { ArrowRight, Calculator, Cherry, Database, Heart, Layers, Swords, Users } from "lucide-react";
+import { ArrowRight, Calculator, Heart, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import PokemonCard from "@/components/pokemon/PokemonCard";
+import { sections } from "@/config/sections";
 import { getDashboardData } from "@/server/dashboard/dashboard.service";
 
 export const dynamic = "force-dynamic";
@@ -24,34 +25,10 @@ export default async function Dashboard() {
   const { stats, pokemon } = await getDashboardData();
 
   const cards = [
-    {
-      title: "Pokémon",
-      value: stats.pokemonCount,
-      icon: Database,
-      link: "/pokemon",
-      accent: "#ef4444",
-    },
-    {
-      title: "Fähigkeiten",
-      value: stats.abilityCount,
-      icon: Layers,
-      link: "/abilities",
-      accent: "var(--color-pokemon-psychic)",
-    },
-    {
-      title: "Attacken",
-      value: stats.moveCount,
-      icon: Swords,
-      link: "/moves",
-      accent: "var(--color-pokemon-fire)",
-    },
-    {
-      title: "Beeren",
-      value: stats.berryCount,
-      icon: Cherry,
-      link: "/berries",
-      accent: "var(--color-pokemon-grass)",
-    },
+    { section: sections.pokemon, value: stats.pokemonCount },
+    { section: sections.abilities, value: stats.abilityCount },
+    { section: sections.moves, value: stats.moveCount },
+    { section: sections.berries, value: stats.berryCount },
   ];
 
   return (
@@ -160,14 +137,14 @@ export default async function Dashboard() {
 
       {/* Statistik */}
       <section className="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
-        {cards.map((card) => {
-          const Icon = card.icon;
+        {cards.map(({ section, value }) => {
+          const Icon = section.icon;
 
           return (
             <Link
-              href={card.link}
-              key={card.title}
-              style={{ "--accent": card.accent } as CSSProperties}
+              href={section.href}
+              key={section.href}
+              style={{ "--accent": section.accent } as CSSProperties}
               className="
                 group
                 relative
@@ -219,9 +196,9 @@ export default async function Dashboard() {
                 />
               </div>
 
-              <strong className="mt-4 block text-2xl text-white md:mt-6 md:text-4xl">{card.value.toLocaleString("de-DE")}</strong>
+              <strong className="mt-4 block text-2xl text-white md:mt-6 md:text-4xl">{value.toLocaleString("de-DE")}</strong>
 
-              <p className="mt-1 text-sm text-slate-400">{card.title}</p>
+              <p className="mt-1 text-sm text-slate-400">{section.name}</p>
 
               {/* Akzent unten */}
               <div aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-(--accent) opacity-70" />
