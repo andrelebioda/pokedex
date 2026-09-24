@@ -28,11 +28,7 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
   const typeColors = accentStyle(getPokemonTypeColorVar(primaryType), getPokemonTypeColorVar(secondaryType));
 
   return (
-    <Link
-      href={`/pokemon/${pokemon.id}`}
-      style={typeColors}
-      className={`${glassCard} flex p-2 hover:-translate-y-1 sm:flex-col sm:p-3`}
-    >
+    <Link href={`/pokemon/${pokemon.id}`} style={typeColors} className={`${glassCard} flex p-2 hover:-translate-y-1 sm:flex-col sm:p-3`}>
       <GlassBlobs />
 
       {/* Nummer als Wasserzeichen */}
@@ -100,9 +96,9 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
             sm:backdrop-blur-md
           "
         >
-          <span className="font-mono text-sm font-semibold text-white/60">{dexNumber}</span>
+          <span className="font-mono text-sm md:text-lg font-semibold text-white/60">{dexNumber}</span>
 
-          <h3 className="truncate text-xl font-bold text-white">{pokemon.name}</h3>
+          <h3 className="truncate text-xl xl:text-2xl font-bold text-white">{pokemon.name}</h3>
 
           <div className="mt-3 flex gap-1.5">
             {pokemon.types.map((type) => (
@@ -117,8 +113,10 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
                   rounded-full
                   py-1
                   pr-2.5
+                  md:pr-3
                   pl-1
                   text-xs
+                  md:text-sm
                   font-semibold
                   text-white
                   shadow-sm
@@ -127,7 +125,7 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
                   ${getPokemonTypeClass(type.slug)}
                 `}
               >
-                <img src={getPokemonTypeIconPath(type.slug)} alt="" className="size-5 shrink-0 rounded-full ring-2 ring-white/40" />
+                <img src={getPokemonTypeIconPath(type.slug)} alt="" className="md:mr-1 size-5 shrink-0 rounded-full ring-2 ring-white/40" />
                 <span className="truncate">{type.name}</span>
               </span>
             ))}
