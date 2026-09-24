@@ -23,6 +23,7 @@ export const pillTrigger = `
   data-[state=open]:bg-white/10
   data-[state=open]:text-white
   relative
+  cursor-pointer
 `;
 
 // Hülle für Dialoge und Dropdowns der Filter

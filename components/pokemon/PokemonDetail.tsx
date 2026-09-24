@@ -192,7 +192,7 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
 
   return (
     <div style={typeColors}>
-      <header className="relative isolate mb-6 overflow-hidden md:-mx-6">
+      <header className="relative isolate mb-6 overflow-hidden -mt-15 pt-15 xl:mt-0 xl:pt-0 md:-mx-6">
         <HeaderBackdrop />
 
         {/* Nummer als Wasserzeichen */}
@@ -201,7 +201,8 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
           className="
             pointer-events-none
             absolute
-            top-4
+            top-16
+            xl:top-4
             right-4
             -z-10
             select-none
@@ -212,6 +213,8 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
             md:right-10
             md:text-[10rem]
             md:leading-none
+            max-sm:left-4.5
+            max-sm:top-35
           "
         >
           {dexNumber}
