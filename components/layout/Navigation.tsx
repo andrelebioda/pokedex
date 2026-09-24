@@ -8,13 +8,75 @@ import { useEffect, useState } from "react";
 
 import { navigationSections } from "@/config/sections";
 
+interface NavLinksProps {
+  pathname: string;
+  onNavigate?: () => void;
+}
+
+function NavLinks({ pathname, onNavigate }: NavLinksProps) {
+  return (
+    <div className="space-y-1">
+      {navigationSections.map((item) => {
+        const Icon = item.icon;
+
+        const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(item.href + "/");
+
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            style={{ "--accent": item.accent } as CSSProperties}
+            className={`
+                group
+                relative
+                flex
+                items-center
+                gap-3
+                rounded-2xl
+                px-3
+                py-2.5
+                transition-all
+                ${
+                  active
+                    ? "bg-[color-mix(in_oklab,var(--accent)_16%,transparent)] text-white"
+                    : "text-slate-400 hover:bg-white/5 hover:text-white"
+                }
+              `}
+          >
+            {active && <span aria-hidden className="absolute top-2 bottom-2 left-0 w-1 rounded-full bg-(--accent)" />}
+
+            <span
+              className={`
+                flex
+                size-9
+                items-center
+                justify-center
+                rounded-xl
+                transition
+                ${active ? "bg-(--accent) text-white shadow-lg shadow-[color-mix(in_oklab,var(--accent)_40%,transparent)]" : "bg-slate-800/60 group-hover:text-(--accent)"}
+              `}
+            >
+              <Icon size={18} />
+            </span>
+
+            <span className="font-medium">{item.name}</span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function Navigation() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setMobileOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -44,61 +106,6 @@ export default function Navigation() {
     </Link>
   );
 
-  function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
-    return (
-      <div className="space-y-1">
-        {navigationSections.map((item) => {
-          const Icon = item.icon;
-
-          const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(item.href + "/");
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              style={{ "--accent": item.accent } as CSSProperties}
-              className={`
-                  group
-                  relative
-                  flex
-                  items-center
-                  gap-3
-                  rounded-2xl
-                  px-3
-                  py-2.5
-                  transition-all
-                  ${
-                    active
-                      ? "bg-[color-mix(in_oklab,var(--accent)_16%,transparent)] text-white"
-                      : "text-slate-400 hover:bg-white/5 hover:text-white"
-                  }
-                `}
-            >
-              {active && <span aria-hidden className="absolute top-2 bottom-2 left-0 w-1 rounded-full bg-(--accent)" />}
-
-              <span
-                className={`
-                  flex
-                  size-9
-                  items-center
-                  justify-center
-                  rounded-xl
-                  transition
-                  ${active ? "bg-(--accent) text-white shadow-lg shadow-[color-mix(in_oklab,var(--accent)_40%,transparent)]" : "bg-slate-800/60 group-hover:text-(--accent)"}
-                `}
-              >
-                <Icon size={18} />
-              </span>
-
-              <span className="font-medium">{item.name}</span>
-            </Link>
-          );
-        })}
-      </div>
-    );
-  }
-
   return (
     <>
       {/* Desktop sidebar */}
@@ -110,7 +117,7 @@ export default function Navigation() {
         <nav className="flex-1 px-4 py-6">
           <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Datenbank</p>
 
-          <NavLinks />
+          <NavLinks pathname={pathname} />
         </nav>
 
         {/* Footer */}
@@ -148,7 +155,7 @@ export default function Navigation() {
 
         {mobileOpen && (
           <nav className="border-t border-white/5 px-4 py-4">
-            <NavLinks onNavigate={() => setMobileOpen(false)} />
+            <NavLinks pathname={pathname} onNavigate={() => setMobileOpen(false)} />
           </nav>
         )}
       </div>
