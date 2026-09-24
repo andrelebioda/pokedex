@@ -99,6 +99,17 @@ export default function Navigation() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mobileOpen]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileOpen]);
+
   const logo = (
     <Link href="/" className="flex items-center gap-3">
       <div className="flex items-center gap-3">
@@ -167,7 +178,10 @@ export default function Navigation() {
         </div>
 
         {mobileOpen && (
-          <nav className="border-t border-white/5 px-4 py-4">
+          <nav className="absolute isolate z-50 h-screen w-full overflow-hidden border-t border-white/5 bg-slate-900/95 px-4 py-4 backdrop-blur-xl">
+            <div aria-hidden className="absolute -top-24 -left-20 -z-10 size-64 rounded-full bg-red-500 opacity-20 blur-3xl" />
+            <div aria-hidden className="absolute -bottom-24 -right-24 -z-10 size-64 rounded-full bg-orange-500 opacity-10 blur-3xl" />
+
             <NavLinks pathname={pathname} onNavigate={() => setMobileOpen(false)} />
           </nav>
         )}
