@@ -1,11 +1,10 @@
-import { Database, Layers, Swords, Cherry } from "lucide-react";
+import type { CSSProperties } from "react";
+import { ArrowRight, Calculator, Cherry, Database, Heart, Layers, Swords, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import PokemonImage from "@/components/pokemon/PokemonImage";
-import { getPokemonTypeClass } from "@/config/pokemonTypes";
+import PokemonCard from "@/components/pokemon/PokemonCard";
 import { getDashboardData } from "@/server/dashboard/dashboard.service";
-import { MappedPokemon } from "@/server/pokemon/pokemon.mapper";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +13,12 @@ export const metadata: Metadata = {
   description: "Forschungszentrum für Pokémon-Daten: Statistiken und aktuelle Einträge aus dem Pokédex, den Attacken, Fähigkeiten und Beeren.",
   alternates: { canonical: "/" },
 };
+
+const plannedFeatures = [
+  { title: "Team Builder", icon: Users },
+  { title: "EVs/IVs-Rechner", icon: Calculator },
+  { title: "Meine Pokémon", description: "Sammle deine favorisierten Pokémon", icon: Heart },
+];
 
 export default async function Dashboard() {
   const { stats, pokemon } = await getDashboardData();
@@ -24,96 +29,202 @@ export default async function Dashboard() {
       value: stats.pokemonCount,
       icon: Database,
       link: "/pokemon",
+      accent: "#ef4444",
     },
     {
       title: "Fähigkeiten",
       value: stats.abilityCount,
       icon: Layers,
       link: "/abilities",
+      accent: "var(--color-pokemon-psychic)",
     },
     {
       title: "Attacken",
       value: stats.moveCount,
       icon: Swords,
       link: "/moves",
+      accent: "var(--color-pokemon-fire)",
     },
     {
       title: "Beeren",
       value: stats.berryCount,
       icon: Cherry,
       link: "/berries",
+      accent: "var(--color-pokemon-grass)",
     },
   ];
 
   return (
-    <div className="space-y-10 px-4 pt-6">
+    <div className="space-y-12 px-4 pt-6 pb-10">
       {/* Header */}
-      <section>
-        <h1 className="text-2xl md:text-5xl font-bold text-white mb-3">Willkommen im PokéLabs</h1>
+      <section
+        className="
+          relative
+          isolate
+          overflow-hidden
+          rounded-3xl
+          border
+          border-white/5
+          bg-slate-900
+          bg-[radial-gradient(circle_at_top_right,rgb(239_68_68/0.25),transparent_55%),radial-gradient(circle_at_bottom_left,rgb(99_144_240/0.12),transparent_50%)]
+          p-6
+          shadow-lg
+          md:p-10
+        "
+      >
+        {/* Pokéball als Wasserzeichen */}
+        <div
+          aria-hidden
+          className="
+            pointer-events-none
+            absolute
+            -top-16
+            -right-16
+            -z-10
+            hidden
+            size-80
+            rounded-full
+            border-[28px]
+            border-white/5
+            md:block
+          "
+        >
+          <div className="absolute inset-x-0 top-1/2 h-7 -translate-y-1/2 bg-white/5" />
+          <div className="absolute top-1/2 left-1/2 size-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-[28px] border-white/5 bg-slate-900" />
+        </div>
 
-        <p className="mt-3 text-[16px] md:text-[22px] text-slate-400 w-full xl:w-[85%]">
+        <span
+          className="
+            inline-flex
+            items-center
+            gap-2
+            rounded-full
+            border
+            border-red-500/30
+            bg-red-500/10
+            px-3
+            py-1
+            text-xs
+            font-semibold
+            text-red-300
+          "
+        >
+          <span className="size-2 animate-pulse rounded-full bg-red-400" />
+          Fanprojekt · in Entwicklung
+        </span>
+
+        <h1 className="mt-4 text-3xl font-bold text-white md:text-5xl">
+          Willkommen im <span className="bg-linear-to-r from-red-400 to-orange-300 bg-clip-text text-transparent">PokéLabs</span>
+        </h1>
+
+        <p className="mt-4 w-full text-[16px] text-slate-400 md:text-[20px] xl:w-[75%]">
           Hier findest du umfangreiche Informationen zu allen Pokémon, Attacken, Fähigkeiten, Items und Beeren. Die Seite ist ein reines Fanprojekt
-          von mir und befindet sich noch in der Entwicklung. In nächster Zeit sind unter anderem folgende Features geplant:
+          von mir und befindet sich noch in der Entwicklung.
         </p>
-        <table className="list-disc list-inside mt-2 text-slate-400">
-          <tbody>
-            <tr className="mb-1 block text-[16px] md:text-[22px]">
-              <td className="pr-2 align-top">●</td>
-              <td>Team Builder</td>
-            </tr>
-            <tr className="mb-1 block text-[16px] md:text-[22px]">
-              <td className="pr-2 align-top">●</td>
-              <td>EVs/IVs-Rechner</td>
-            </tr>
-            <tr className="mb-1 block text-[16px] md:text-[22px]">
-              <td className="pr-2 align-top">●</td>
-              <td>Der Bereich „Meine Pokémon“, in dem du deine favorisierten Pokémon sammeln kannst.</td>
-            </tr>
-          </tbody>
-        </table>
+
+        <div className="mt-8">
+          <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase">Demnächst geplant</p>
+
+          <ul className="mt-3 grid gap-3 sm:grid-cols-3">
+            {plannedFeatures.map((feature) => {
+              const Icon = feature.icon;
+
+              return (
+                <li
+                  key={feature.title}
+                  className="
+                    flex
+                    items-center
+                    gap-3
+                    rounded-2xl
+                    border
+                    border-white/5
+                    bg-slate-800/50
+                    p-3
+                  "
+                >
+                  <div className="rounded-xl bg-red-500/10 p-2 text-red-400">
+                    <Icon size={20} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="font-semibold text-white">{feature.title}</p>
+                    {feature.description && <p className="truncate text-sm text-slate-400">{feature.description}</p>}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </section>
 
       {/* Statistik */}
-      <section className="mb-12 grid gap-6 grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
         {cards.map((card) => {
           const Icon = card.icon;
 
           return (
-            <Link href={card.link} key={card.title} className="group">
-              <div
-                key={card.title}
-                className="
-                rounded-2xl
+            <Link
+              href={card.link}
+              key={card.title}
+              style={{ "--accent": card.accent } as CSSProperties}
+              className="
+                group
+                relative
+                isolate
+                overflow-hidden
+                rounded-3xl
                 border
-                border-slate-800
+                border-white/5
                 bg-slate-900
-                p-3
-                md:p-6
+                bg-[linear-gradient(135deg,color-mix(in_oklab,var(--accent)_22%,transparent),transparent_70%)]
+                p-4
                 shadow-lg
-                transition
-                hover:border-slate-700
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:border-[color-mix(in_oklab,var(--accent)_45%,transparent)]
+                hover:shadow-[0_12px_40px_-12px_color-mix(in_oklab,var(--accent)_60%,transparent)]
+                md:p-6
               "
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="pb-2 text-sm text-slate-400">{card.title}</p>
+            >
+              {/* Icon als Wasserzeichen */}
+              <Icon
+                aria-hidden
+                strokeWidth={1.5}
+                className="
+                  pointer-events-none
+                  absolute
+                  -right-4
+                  -bottom-4
+                  -z-10
+                  size-24
+                  text-white/5
+                  transition-transform
+                  duration-300
+                  group-hover:scale-110
+                  group-hover:-rotate-6
+                  md:size-32
+                "
+              />
 
-                    <strong className="text-2xl md:text-4xl text-white">{card.value}</strong>
-                  </div>
-
-                  <div
-                    className="
-                    rounded-xl
-                    bg-red-500/10
-                    p-2
-                    md:p-3
-                    text-red-400
-                  "
-                  >
-                    <Icon size={32} />
-                  </div>
+              <div className="flex items-start justify-between gap-2">
+                <div className="rounded-xl bg-[color-mix(in_oklab,var(--accent)_18%,transparent)] p-2 text-(--accent) md:p-3">
+                  <Icon className="size-6 md:size-7" />
                 </div>
+
+                <ArrowRight
+                  size={18}
+                  className="text-slate-600 transition-all duration-300 group-hover:translate-x-1 group-hover:text-(--accent)"
+                />
               </div>
+
+              <strong className="mt-4 block text-2xl text-white md:mt-6 md:text-4xl">{card.value.toLocaleString("de-DE")}</strong>
+
+              <p className="mt-1 text-sm text-slate-400">{card.title}</p>
+
+              {/* Akzent unten */}
+              <div aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-(--accent) opacity-70" />
             </Link>
           );
         })}
@@ -121,79 +232,42 @@ export default async function Dashboard() {
 
       {/* Pokemon */}
       <section>
-        <div className="mb-8">
-          <h2 className="pb-1.5 text-[20px] md:text-3xl font-bold text-white">Pokémon Datenbank</h2>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div className="border-l-4 border-red-500 pl-4">
+            <h2 className="pb-1.5 text-[20px] font-bold text-white md:text-3xl">Pokémon Datenbank</h2>
 
-          <p className="text-[16px] md:text-lg text-slate-400">Aktuelle Einträge aus dem Pokédex</p>
+            <p className="text-[16px] text-slate-400 md:text-lg">Zufällige Einträge aus dem Pokédex</p>
+          </div>
+
+          <Link
+            href="/pokemon"
+            className="
+              group
+              inline-flex
+              items-center
+              gap-2
+              rounded-full
+              border
+              border-white/10
+              bg-slate-900
+              px-4
+              py-2
+              text-sm
+              font-semibold
+              text-slate-300
+              transition
+              hover:border-red-500/40
+              hover:text-white
+            "
+          >
+            Alle Pokémon
+            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {pokemon.map((poke: MappedPokemon) => (
-            <Link
-              href={`/pokemon/${poke.id}`}
-              key={poke.id}
-              className="
-                group
-                rounded-2xl
-                border
-                border-slate-800
-                bg-slate-900
-                p-4
-                shadow-lg
-                transition-all
-                hover:-translate-y-1
-                hover:border-slate-700
-                hover:shadow-xl
-                hover:shadow-red-500/10
-                grid
-                grid-cols-2
-                justify-between
-                md:grid-cols-1
-              "
-            >
-              {/* Bild */}
-              <div
-                className="
-                  flex
-                  md:justify-center
-                  rounded-xl
-                  bg-slate-800/50
-                  p-2
-                  md:p-4
-                "
-              >
-                <PokemonImage src={poke.image} alt={poke.name} />
-              </div>
-
-              {/* Info */}
-              <div className="mt-4 ml-4 md:ml-0">
-                <strong className="text-md text-slate-500">#{String(poke.id).padStart(3, "0")}</strong>
-
-                <h3 className="text-xl font-bold text-white">{poke.name}</h3>
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {poke.types.map((type: { slug: string; name: string }) => (
-                    <span
-                      key={type.slug}
-                      className={`
-                          flex
-                          h-6
-                          w-20
-                          items-center
-                          justify-center
-                          rounded-full
-                          text-xs
-                          font-semibold
-                          text-white
-                          ${getPokemonTypeClass(type.slug)}
-                        `}
-                    >
-                      {type.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Link>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          {pokemon.map((poke) => (
+            <PokemonCard key={poke.id} pokemon={poke} />
           ))}
         </div>
       </section>
