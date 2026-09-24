@@ -139,8 +139,6 @@ export default function Navigation() {
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6">
-          <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Datenbank</p>
-
           <NavLinks pathname={pathname} />
         </nav>
 
