@@ -20,7 +20,7 @@ export default function FilterModal({ title = "Filter", activeCount, open, onOpe
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <button type="button" className={pillTrigger}>
+        <button type="button" aria-label={title} className={pillTrigger}>
           <SlidersHorizontal size={16} />
           <span className="hidden md:block">Filter</span>
           {activeCount > 0 && (

@@ -1,5 +1,6 @@
 export const pillTrigger = `
   flex
+  h-10
   items-center
   gap-2
   rounded-full
@@ -9,6 +10,7 @@ export const pillTrigger = `
   px-4
   py-2.5
   text-sm
+  md:h-11
   md:text-[16px]
   text-slate-300
   transition
