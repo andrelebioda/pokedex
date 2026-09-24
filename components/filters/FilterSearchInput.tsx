@@ -33,6 +33,8 @@ export default function FilterSearchInput({ value, onChange, placeholder, classN
           placeholder:text-slate-500
           focus:border-red-500
           focus:outline-none
+          h-10
+          md:h-11
         "
       />
 
