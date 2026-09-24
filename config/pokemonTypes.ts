@@ -29,3 +29,11 @@ export function getPokemonTypeClass(type: string) {
 export function getPokemonTypeIconPath(type: string) {
   return `/${type.toLowerCase()}.svg`;
 }
+
+export function getPokemonTypeColorVar(type?: string) {
+  if (!type || !(type.toLowerCase() in pokemonTypeClasses)) {
+    return "#64748b";
+  }
+
+  return `var(--color-pokemon-${type.toLowerCase()})`;
+}
