@@ -14,6 +14,7 @@ interface PageHeaderProps {
   count?: number;
   backLink?: { href: string; label: string };
   children?: ReactNode;
+  page?: string;
 }
 
 // Die Farben kommen aus --accent und --accent-2 der umgebenden SectionTheme.
@@ -26,13 +27,18 @@ export default function PageHeader({
   count,
   backLink,
   children,
+  page,
 }: PageHeaderProps) {
   return (
-    <header className="relative isolate overflow-hidden md:-mx-6">
+    <header className="relative isolate overflow-hidden -mt-15 pt-15 xl:mt-0 xl:pt-0 md:-mx-6">
       <HeaderBackdrop />
 
       {/* Icon als Wasserzeichen */}
-      <Icon aria-hidden strokeWidth={1.25} className="pointer-events-none absolute -top-6 right-2 -z-10 size-44 text-white/10 mask-[linear-gradient(to_bottom,black_30%,transparent_90%)] md:right-10 md:size-60" />
+      <Icon
+        aria-hidden
+        strokeWidth={1.25}
+        className="pointer-events-none absolute -top-2 xl:-top-6 right-2 -z-10 size-44 text-white/10 mask-[linear-gradient(to_bottom,black_30%,transparent_90%)] md:right-10 md:size-60"
+      />
 
       <div className="px-4 pt-6 pb-8 md:px-10 md:pt-10 md:pb-12">
         {backLink && (
@@ -64,7 +70,7 @@ export default function PageHeader({
 
         <div className="flex items-center gap-4 md:gap-6">
           <div
-            className="
+            className={`
               flex
               size-14
               shrink-0
@@ -77,7 +83,8 @@ export default function PageHeader({
               text-white
               shadow-[0_10px_30px_-8px_var(--accent),inset_0_1px_0_rgb(255_255_255/0.3)]
               md:size-18
-            "
+              ${page === "home" ? "max-xl:hidden" : ""}
+            `}
           >
             <Icon className="size-7 md:size-9" />
           </div>
@@ -87,7 +94,6 @@ export default function PageHeader({
 
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold text-balance text-white md:text-5xl">{title}</h1>
-
               {count != null && (
                 <span className="rounded-full border border-white/15 bg-white/10 px-3 py-0.5 text-sm font-semibold text-white backdrop-blur-md">
                   {count.toLocaleString("de-DE")}

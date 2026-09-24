@@ -119,7 +119,7 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 isolate hidden h-screen flex-col overflow-hidden border-r border-white/10 bg-slate-900/70 text-white backdrop-blur-xl min-[1200px]:flex">
+      <aside className="sticky top-0 isolate hidden h-screen flex-col overflow-hidden border-r border-white/10  text-white backdrop-blur-xl min-[1200px]:flex">
         <div aria-hidden className="absolute -top-24 -left-20 -z-10 size-64 rounded-full bg-red-500 opacity-20 blur-3xl" />
         <div aria-hidden className="absolute -bottom-24 -right-24 -z-10 size-64 rounded-full bg-orange-500 opacity-10 blur-3xl" />
 

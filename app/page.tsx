@@ -38,6 +38,7 @@ export default async function Dashboard() {
     <SectionTheme accent={sections.home.accent} accent2={sections.home.accent2}>
       <PageHeader
         section={sections.home}
+        page="home"
         eyebrow={
           <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 backdrop-blur-md">
             <span className="size-2 animate-pulse rounded-full bg-red-400" />

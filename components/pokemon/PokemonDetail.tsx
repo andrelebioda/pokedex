@@ -249,8 +249,6 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
 
               <h1 className="mt-1 text-4xl font-bold text-white md:text-6xl">{pokemon.name}</h1>
 
-              {pokemon.genus && <p className="mt-2 text-white/75">{pokemon.genus}-Pokémon</p>}
-
               <div className="mt-5 flex flex-wrap gap-2">
                 {pokemon.types.map((type) => (
                   <span
@@ -285,7 +283,10 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
             </div>
 
             <div className="relative order-1 flex justify-center lg:order-2">
-              <div aria-hidden className="absolute top-1/2 left-1/2 size-3/4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white opacity-15 blur-3xl" />
+              <div
+                aria-hidden
+                className="absolute top-1/2 left-1/2 size-3/4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white opacity-15 blur-3xl"
+              />
 
               <div className="relative w-full max-w-90 drop-shadow-[0_20px_25px_rgb(0_0_0/0.4)]">
                 <PokemonImage src={pokemon.image} alt={pokemon.name} size={340} />
@@ -338,17 +339,11 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
 
       {tab === "stats" &&
         (pokemon.stats ? (
-          <div className="mx-4 grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <div className="mx-4 grid gap-6 lg:grid-cols-[1fr_1fr] pt-6">
             <div className={`${glassCard} flex items-center justify-center p-3`}>
               <GlassBlobs />
               <div className={`${glassPanel} w-full p-4`}>
-                <PokemonStatsRadar
-                  stats={pokemon.stats}
-                  labels={STAT_CHART}
-                  order={STAT_KEYS_CHART}
-                  max={STAT_MAX}
-                  color="#ffffff"
-                />
+                <PokemonStatsRadar stats={pokemon.stats} labels={STAT_CHART} order={STAT_KEYS_CHART} max={STAT_MAX} color="#ffffff" />
               </div>
             </div>
 
@@ -388,9 +383,9 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
 
       {tab === "moves" && (
         <div>
-          <div className="flex items-center justify-between gap-4 px-4">
+          {/* <div className="flex items-center justify-between gap-4 px-4">
             <FilterSearchInput value={movesSearchInput} onChange={setMovesSearchInput} placeholder="Attacke suchen…" className="sm:w-72" />
-          </div>
+          </div> */}
 
           {moveTableItems.length > 0 ? (
             <MoveGrid moves={moveTableItems} showLearnMethod showPokemonInfo={false} />
