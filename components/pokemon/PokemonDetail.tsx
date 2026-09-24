@@ -201,20 +201,19 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
           className="
             pointer-events-none
             absolute
-            top-16
-            xl:top-4
-            right-4
+            top-31
+            left-1/2
             -z-10
+            -translate-x-1/2
             select-none
-            text-7xl
+            text-[7rem]
+            leading-none
             font-black
             tracking-tighter
             text-white/10
-            md:right-10
-            md:text-[10rem]
-            md:leading-none
-            max-sm:left-4.5
-            max-sm:top-35
+            md:top-27
+            md:text-[16rem]
+            xl:top-12
           "
         >
           {dexNumber}
@@ -224,7 +223,6 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
           <Link
             href="/pokemon"
             className="
-              mb-6
               inline-flex
               items-center
               gap-1.5
@@ -246,58 +244,56 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
             Zurück zu allen Pokémon
           </Link>
 
-          <div className="grid gap-6 lg:grid-cols-[1fr_380px] lg:items-center">
-            <div className="order-2 lg:order-1">
-              <span className="font-mono text-lg font-semibold text-white/60">{dexNumber}</span>
+          {/* Bild groß und mittig */}
+          <div className="relative mx-auto w-full max-w-80 sm:max-w-96 md:max-w-112">
+            <div aria-hidden className="absolute inset-[15%] rounded-full bg-white opacity-20 blur-3xl" />
+            <div aria-hidden className="absolute inset-[25%] rounded-full bg-(--accent) opacity-60 blur-3xl" />
 
-              <h1 className="mt-1 text-4xl font-bold text-white md:text-6xl">{pokemon.name}</h1>
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                {pokemon.types.map((type) => (
-                  <span
-                    key={type.slug}
-                    className={`
-                      flex
-                      h-9
-                      items-center
-                      gap-2
-                      rounded-full
-                      py-1
-                      pr-4
-                      pl-1
-                      text-sm
-                      font-semibold
-                      text-white
-                      shadow-md
-                      ring-1
-                      ring-white/20
-                      ${getPokemonTypeClass(type.slug)}
-                    `}
-                  >
-                    <img src={getPokemonTypeIconPath(type.slug)} alt="" className="size-7 rounded-full ring-2 ring-white/40" />
-                    {type.name}
-                  </span>
-                ))}
-              </div>
-
-              {pokemon.description && (
-                <p className={`${glassPanel} mt-6 max-w-2xl p-4 text-[16px] text-white/85 md:text-lg`}>{pokemon.description}</p>
-              )}
-            </div>
-
-            <div className="relative order-1 flex justify-center lg:order-2">
-              <div
-                aria-hidden
-                className="absolute top-1/2 left-1/2 size-3/4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white opacity-15 blur-3xl"
-              />
-
-              <div className="relative w-full max-w-90 drop-shadow-[0_20px_25px_rgb(0_0_0/0.4)]">
-                <PokemonImage src={pokemon.image} alt={pokemon.name} size={340} />
-              </div>
+            <div className="relative drop-shadow-[0_25px_30px_rgb(0_0_0/0.45)]">
+              <PokemonImage src={pokemon.image} alt={pokemon.name} size={440} fluid />
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="mt-2 flex flex-col items-center text-center">
+            <span className="font-mono text-lg font-semibold text-white/60">{dexNumber}</span>
+
+            <h1 className="mt-1 text-4xl font-bold text-white md:text-6xl">{pokemon.name}</h1>
+
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              {pokemon.types.map((type) => (
+                <span
+                  key={type.slug}
+                  className={`
+                    flex
+                    h-9
+                    items-center
+                    gap-2
+                    rounded-full
+                    py-1
+                    pr-4
+                    pl-1
+                    text-sm
+                    font-semibold
+                    text-white
+                    shadow-md
+                    ring-1
+                    ring-white/20
+                    ${getPokemonTypeClass(type.slug)}
+                  `}
+                >
+                  <img src={getPokemonTypeIconPath(type.slug)} alt="" className="size-7 rounded-full ring-2 ring-white/40" />
+                  {type.name}
+                </span>
+              ))}
+            </div>
+
+            {/* Beschreibung vorerst ausgeblendet
+            {pokemon.description && (
+              <p className={`${glassPanel} mt-6 max-w-2xl p-4 text-[16px] text-white/85 md:text-lg`}>{pokemon.description}</p>
+            )} */}
+          </div>
+
+          <div className="mx-auto mt-8 grid max-w-5xl grid-cols-2 gap-3 lg:grid-cols-4">
             {infoTiles.map((tile) => (
               <div key={tile.label} className={`${glassPanel} p-4`}>
                 <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-white/60 uppercase">
