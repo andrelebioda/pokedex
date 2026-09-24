@@ -73,6 +73,7 @@ model TypeTranslation {
 model PokemonType {
   pokemonId Int
   typeId    Int
+  slot      Int?
 
   pokemon Pokemon @relation(fields: [pokemonId], references: [id])
   type    Type    @relation(fields: [typeId], references: [id])

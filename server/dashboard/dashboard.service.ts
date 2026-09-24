@@ -45,6 +45,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       },
 
       types: {
+        orderBy: { slot: "asc" },
         select: {
           type: {
             select: {

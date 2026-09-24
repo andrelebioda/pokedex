@@ -173,6 +173,7 @@ export async function getPokemonForMove(moveId: number): Promise<MoveLearner[]> 
           },
 
           types: {
+            orderBy: { slot: "asc" },
             select: {
               type: {
                 select: {
