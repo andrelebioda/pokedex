@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface FilterSearchInputProps {
   value: string;
@@ -26,7 +26,7 @@ export default function FilterSearchInput({ value, onChange, placeholder, classN
           border-slate-800
           bg-slate-900
           py-2.5
-          pr-4
+          pr-10
           pl-10
           text-[16px]
           text-white
@@ -35,6 +35,17 @@ export default function FilterSearchInput({ value, onChange, placeholder, classN
           focus:outline-none
         "
       />
+
+      {value.length > 0 && (
+        <button
+          type="button"
+          onClick={() => onChange("")}
+          aria-label="Suche löschen"
+          className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-500 transition hover:text-white"
+        >
+          <X size={16} />
+        </button>
+      )}
     </div>
   );
 }
