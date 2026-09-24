@@ -18,7 +18,7 @@ export default function BerryCard({ berry }: BerryCardProps) {
 
         <div className="min-w-0">
           <h3 className="font-semibold text-white text-lg">{berry.name}</h3>
-          {berry.description && <p className="mt-1 text-[14px] text-slate-400">{berry.description}</p>}
+          {berry.description && <p className="mt-1 text-[14px] md:text-[16px] text-slate-400">{berry.description}</p>}
         </div>
       </div>
 

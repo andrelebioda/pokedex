@@ -39,7 +39,7 @@ export default function ItemCard({ item }: ItemCardProps) {
       <div className="min-w-0">
         <h3 className="font-semibold text-white text-md">{item.name}</h3>
 
-        {item.effect && <p className="mt-1 text-[14px] text-slate-400">{item.effect}</p>}
+        {item.effect && <p className="mt-1 text-[14px] md:text-[16px] text-slate-400">{item.effect}</p>}
       </div>
     </div>
   );

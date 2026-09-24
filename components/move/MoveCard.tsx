@@ -34,7 +34,7 @@ export default function MoveCard({ move, showLearnMethod = false, showPokemonInf
         </div>
       </div>
 
-      {move.description && <p className="mt-2 text-[14px] text-slate-400 pb-2">{move.description}</p>}
+      {move.description && <p className="mt-2 text-[14px] md:text-[16px] text-slate-400 pb-2">{move.description}</p>}
 
       <div className="flex flex-wrap items-center justify-between gap-2 pt-4 mt-4 border-t border-slate-700 sm:absolute sm:right-4 sm:bottom-4 sm:left-4">
         <div className="flex items-center gap-2">

@@ -23,7 +23,7 @@ export default function AbilityCard({ ability, showPokemonInfo = true, onShowPok
         </div>
       </div>
 
-      {ability.description && <p className="mt-4 text-[14px] text-slate-400 pb-2">{ability.description}</p>}
+      {ability.description && <p className="mt-4 text-[14px] md:text-[16px] text-slate-400 pb-2">{ability.description}</p>}
 
       <div className="flex flex-wrap items-center justify-between gap-2 pt-4 mt-4 border-t border-slate-700 sm:absolute sm:right-4 sm:bottom-4 sm:left-4">
         {hasStatsRow && (
