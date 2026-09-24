@@ -28,7 +28,7 @@ export default function FilterSearchInput({ value, onChange, placeholder, classN
           py-2.5
           pr-4
           pl-10
-          text-sm
+          text-[16px]
           text-white
           placeholder:text-slate-500
           focus:border-red-500
