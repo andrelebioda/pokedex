@@ -23,7 +23,7 @@ export default function FilterCheckboxGroup({ options, selected, onToggle, colum
         return (
           <label
             key={option.value}
-            className="flex cursor-pointer items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm text-slate-300 transition hover:bg-slate-800/60 hover:text-white"
+            className="flex cursor-pointer items-center gap-2 rounded-lg px-1.5 py-1.5 text-sm md:text-[16px] text-slate-300 transition hover:bg-slate-800/60 hover:text-white"
           >
             <Checkbox
               checked={active}

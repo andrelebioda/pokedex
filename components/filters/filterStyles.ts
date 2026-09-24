@@ -9,6 +9,7 @@ export const pillTrigger = `
   px-4
   py-2.5
   text-sm
+  md:text-[16px]
   text-slate-300
   transition
   hover:border-slate-700

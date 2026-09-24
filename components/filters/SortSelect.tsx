@@ -29,8 +29,8 @@ export default function SortSelect<T extends string>({ value, groups, onChange }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" className={`${pillTrigger} whitespace-nowrap pr-8`}>
-          {activeLabel}
+        <button type="button" className={`${pillTrigger} whitespace-nowrap pr-8 max-md:w-22.5`}>
+          <span className="truncate">{activeLabel}</span>
           <ChevronDown size={16} className="absolute right-3 text-slate-500" />
         </button>
       </DropdownMenuTrigger>
@@ -49,7 +49,7 @@ export default function SortSelect<T extends string>({ value, groups, onChange }
                 <DropdownMenuItem
                   key={option.value}
                   onClick={() => onChange(option.value)}
-                  className="gap-2.5 py-1.5 text-slate-300 focus:bg-slate-800 focus:text-white"
+                  className="gap-2.5 py-1.5 text-slate-300 focus:bg-slate-800 focus:text-white text-sm md:text-[16px] data-[state=open]:bg-slate-800 data-[state=open]:text-white"
                 >
                   <span className="flex size-3.5 shrink-0 items-center justify-center">
                     {active && <span className="size-1.5 rounded-full bg-white" />}
