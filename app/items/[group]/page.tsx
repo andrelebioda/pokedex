@@ -1,12 +1,12 @@
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import ItemExplorer from "@/components/item/ItemExplorer";
 import ItemFilters from "@/components/item/ItemFilters";
+import PageHeader from "@/components/layout/PageHeader";
 import StickyBar from "@/components/layout/StickyBar";
-import { getItemCategoryGroupBySlug } from "@/config/itemCategories";
+import { getItemCategoryGroupBySlug, getItemGroupStyle } from "@/config/itemCategories";
+import { sections } from "@/config/sections";
 import { getGroupCategoryOptions, getItemsForGroup, ItemSort } from "@/server/item/item.service";
 
 export const dynamic = "force-dynamic";
@@ -58,33 +58,19 @@ export default async function ItemGroupPage({ params, searchParams }: ItemGroupP
   const { items: initialItems, hasMore: initialHasMore, total } = result;
 
   const categoryOptions = getGroupCategoryOptions(groupSlug);
+  const groupStyle = getItemGroupStyle(groupSlug);
 
   return (
     <div>
-      <div className="px-4 pt-6">
-        <Link
-          href="/items"
-          className="
-            mb-4
-            inline-flex
-            items-center
-            gap-1.5
-            text-sm
-            text-slate-400
-            transition
-            hover:text-white
-          "
-        >
-          <ArrowLeft size={16} />
-          Zurück zu allen Kategorien
-        </Link>
-
-        <div className="mb-6 flex items-center gap-3">
-          <h1 className="text-3xl font-bold text-white">{group.name}</h1>
-
-          {group.flat && <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-400">{total}</span>}
-        </div>
-      </div>
+      <PageHeader
+        section={sections.items}
+        title={group.name}
+        description={`${categoryOptions.length === 1 ? "1 Kategorie" : `${categoryOptions.length} Kategorien`} in dieser Gruppe`}
+        icon={groupStyle.icon}
+        accent={groupStyle.accent}
+        count={total}
+        backLink={{ href: "/items", label: "Zurück zu allen Kategorien" }}
+      />
 
       <StickyBar>
         <ItemFilters categories={categoryOptions} search={search} selectedCategories={selectedCategories} sort={sort} />

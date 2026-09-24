@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 
 import BerryCard from "@/components/berry/BerryCard";
 import BerryFilters from "@/components/berry/BerryFilters";
+import PageHeader from "@/components/layout/PageHeader";
 import StickyBar from "@/components/layout/StickyBar";
+import { sections } from "@/config/sections";
 import { getAllBerries, BerrySort } from "@/server/berry/berry.service";
 import { getAllTypes } from "@/server/type/type.service";
 
@@ -40,6 +42,8 @@ export default async function BerriesPage({ searchParams }: BerriesPageProps) {
 
   return (
     <div>
+      <PageHeader section={sections.berries} count={berries.length} />
+
       <StickyBar>
         <BerryFilters types={types} search={search} selectedTypes={selectedTypes} sort={sort} minPower={minPower} maxPower={maxPower} />
       </StickyBar>

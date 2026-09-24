@@ -1,3 +1,5 @@
+import { Backpack, Boxes, CircleDot, Dumbbell, HeartPulse, LucideIcon, Music, Sparkles, Swords, Trophy, UtensilsCrossed } from "lucide-react";
+
 export interface ItemCategoryGroupDefinition {
   slug: string;
   name: string;
@@ -122,4 +124,21 @@ export function formatItemCategoryLabel(slug: string) {
     .split("-")
     .map((word) => (word.length <= 2 ? word.toUpperCase() : word.charAt(0).toUpperCase() + word.slice(1)))
     .join(" ");
+}
+
+const itemGroupStyles: Record<string, { icon: LucideIcon; accent: string }> = {
+  balls: { icon: CircleDot, accent: "#ef4444" },
+  healing: { icon: HeartPulse, accent: "var(--color-pokemon-grass)" },
+  training: { icon: Dumbbell, accent: "var(--color-pokemon-fighting)" },
+  "battle-items": { icon: Swords, accent: "var(--color-pokemon-fire)" },
+  evolution: { icon: Sparkles, accent: "var(--color-pokemon-fairy)" },
+  flutes: { icon: Music, accent: "var(--color-pokemon-ice)" },
+  "held-items": { icon: Backpack, accent: "var(--color-pokemon-water)" },
+  picnic: { icon: UtensilsCrossed, accent: "var(--color-pokemon-ground)" },
+  collectibles: { icon: Trophy, accent: "var(--color-pokemon-electric)" },
+  other: { icon: Boxes, accent: "var(--color-pokemon-steel)" },
+};
+
+export function getItemGroupStyle(slug: string) {
+  return itemGroupStyles[slug] ?? { icon: CircleDot, accent: "var(--color-pokemon-water)" };
 }

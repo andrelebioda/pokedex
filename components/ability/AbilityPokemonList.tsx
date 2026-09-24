@@ -27,9 +27,9 @@ export default function AbilityPokemonList({ state }: AbilityPokemonListProps) {
         <Link
           key={entry.id}
           href={`/pokemon/${entry.id}`}
-          className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/40 p-2.5 transition hover:border-slate-700"
+          className="flex items-center gap-3 rounded-2xl border border-white/5 bg-slate-800/40 p-2.5 transition hover:border-[color-mix(in_oklab,var(--accent)_45%,transparent)] hover:bg-slate-800/70"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-800/50">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_oklab,var(--accent)_15%,transparent)]">
             <ItemImage src={entry.image} alt={entry.name} size={36} />
           </div>
 

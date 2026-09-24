@@ -9,3 +9,9 @@ export const damageClassTooltips: Record<string, string> = {
   special: "Spezial: Schaden basiert auf Spezial-Angriff und Spezial-Verteidigung",
   status: "Status: Verursacht keinen direkten Schaden",
 };
+
+export const damageClassLabels: Record<string, string> = {
+  physical: "Physisch",
+  special: "Spezial",
+  status: "Status",
+};

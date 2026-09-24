@@ -12,19 +12,25 @@ interface PokemonStatsRadarProps {
   labels: Record<keyof MappedPokemonStats, string>;
   order: (keyof MappedPokemonStats)[];
   max?: number;
+  color?: string;
 }
 
-export default function PokemonStatsRadar({ stats, labels, order, max = 255 }: PokemonStatsRadarProps) {
+function withAlpha(hex: string, alpha: number) {
+  const value = parseInt(hex.slice(1), 16);
+  return `rgba(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}, ${alpha})`;
+}
+
+export default function PokemonStatsRadar({ stats, labels, order, max = 255, color = "#ef4444" }: PokemonStatsRadarProps) {
   const data = {
     labels: order.map((key) => labels[key]),
     datasets: [
       {
         label: "Basiswerte",
         data: order.map((key) => stats[key]),
-        backgroundColor: "rgba(239, 68, 68, 0.25)",
-        borderColor: "rgb(239, 68, 68)",
+        backgroundColor: withAlpha(color, 0.3),
+        borderColor: color,
         borderWidth: 2,
-        pointBackgroundColor: "rgb(239, 68, 68)",
+        pointBackgroundColor: color,
         pointBorderColor: "#0f172a",
         pointBorderWidth: 2,
         pointRadius: 4,

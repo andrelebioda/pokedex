@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 
 import AbilityExplorer from "@/components/ability/AbilityExplorer";
 import AbilityFilters from "@/components/ability/AbilityFilters";
+import PageHeader from "@/components/layout/PageHeader";
 import StickyBar from "@/components/layout/StickyBar";
+import { sections } from "@/config/sections";
 import { getAbilityList, AbilityHiddenFilter, AbilitySort } from "@/server/ability/ability.service";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +37,9 @@ export default async function AbilitiesPage({ searchParams }: AbilitiesPageProps
 
   return (
     <div>
-      <StickyBar className="">
+      <PageHeader section={sections.abilities} />
+
+      <StickyBar>
         <AbilityFilters search={search} selectedHidden={selectedHidden} sort={sort} />
       </StickyBar>
 

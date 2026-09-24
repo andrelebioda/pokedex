@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
+import PageHeader from "@/components/layout/PageHeader";
 import StickyBar from "@/components/layout/StickyBar";
+import { sections } from "@/config/sections";
 import MoveExplorer from "@/components/move/MoveExplorer";
 import MoveFilters from "@/components/move/MoveFilters";
 import { getMoveList, MoveSort } from "@/server/move/move.service";
@@ -41,6 +43,8 @@ export default async function MovesPage({ searchParams }: MovesPageProps) {
 
   return (
     <div>
+      <PageHeader section={sections.moves} />
+
       <StickyBar>
         <MoveFilters types={types} search={search} selectedTypes={selectedTypes} sort={sort} minPower={minPower} maxPower={maxPower} />
       </StickyBar>

@@ -1,9 +1,11 @@
-import { Battery, Info, Target, Zap } from "lucide-react";
+import type { CSSProperties } from "react";
+import { Users } from "lucide-react";
 
+import { accentCard, accentGradient, statChip } from "@/components/layout/cardStyles";
 import { MoveGridItem } from "@/components/move/MoveGrid";
-import { damageClassIconPaths, damageClassTooltips } from "@/config/damageClass";
+import { damageClassLabels, damageClassTooltips } from "@/config/damageClass";
 import { getLearnMethodBadge } from "@/config/moveLearnMethods";
-import { getPokemonTypeIconPath } from "@/config/pokemonTypes";
+import { getPokemonTypeColorVar, getPokemonTypeIconPath } from "@/config/pokemonTypes";
 
 interface MoveCardProps {
   move: MoveGridItem;
@@ -15,64 +17,62 @@ interface MoveCardProps {
 export default function MoveCard({ move, showLearnMethod = false, showPokemonInfo = true, onShowPokemon }: MoveCardProps) {
   const methodBadge = showLearnMethod ? getLearnMethodBadge(move.learnMethod, move.level) : null;
 
+  const stats = [
+    { label: "Stärke", value: move.power ?? "–" },
+    { label: "Genauigkeit", value: move.accuracy != null ? `${move.accuracy}%` : "–" },
+    { label: "AP", value: move.pp ?? "–" },
+  ];
+
   return (
-    <div className="relative rounded-xl border border-slate-800 bg-slate-900 p-4 pb-4 transition hover:border-slate-700 sm:pb-16">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <img src={getPokemonTypeIconPath(move.typeSlug)} alt="" title={move.type} className="h-5.5 w-5.5 shrink-0 mr-1" />
-          <h3 className="text-lg font-semibold text-white">{move.nameDe}</h3>
+    <div style={{ "--accent": getPokemonTypeColorVar(move.typeSlug) } as CSSProperties} className={`${accentCard} flex flex-col`}>
+      <div className={`${accentGradient} flex items-center gap-3 px-4 pt-4 pb-3`}>
+        <img src={getPokemonTypeIconPath(move.typeSlug)} alt="" className="size-9 shrink-0 rounded-full ring-2 ring-white/20" />
 
-          {/* {move.damageClass && (
-            <img
-              src={damageClassIconPaths[move.damageClass]}
-              alt={move.damageClass}
-              title={damageClassTooltips[move.damageClass]}
-              style={{ imageRendering: "pixelated" }}
-              className="h-4 w-8 shrink-0 object-contain"
-            />
-          )} */}
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-lg font-semibold text-white">{move.nameDe}</h3>
+
+          <p className="text-xs font-medium text-slate-400">
+            <span className="text-(--accent)">{move.type}</span>
+            {move.damageClass && (
+              <span title={damageClassTooltips[move.damageClass]}> · {damageClassLabels[move.damageClass] ?? move.damageClass}</span>
+            )}
+          </p>
         </div>
+
+        {methodBadge && (
+          <span className={`${statChip} shrink-0`} title="Lernmethode">
+            <methodBadge.Icon size={12} />
+            {methodBadge.label}
+          </span>
+        )}
       </div>
 
-      {move.description && <p className="mt-2 text-[14px] md:text-[16px] text-slate-400 pb-2">{move.description}</p>}
+      {move.description && <p className="px-4 pt-1 text-[14px] text-slate-400 md:text-[15px]">{move.description}</p>}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-4 mt-4 border-t border-slate-700 sm:absolute sm:right-4 sm:bottom-4 sm:left-4">
-        <div className="flex items-center gap-2">
-          <span className=" flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300" title="Stärke">
-            <Zap size={12} className="mr-1" />
-            {move.power ?? "-"}
-          </span>
-
-          <span className="flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300" title="Genauigkeit">
-            <Target size={12} className="mr-1" />
-            {move.accuracy != null ? `${move.accuracy}%` : "-"}
-          </span>
-
-          <span className="flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300" title="AP">
-            <Battery size={12} className="mr-1" />
-            {move.pp ?? "-"}
-          </span>
-
-          {methodBadge && (
-            <span className="flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300" title="Lernmethode">
-              <methodBadge.Icon size={12} />
-              {methodBadge.label}
-            </span>
-          )}
+      <div className="mt-auto flex items-center gap-2 px-4 pt-4 pb-4">
+        <div className="grid flex-1 grid-cols-3 gap-2">
+          {stats.map((stat) => (
+            <div key={stat.label} title={stat.label} className="rounded-xl bg-slate-800/60 px-2 py-1.5 text-center">
+              <p className="truncate text-[11px] font-medium text-slate-500">{stat.label}</p>
+              <p className="text-sm font-bold text-white">{stat.value}</p>
+            </div>
+          ))}
         </div>
-        <div className="flex items-center gap-2">
-          {showPokemonInfo && (
-            <button
-              type="button"
-              onClick={() => onShowPokemon?.(move)}
-              title="Pokémon anzeigen, die diese Attacke lernen können"
-              className="shrink-0 rounded-lg  text-slate-400 transition hover:bg-slate-800 hover:text-white hover:cursor-pointer"
-            >
-              <Info size={24} />
-            </button>
-          )}
-        </div>
+
+        {showPokemonInfo && (
+          <button
+            type="button"
+            onClick={() => onShowPokemon?.(move)}
+            title="Pokémon anzeigen, die diese Attacke lernen können"
+            aria-label="Pokémon anzeigen, die diese Attacke lernen können"
+            className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-slate-800/60 text-slate-400 transition hover:bg-(--accent) hover:text-white"
+          >
+            <Users size={18} />
+          </button>
+        )}
       </div>
+
+      <div aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-(--accent) opacity-70" />
     </div>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import ItemCard from "@/components/item/ItemCard";
+import { getItemGroupStyle } from "@/config/itemCategories";
 import { ItemSort, MappedItem } from "@/server/item/item.service";
 
 const LIMIT = 60;
@@ -125,14 +126,16 @@ export default function ItemExplorer({
   }
 
   return (
-    <div className="space-y-10 px-4 py-6">
+    <div style={{ "--accent": getItemGroupStyle(groupSlug).accent } as CSSProperties} className="space-y-10 px-4 py-6">
       {groups.map((group) => (
         <section key={group.category}>
           {!hideHeader && (
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-4 flex items-center gap-3 border-l-4 border-(--accent) pl-3">
               <h2 className="text-xl font-bold text-white">{group.categoryName}</h2>
 
-              <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-400">{group.items.length}</span>
+              <span className="rounded-full bg-[color-mix(in_oklab,var(--accent)_18%,transparent)] px-2.5 py-0.5 text-xs font-semibold text-(--accent)">
+                {group.items.length}
+              </span>
             </div>
           )}
 

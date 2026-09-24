@@ -1,15 +1,15 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Dna, Ruler, Tag, Weight } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 
 import AbilityGrid from "@/components/ability/AbilityGrid";
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
 import MoveGrid from "@/components/move/MoveGrid";
 import PokemonImage from "@/components/pokemon/PokemonImage";
 import PokemonStatsRadar from "@/components/pokemon/PokemonStatsRadar";
-import { getPokemonTypeClass } from "@/config/pokemonTypes";
+import { getPokemonTypeClass, getPokemonTypeColorVar, getPokemonTypeHexColor, getPokemonTypeIconPath } from "@/config/pokemonTypes";
 import { mapPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
 
 type PokemonDetailData = NonNullable<ReturnType<typeof mapPokemon>>;
@@ -169,11 +169,33 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
     isHidden: ability.isHidden,
   }));
 
+  const primaryType = pokemon.types[0]?.slug;
+  const secondaryType = pokemon.types[1]?.slug ?? primaryType;
+  const dexNumber = `#${String(pokemon.id).padStart(3, "0")}`;
+
+  const typeColors = {
+    "--type-a": getPokemonTypeColorVar(primaryType),
+    "--type-b": getPokemonTypeColorVar(secondaryType),
+  } as CSSProperties;
+
+  const infoTiles = [
+    { label: "Größe", icon: Ruler, value: pokemon.height ? `${pokemon.height} m` : "–" },
+    { label: "Gewicht", icon: Weight, value: pokemon.weight ? `${pokemon.weight} kg` : "–" },
+    { label: "Kategorie", icon: Tag, value: pokemon.genus ?? "–" },
+    {
+      label: "Fähigkeiten",
+      icon: Dna,
+      value: pokemon.abilities && pokemon.abilities.length > 0 ? pokemon.abilities.map((ability) => ability.name).join(", ") : "–",
+    },
+  ];
+
   return (
-    <div className="pt-6">
+    <div style={typeColors} className="pt-6">
       <Link
         href="/pokemon"
         className="
+          mb-4
+          ml-4
           inline-flex
           items-center
           gap-2
@@ -181,118 +203,158 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
           text-slate-400
           transition
           hover:text-white
-          ml-4
-          mb-6
         "
       >
         <ArrowLeft size={16} />
-        Zurück zur Übersicht
+        Zurück zu allen Pokémon
       </Link>
 
-      <div
+      <section
         className="
+          relative
+          isolate
+          mx-4
+          mb-6
           overflow-hidden
-          rounded-2xl
+          rounded-3xl
           border
-          border-slate-800
+          border-white/5
           bg-slate-900
           shadow-lg
-          mx-4
-          mb-4
         "
       >
-        <div className="grid gap-8 p-8 lg:grid-cols-[360px_1fr] lg:items-center">
-          <div>
-            <strong className="text-lg text-slate-500">#{String(pokemon.id).padStart(3, "0")}</strong>
+        <div
+          className="
+            relative
+            grid
+            gap-6
+            bg-[linear-gradient(135deg,color-mix(in_oklab,var(--type-a)_35%,transparent),color-mix(in_oklab,var(--type-b)_12%,transparent)_70%)]
+            p-6
+            md:p-10
+            lg:grid-cols-[1fr_380px]
+            lg:items-center
+          "
+        >
+          {/* Nummer als Wasserzeichen */}
+          <span
+            aria-hidden
+            className="
+              pointer-events-none
+              absolute
+              top-2
+              right-4
+              -z-10
+              select-none
+              text-7xl
+              font-black
+              tracking-tighter
+              text-white/5
+              md:text-[10rem]
+              md:leading-none
+            "
+          >
+            {dexNumber}
+          </span>
 
-            <h1 className="mt-1 text-5xl font-bold text-white">{pokemon.name}</h1>
+          <div className="order-2 lg:order-1">
+            <span className="font-mono text-lg font-semibold text-slate-400">{dexNumber}</span>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <h1 className="mt-1 text-4xl font-bold text-white md:text-6xl">{pokemon.name}</h1>
+
+            {pokemon.genus && <p className="mt-2 text-slate-300">{pokemon.genus}-Pokémon</p>}
+
+            <div className="mt-5 flex flex-wrap gap-2">
               {pokemon.types.map((type) => (
                 <span
                   key={type.slug}
                   className={`
+                    flex
+                    h-9
+                    items-center
+                    gap-2
                     rounded-full
-                    px-4
-                    py-1.5
+                    py-1
+                    pr-4
+                    pl-1
                     text-sm
                     font-semibold
                     text-white
+                    shadow-md
                     ${getPokemonTypeClass(type.slug)}
                   `}
                 >
+                  <img src={getPokemonTypeIconPath(type.slug)} alt="" className="size-7 rounded-full ring-2 ring-white/40" />
                   {type.name}
                 </span>
               ))}
             </div>
+
+            {pokemon.description && <p className="mt-6 max-w-2xl text-[16px] text-slate-300 md:text-lg">{pokemon.description}</p>}
           </div>
 
-          <div className="flex justify-center lg:justify-end">
-            <PokemonImage src={pokemon.image} alt={pokemon.name} size={340} />
-          </div>
-        </div>
+          <div className="relative order-1 flex justify-center lg:order-2">
+            <div aria-hidden className="absolute top-1/2 left-1/2 size-3/4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-(--type-a) opacity-35 blur-3xl" />
 
-        <div className="grid grid-cols-2 gap-x-6 gap-y-5 border-t border-slate-800 bg-slate-950/40 px-8 py-6 sm:grid-cols-4">
-          <div>
-            <p className="text-sm text-slate-500">Größe</p>
-            <p className="text-lg font-semibold text-white">{pokemon.height ? `${pokemon.height} m` : "–"}</p>
-          </div>
-
-          <div>
-            <p className="text-sm text-slate-500">Gewicht</p>
-            <p className="text-lg font-semibold text-white">{pokemon.weight ? `${pokemon.weight} kg` : "–"}</p>
-          </div>
-
-          <div>
-            <p className="text-sm text-slate-500">Kategorie</p>
-            <p className="text-lg font-semibold text-white">{pokemon.genus ?? "–"}</p>
-          </div>
-
-          <div>
-            <p className="text-sm text-slate-500">Fähigkeiten</p>
-            {pokemon.abilities && pokemon.abilities.length > 0 ? (
-              pokemon.abilities.map((ability) => (
-                <p key={ability.id} className="text-lg font-semibold text-white">
-                  {ability.name}
-                </p>
-              ))
-            ) : (
-              <p className="text-lg font-semibold text-white">–</p>
-            )}
+            <div className="relative w-full max-w-90">
+              <PokemonImage src={pokemon.image} alt={pokemon.name} size={340} />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="sticky top-16 z-20 flex justify-center gap-2 overflow-x-auto border-b border-slate-800 bg-slate-950 mb-6 xl:top-0">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={`
-              shrink-0
-              px-4
-              py-3
-              text-sm
-              font-semibold
-              transition
+        <div className="grid grid-cols-2 gap-3 p-4 md:p-6 lg:grid-cols-4">
+          {infoTiles.map((tile) => (
+            <div key={tile.label} className="rounded-2xl border border-white/5 bg-slate-800/40 p-4">
+              <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                <tile.icon size={14} className="text-(--type-a)" />
+                {tile.label}
+              </p>
+              <p className="mt-1 text-lg font-semibold text-white">{tile.value}</p>
+            </div>
+          ))}
+        </div>
 
-              ${tab === t.id ? "border-b-2 border-red-500 text-white" : "text-slate-400 hover:text-white"}
-            `}
-          >
-            {t.label}
-          </button>
-        ))}
+        <div aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-[linear-gradient(90deg,var(--type-a),var(--type-b))] opacity-70" />
+      </section>
+
+      <div className="sticky top-16 z-20 mb-6 flex justify-center bg-slate-950/90 px-4 py-3 backdrop-blur xl:top-0">
+        <div className="flex gap-1 overflow-x-auto rounded-full border border-white/5 bg-slate-900 p-1">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`
+                shrink-0
+                rounded-full
+                px-5
+                py-2
+                text-sm
+                font-semibold
+                transition
+
+                ${tab === t.id ? "bg-(--type-a) text-white shadow-md" : "text-slate-400 hover:bg-white/5 hover:text-white"}
+              `}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {tab === "stats" &&
         (pokemon.stats ? (
-          <div className="grid gap-6 lg:grid-cols-[1fr_1fr] mx-4">
-            <div className="flex items-center justify-center rounded-2xl border border-slate-800 bg-slate-900 p-6">
-              <PokemonStatsRadar stats={pokemon.stats} labels={STAT_CHART} order={STAT_KEYS_CHART} max={STAT_MAX} />
+          <div className="mx-4 grid gap-6 lg:grid-cols-[1fr_1fr]">
+            <div className="flex items-center justify-center rounded-3xl border border-white/5 bg-slate-900 p-6">
+              <PokemonStatsRadar
+                stats={pokemon.stats}
+                labels={STAT_CHART}
+                order={STAT_KEYS_CHART}
+                max={STAT_MAX}
+                color={getPokemonTypeHexColor(primaryType)}
+              />
             </div>
 
-            <div className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <div className="space-y-5 rounded-3xl border border-white/5 bg-slate-900 p-6">
               {STAT_KEYS.map((key) => {
                 const value = pokemon.stats![key];
 
@@ -303,21 +365,26 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
                       <span className="font-semibold text-white">{value}</span>
                     </div>
 
-                    <div className="h-2 w-full rounded-full bg-slate-800">
-                      <div className="h-full rounded-full bg-red-500" style={{ width: `${Math.min(100, (value / STAT_MAX) * 100)}%` }} />
+                    <div className="h-2.5 w-full rounded-full bg-slate-800">
+                      <div
+                        className="h-full rounded-full bg-[linear-gradient(90deg,var(--type-a),var(--type-b))]"
+                        style={{ width: `${Math.min(100, (value / STAT_MAX) * 100)}%` }}
+                      />
                     </div>
                   </div>
                 );
               })}
 
-              <div className="flex justify-between border-t border-slate-800 pt-4 text-sm">
-                <span className="text-slate-400">Gesamt</span>
-                <span className="font-bold text-white">{statsTotal}</span>
+              <div className="flex items-center justify-between border-t border-white/5 pt-4">
+                <span className="text-sm text-slate-400">Gesamt</span>
+                <span className="rounded-full bg-[color-mix(in_oklab,var(--type-a)_20%,transparent)] px-3 py-1 text-sm font-bold text-white">
+                  {statsTotal}
+                </span>
               </div>
             </div>
           </div>
         ) : (
-          <p className="text-slate-500">Keine Statistiken verfügbar.</p>
+          <p className="text-center text-slate-500">Keine Statistiken verfügbar.</p>
         ))}
 
       {tab === "moves" && (
@@ -329,17 +396,17 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
           {moveTableItems.length > 0 ? (
             <MoveGrid moves={moveTableItems} showLearnMethod showPokemonInfo={false} />
           ) : !movesLoading ? (
-            <p className="text-slate-500">Keine Attacken gefunden.</p>
+            <p className="pt-6 text-center text-slate-500">Keine Attacken gefunden.</p>
           ) : null}
 
           {movesHasMore && (
-            <div ref={movesSentinelRef} className="flex justify-center">
+            <div ref={movesSentinelRef} className="flex justify-center py-6">
               {movesLoading && <p className="text-slate-400">Lade weitere Attacken…</p>}
 
               {movesError && (
                 <button
                   onClick={() => fetchMoves(movesPage + 1, movesSearch, true)}
-                  className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-slate-300 hover:border-slate-700 hover:text-white"
+                  className="rounded-full border border-white/10 bg-slate-900 px-4 py-2 text-slate-300 transition hover:border-white/20 hover:text-white"
                 >
                   Erneut versuchen
                 </button>
@@ -353,7 +420,7 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
         (abilityGridItems.length > 0 ? (
           <AbilityGrid abilities={abilityGridItems} showPokemonInfo={false} />
         ) : (
-          <p className="text-slate-500">Keine Fähigkeiten verfügbar.</p>
+          <p className="text-center text-slate-500">Keine Fähigkeiten verfügbar.</p>
         ))}
     </div>
   );

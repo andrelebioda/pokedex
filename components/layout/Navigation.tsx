@@ -1,55 +1,12 @@
 "use client";
 
-import { Home, Search, Package, Cherry, Swords, Layers, Dna, Menu, X, CircleDot } from "lucide-react";
+import type { CSSProperties } from "react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const navigation = [
-  {
-    name: "Übersicht",
-    href: "/",
-    icon: Home,
-  },
-  {
-    name: "Pokémon",
-    href: "/pokemon",
-    icon: Search,
-  },
-  {
-    name: "Items",
-    href: "/items",
-    icon: Package,
-  },
-  {
-    name: "Beeren",
-    href: "/berries",
-    icon: Cherry,
-  },
-  {
-    name: "Attacken",
-    href: "/moves",
-    icon: Swords,
-  },
-  // {
-  //   name: "Typen",
-  //   href: "/types",
-  //   icon: Layers,
-  // },
-  {
-    name: "Fähigkeiten",
-    href: "/abilities",
-    icon: Dna,
-  },
-];
-
-// const secondaryNavigation = [
-//   {
-//     name: "Einstellungen",
-//     href: "/settings",
-//     icon: Settings,
-//   },
-// ];
+import { navigationSections } from "@/config/sections";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -89,24 +46,50 @@ export default function Navigation() {
 
   function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
     return (
-      <div className="space-y-2">
-        {navigation.map((item) => {
+      <div className="space-y-1">
+        {navigationSections.map((item) => {
           const Icon = item.icon;
 
-          const active = pathname === item.href || pathname.startsWith(item.href + "/");
+          const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(item.href + "/");
 
           return (
             <Link
               key={item.href}
               href={item.href}
               onClick={onNavigate}
+              style={{ "--accent": item.accent } as CSSProperties}
               className={`
-                  flex items-center gap-3 rounded-xl px-4 py-3
+                  group
+                  relative
+                  flex
+                  items-center
+                  gap-3
+                  rounded-2xl
+                  px-3
+                  py-2.5
                   transition-all
-                  ${active ? "bg-red-500 text-white shadow-lg shadow-red-500/20" : "text-slate-300 hover:bg-slate-800 hover:text-white"}
+                  ${
+                    active
+                      ? "bg-[color-mix(in_oklab,var(--accent)_16%,transparent)] text-white"
+                      : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  }
                 `}
             >
-              <Icon size={20} />
+              {active && <span aria-hidden className="absolute top-2 bottom-2 left-0 w-1 rounded-full bg-(--accent)" />}
+
+              <span
+                className={`
+                  flex
+                  size-9
+                  items-center
+                  justify-center
+                  rounded-xl
+                  transition
+                  ${active ? "bg-(--accent) text-white shadow-lg shadow-[color-mix(in_oklab,var(--accent)_40%,transparent)]" : "bg-slate-800/60 group-hover:text-(--accent)"}
+                `}
+              >
+                <Icon size={18} />
+              </span>
 
               <span className="font-medium">{item.name}</span>
             </Link>
@@ -119,9 +102,9 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen flex-col bg-slate-900 text-white min-[1200px]:flex">
+      <aside className="sticky top-0 hidden h-screen flex-col border-r border-white/5 bg-slate-900 bg-[radial-gradient(circle_at_top_left,rgb(239_68_68/0.12),transparent_45%)] text-white min-[1200px]:flex">
         {/* Logo */}
-        <div className="flex items-center gap-3 border-b border-slate-800 px-6 py-5">{logo}</div>
+        <div className="flex items-center gap-3 border-b border-white/5 px-6 py-5">{logo}</div>
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6">
@@ -131,14 +114,12 @@ export default function Navigation() {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-slate-800 p-4">
-          <div
-            className="
-            flex items-center gap-3 rounded-xl
-            bg-slate-900 px-4 py-3
-          "
-          >
-            <CircleDot className="text-red-500" />
+        <div className="p-4">
+          <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-slate-800/40 px-4 py-3">
+            <span className="relative flex size-2.5">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-60" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-red-500" />
+            </span>
 
             <div>
               <p className="text-sm font-semibold">Pokédex v1.0</p>
@@ -150,7 +131,7 @@ export default function Navigation() {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="sticky top-0 z-30 border-b border-slate-800 bg-slate-900 text-white min-[1200px]:hidden">
+      <div className="sticky top-0 z-30 border-b border-white/5 bg-slate-900/90 text-white backdrop-blur min-[1200px]:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           {logo}
 
@@ -166,7 +147,7 @@ export default function Navigation() {
         </div>
 
         {mobileOpen && (
-          <nav className="border-t border-slate-800 px-4 py-4">
+          <nav className="border-t border-white/5 px-4 py-4">
             <NavLinks onNavigate={() => setMobileOpen(false)} />
           </nav>
         )}

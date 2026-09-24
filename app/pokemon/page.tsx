@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
+import PageHeader from "@/components/layout/PageHeader";
 import StickyBar from "@/components/layout/StickyBar";
+import { sections } from "@/config/sections";
 import PokemonFilters from "@/components/pokemon/PokemonFilters";
 import PokemonGrid from "@/components/pokemon/PokemonGrid";
 import { getPokemonList, PokemonSort } from "@/server/pokemon/pokemon.service";
@@ -42,6 +44,8 @@ export default async function PokemonPage({ searchParams }: PokemonPageProps) {
 
   return (
     <div>
+      <PageHeader section={sections.pokemon} />
+
       <StickyBar>
         <PokemonFilters types={types} search={search} selectedTypes={selectedTypes} selectedGenerations={selectedGenerations} sort={sort} />
       </StickyBar>

@@ -128,7 +128,7 @@ export default function MoveExplorer({
         </div>
       )}
 
-      {!hasMore && moves.length > 0 && <p className="px-4 pb-6 text-center text-slate-500">Alle Attacken geladen ({moves.length})</p>}
+      {!hasMore && moves.length > 0 && <p className="px-4 pt-6 pb-6 text-center text-slate-500">Alle Attacken geladen ({moves.length})</p>}
     </div>
   );
 }
