@@ -27,9 +27,9 @@ export default function AbilityPokemonList({ state }: AbilityPokemonListProps) {
         <Link
           key={entry.id}
           href={`/pokemon/${entry.id}`}
-          className="flex items-center gap-3 rounded-2xl border border-white/5 bg-slate-800/40 p-2.5 transition hover:border-[color-mix(in_oklab,var(--accent)_45%,transparent)] hover:bg-slate-800/70"
+          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-2.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.1)] transition hover:border-white/25 hover:bg-white/20"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_oklab,var(--accent)_15%,transparent)]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/20">
             <ItemImage src={entry.image} alt={entry.name} size={36} />
           </div>
 
@@ -37,7 +37,7 @@ export default function AbilityPokemonList({ state }: AbilityPokemonListProps) {
             <p className="truncate text-sm font-semibold text-white">{entry.name}</p>
 
             {entry.isHidden && (
-              <span className="mt-0.5 flex items-center gap-1 text-[10px] font-semibold text-slate-400">
+              <span className="mt-0.5 flex items-center gap-1 text-[10px] font-semibold text-white/70">
                 <EyeOff size={10} />
                 Versteckt
               </span>

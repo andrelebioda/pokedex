@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ItemExplorer from "@/components/item/ItemExplorer";
 import ItemFilters from "@/components/item/ItemFilters";
 import PageHeader from "@/components/layout/PageHeader";
+import SectionTheme from "@/components/layout/SectionTheme";
 import StickyBar from "@/components/layout/StickyBar";
 import { getItemCategoryGroupBySlug, getItemGroupStyle } from "@/config/itemCategories";
 import { sections } from "@/config/sections";
@@ -61,13 +62,12 @@ export default async function ItemGroupPage({ params, searchParams }: ItemGroupP
   const groupStyle = getItemGroupStyle(groupSlug);
 
   return (
-    <div>
+    <SectionTheme accent={groupStyle.accent} accent2={groupStyle.accent2}>
       <PageHeader
         section={sections.items}
         title={group.name}
         description={`${categoryOptions.length === 1 ? "1 Kategorie" : `${categoryOptions.length} Kategorien`} in dieser Gruppe`}
         icon={groupStyle.icon}
-        accent={groupStyle.accent}
         count={total}
         backLink={{ href: "/items", label: "Zurück zu allen Kategorien" }}
       />
@@ -85,6 +85,6 @@ export default async function ItemGroupPage({ params, searchParams }: ItemGroupP
         categories={selectedCategories}
         sort={sort}
       />
-    </div>
+    </SectionTheme>
   );
 }

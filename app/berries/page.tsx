@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import BerryCard from "@/components/berry/BerryCard";
 import BerryFilters from "@/components/berry/BerryFilters";
 import PageHeader from "@/components/layout/PageHeader";
+import SectionTheme from "@/components/layout/SectionTheme";
 import StickyBar from "@/components/layout/StickyBar";
 import { sections } from "@/config/sections";
 import { getAllBerries, BerrySort } from "@/server/berry/berry.service";
@@ -41,7 +42,7 @@ export default async function BerriesPage({ searchParams }: BerriesPageProps) {
   ]);
 
   return (
-    <div>
+    <SectionTheme accent={sections.berries.accent} accent2={sections.berries.accent2}>
       <PageHeader section={sections.berries} count={berries.length} />
 
       <StickyBar>
@@ -59,6 +60,6 @@ export default async function BerriesPage({ searchParams }: BerriesPageProps) {
           </div>
         )}
       </section>
-    </div>
+    </SectionTheme>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import PageHeader from "@/components/layout/PageHeader";
+import SectionTheme from "@/components/layout/SectionTheme";
 import StickyBar from "@/components/layout/StickyBar";
 import { sections } from "@/config/sections";
 import MoveExplorer from "@/components/move/MoveExplorer";
@@ -42,7 +43,7 @@ export default async function MovesPage({ searchParams }: MovesPageProps) {
   ]);
 
   return (
-    <div>
+    <SectionTheme accent={sections.moves.accent} accent2={sections.moves.accent2}>
       <PageHeader section={sections.moves} />
 
       <StickyBar>
@@ -60,6 +61,6 @@ export default async function MovesPage({ searchParams }: MovesPageProps) {
           maxPower={maxPower}
         />
       </section>
-    </div>
+    </SectionTheme>
   );
 }

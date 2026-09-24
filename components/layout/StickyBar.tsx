@@ -36,10 +36,12 @@ export default function StickyBar({ children, className = "" }: StickyBarProps) 
         xl:top-0
         z-20
         border-b
-        border-slate-800
-        bg-slate-950/95
+        border-white/5
+        bg-slate-950/60
         px-4
-        backdrop-blur
+        backdrop-blur-xl
+        md:-mx-6
+        md:px-10
         ${className}
       `}
       >

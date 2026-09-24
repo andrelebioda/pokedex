@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import AbilityExplorer from "@/components/ability/AbilityExplorer";
 import AbilityFilters from "@/components/ability/AbilityFilters";
 import PageHeader from "@/components/layout/PageHeader";
+import SectionTheme from "@/components/layout/SectionTheme";
 import StickyBar from "@/components/layout/StickyBar";
 import { sections } from "@/config/sections";
 import { getAbilityList, AbilityHiddenFilter, AbilitySort } from "@/server/ability/ability.service";
@@ -36,7 +37,7 @@ export default async function AbilitiesPage({ searchParams }: AbilitiesPageProps
   const { abilities, hasMore } = await getAbilityList(1, LIMIT, { search, hidden: selectedHidden, sort });
 
   return (
-    <div>
+    <SectionTheme accent={sections.abilities.accent} accent2={sections.abilities.accent2}>
       <PageHeader section={sections.abilities} />
 
       <StickyBar>
@@ -46,6 +47,6 @@ export default async function AbilitiesPage({ searchParams }: AbilitiesPageProps
       <section>
         <AbilityExplorer initialAbilities={abilities} initialHasMore={hasMore} search={search} hidden={selectedHidden} sort={sort} />
       </section>
-    </div>
+    </SectionTheme>
   );
 }

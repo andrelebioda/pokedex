@@ -1,8 +1,10 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
 
+import { glassCard, glassPanel } from "@/components/layout/cardStyles";
+import GlassBlobs from "@/components/layout/GlassBlobs";
 import PokemonImage from "@/components/pokemon/PokemonImage";
 import { getPokemonTypeClass, getPokemonTypeColorVar, getPokemonTypeIconPath } from "@/config/pokemonTypes";
+import { accentStyle } from "@/config/sections";
 
 export interface PokemonListItem {
   id: number;
@@ -23,42 +25,15 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
   const secondaryType = pokemon.types[1]?.slug ?? primaryType;
   const dexNumber = `#${String(pokemon.id).padStart(3, "0")}`;
 
-  const typeColors = {
-    "--type-a": getPokemonTypeColorVar(primaryType),
-    "--type-b": getPokemonTypeColorVar(secondaryType),
-  } as CSSProperties;
+  const typeColors = accentStyle(getPokemonTypeColorVar(primaryType), getPokemonTypeColorVar(secondaryType));
 
   return (
     <Link
       href={`/pokemon/${pokemon.id}`}
       style={typeColors}
-      className="
-        group
-        relative
-        isolate
-        flex
-        items-center
-        gap-3
-        overflow-hidden
-        rounded-3xl
-        border
-        border-white/10
-        bg-slate-900
-        bg-[linear-gradient(150deg,color-mix(in_oklab,var(--type-a)_55%,transparent),color-mix(in_oklab,var(--type-b)_35%,transparent))]
-        p-3
-        shadow-lg
-        transition-all
-        duration-300
-        hover:-translate-y-1
-        hover:border-[color-mix(in_oklab,var(--type-a)_60%,transparent)]
-        hover:shadow-[0_12px_40px_-12px_color-mix(in_oklab,var(--type-a)_70%,transparent)]
-        sm:flex-col
-        sm:items-stretch
-      "
+      className={`${glassCard} flex items-center gap-3 p-3 hover:-translate-y-1 sm:flex-col sm:items-stretch`}
     >
-      {/* Farbflecken, die hinter dem Glas verschwimmen */}
-      <div aria-hidden className="absolute -top-10 -left-10 -z-10 size-40 rounded-full bg-(--type-a) opacity-50 blur-2xl" />
-      <div aria-hidden className="absolute -right-8 -bottom-10 -z-10 size-44 rounded-full bg-(--type-b) opacity-45 blur-2xl" />
+      <GlassBlobs />
 
       {/* Nummer als Wasserzeichen */}
       <span
@@ -108,21 +83,7 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
       </div>
 
       {/* Info als Glasfläche */}
-      <div
-        className="
-          min-w-0
-          flex-1
-          rounded-2xl
-          border
-          border-white/15
-          bg-white/10
-          p-2.5
-          shadow-[inset_0_1px_0_rgb(255_255_255/0.15)]
-          backdrop-blur-md
-          min-[400px]:p-3
-          sm:p-4
-        "
-      >
+      <div className={`${glassPanel} min-w-0 flex-1 p-2.5 min-[400px]:p-3 sm:p-4`}>
         <span className="font-mono text-sm font-semibold text-white/60">{dexNumber}</span>
 
         <h3 className="truncate text-xl font-bold text-white">{pokemon.name}</h3>

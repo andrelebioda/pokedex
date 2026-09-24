@@ -18,7 +18,7 @@ export default function FilterRangeInput({ min, max, onChange, minPlaceholder = 
         value={min ?? ""}
         onChange={(event) => onChange(event.target.value === "" ? undefined : Number(event.target.value), max)}
         placeholder={minPlaceholder}
-        className="w-full rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-white placeholder:text-slate-500 focus:border-red-500 focus:outline-none"
+        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white placeholder:text-white/40 focus:border-(--accent,#ef4444) focus:outline-none"
       />
 
       <span className="shrink-0 text-slate-600">–</span>
@@ -30,7 +30,7 @@ export default function FilterRangeInput({ min, max, onChange, minPlaceholder = 
         value={max ?? ""}
         onChange={(event) => onChange(min, event.target.value === "" ? undefined : Number(event.target.value))}
         placeholder={maxPlaceholder}
-        className="w-full rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-white placeholder:text-slate-500 focus:border-red-500 focus:outline-none"
+        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white placeholder:text-white/40 focus:border-(--accent,#ef4444) focus:outline-none"
       />
     </div>
   );

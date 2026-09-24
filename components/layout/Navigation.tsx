@@ -1,12 +1,11 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { navigationSections } from "@/config/sections";
+import { accentStyle, navigationSections } from "@/config/sections";
 
 interface NavLinksProps {
   pathname: string;
@@ -26,41 +25,52 @@ function NavLinks({ pathname, onNavigate }: NavLinksProps) {
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            style={{ "--accent": item.accent } as CSSProperties}
+            aria-current={active ? "page" : undefined}
+            style={accentStyle(item.accent, item.accent2)}
             className={`
                 group
                 relative
                 flex
                 items-center
                 gap-3
+                overflow-hidden
                 rounded-2xl
-                px-3
-                py-2.5
+                border
+                px-2.5
+                py-2
                 transition-all
+                duration-300
                 ${
                   active
-                    ? "bg-[color-mix(in_oklab,var(--accent)_16%,transparent)] text-white"
-                    : "text-slate-400 hover:bg-white/5 hover:text-white"
+                    ? "border-white/15 bg-[linear-gradient(135deg,color-mix(in_oklab,var(--accent)_75%,transparent),color-mix(in_oklab,var(--accent-2)_45%,transparent))] text-white shadow-[0_10px_30px_-12px_var(--accent),inset_0_1px_0_rgb(255_255_255/0.2)]"
+                    : "border-transparent text-slate-400 hover:border-white/10 hover:bg-white/5 hover:text-white"
                 }
               `}
           >
-            {active && <span aria-hidden className="absolute top-2 bottom-2 left-0 w-1 rounded-full bg-(--accent)" />}
-
             <span
               className={`
                 flex
                 size-9
+                shrink-0
                 items-center
                 justify-center
                 rounded-xl
+                border
                 transition
-                ${active ? "bg-(--accent) text-white shadow-lg shadow-[color-mix(in_oklab,var(--accent)_40%,transparent)]" : "bg-slate-800/60 group-hover:text-(--accent)"}
+                duration-300
+                ${
+                  active
+                    ? "border-white/20 bg-white/20 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]"
+                    : "border-white/5 bg-white/5 group-hover:border-[color-mix(in_oklab,var(--accent)_40%,transparent)] group-hover:bg-[color-mix(in_oklab,var(--accent)_20%,transparent)] group-hover:text-(--accent)"
+                }
               `}
             >
               <Icon size={18} />
             </span>
 
             <span className="font-medium">{item.name}</span>
+
+            {active && <span aria-hidden className="ml-auto size-1.5 rounded-full bg-white shadow-[0_0_8px_white]" />}
           </Link>
         );
       })}
@@ -109,7 +119,10 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen flex-col border-r border-white/5 bg-slate-900 bg-[radial-gradient(circle_at_top_left,rgb(239_68_68/0.12),transparent_45%)] text-white min-[1200px]:flex">
+      <aside className="sticky top-0 isolate hidden h-screen flex-col overflow-hidden border-r border-white/10 bg-slate-900/70 text-white backdrop-blur-xl min-[1200px]:flex">
+        <div aria-hidden className="absolute -top-24 -left-20 -z-10 size-64 rounded-full bg-red-500 opacity-20 blur-3xl" />
+        <div aria-hidden className="absolute -bottom-24 -right-24 -z-10 size-64 rounded-full bg-orange-500 opacity-10 blur-3xl" />
+
         {/* Logo */}
         <div className="flex items-center gap-3 border-b border-white/5 px-6 py-5">{logo}</div>
 
@@ -122,7 +135,7 @@ export default function Navigation() {
 
         {/* Footer */}
         <div className="p-4">
-          <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-slate-800/40 px-4 py-3">
+          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md">
             <span className="relative flex size-2.5">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-60" />
               <span className="relative inline-flex size-2.5 rounded-full bg-red-500" />
@@ -138,7 +151,7 @@ export default function Navigation() {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="sticky top-0 z-30 border-b border-white/5 bg-slate-900/90 text-white backdrop-blur min-[1200px]:hidden">
+      <div className="sticky top-0 z-30 border-b border-white/10 bg-slate-900/70 text-white backdrop-blur-xl min-[1200px]:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           {logo}
 
@@ -147,7 +160,7 @@ export default function Navigation() {
             onClick={() => setMobileOpen((prev) => !prev)}
             aria-expanded={mobileOpen}
             aria-label={mobileOpen ? "Menü schließen" : "Menü öffnen"}
-            className="rounded-lg p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
+            className="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white"
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>

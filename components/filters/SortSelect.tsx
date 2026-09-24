@@ -10,7 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { pillTrigger } from "@/components/filters/filterStyles";
+import { glassPopover, pillTrigger } from "@/components/filters/filterStyles";
+import { useSectionThemeStyle } from "@/components/layout/SectionTheme";
 
 export interface SortOption<T extends string> {
   value: T;
@@ -24,6 +25,7 @@ interface SortSelectProps<T extends string> {
 }
 
 export default function SortSelect<T extends string>({ value, groups, onChange }: SortSelectProps<T>) {
+  const themeStyle = useSectionThemeStyle();
   const activeLabel = groups.flat().find((option) => option.value === value)?.label ?? "";
 
   return (
@@ -35,12 +37,12 @@ export default function SortSelect<T extends string>({ value, groups, onChange }
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="start" className="mt-2 w-56 border-slate-800 bg-slate-900 text-slate-200">
+      <DropdownMenuContent align="start" style={themeStyle} className={`mt-2 w-56 ${glassPopover}`}>
         <DropdownMenuLabel className="text-slate-500">Sortieren nach</DropdownMenuLabel>
 
         {groups.map((group, groupIndex) => (
           <div key={groupIndex}>
-            {groupIndex > 0 && <DropdownMenuSeparator className="bg-slate-800" />}
+            {groupIndex > 0 && <DropdownMenuSeparator className="bg-white/10" />}
 
             {group.map((option) => {
               const active = option.value === value;
@@ -49,10 +51,10 @@ export default function SortSelect<T extends string>({ value, groups, onChange }
                 <DropdownMenuItem
                   key={option.value}
                   onClick={() => onChange(option.value)}
-                  className="gap-2.5 py-1.5 text-slate-300 focus:bg-slate-800 focus:text-white text-sm md:text-[16px] data-[state=open]:bg-slate-800 data-[state=open]:text-white"
+                  className="gap-2.5 py-1.5 text-slate-300 focus:bg-white/10 focus:text-white text-sm md:text-[16px] data-[state=open]:bg-white/10 data-[state=open]:text-white"
                 >
                   <span className="flex size-3.5 shrink-0 items-center justify-center">
-                    {active && <span className="size-1.5 rounded-full bg-white" />}
+                    {active && <span className="size-2 rounded-full bg-(--accent,#ef4444) shadow-[0_0_8px_var(--accent,#ef4444)]" />}
                   </span>
                   {option.label}
                 </DropdownMenuItem>

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Cherry, Dna, Home, LucideIcon, Package, Search, Swords } from "lucide-react";
 
 export interface Section {
@@ -5,6 +6,7 @@ export interface Section {
   href: string;
   icon: LucideIcon;
   accent: string;
+  accent2: string;
   description?: string;
 }
 
@@ -14,12 +16,14 @@ export const sections = {
     href: "/",
     icon: Home,
     accent: "#ef4444",
+    accent2: "#f97316",
   },
   pokemon: {
     name: "Pokémon",
     href: "/pokemon",
     icon: Search,
     accent: "#ef4444",
+    accent2: "#f97316",
     description: "Alle Pokémon mit Typen, Werten, Attacken und Fähigkeiten.",
   },
   items: {
@@ -27,6 +31,7 @@ export const sections = {
     href: "/items",
     icon: Package,
     accent: "var(--color-pokemon-water)",
+    accent2: "#22d3ee",
     description: "Wähle eine Kategorie, um die enthaltenen Items zu sehen.",
   },
   berries: {
@@ -34,6 +39,7 @@ export const sections = {
     href: "/berries",
     icon: Cherry,
     accent: "var(--color-pokemon-grass)",
+    accent2: "#14b8a6",
     description: "Alle Beeren mit Beerenkräften und Wachstumszeit.",
   },
   moves: {
@@ -41,6 +47,7 @@ export const sections = {
     href: "/moves",
     icon: Swords,
     accent: "var(--color-pokemon-fire)",
+    accent2: "var(--color-pokemon-electric)",
     description: "Alle Attacken mit Stärke, Genauigkeit und AP.",
   },
   abilities: {
@@ -48,8 +55,13 @@ export const sections = {
     href: "/abilities",
     icon: Dna,
     accent: "var(--color-pokemon-psychic)",
+    accent2: "#a855f7",
     description: "Alle Fähigkeiten und die Pokémon, die sie besitzen können.",
   },
 } satisfies Record<string, Section>;
 
 export const navigationSections: Section[] = [sections.home, sections.pokemon, sections.items, sections.berries, sections.moves, sections.abilities];
+
+export function accentStyle(accent: string, accent2: string = accent) {
+  return { "--accent": accent, "--accent-2": accent2 } as CSSProperties;
+}

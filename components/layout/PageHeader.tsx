@@ -1,86 +1,106 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { ArrowLeft, LucideIcon } from "lucide-react";
 import Link from "next/link";
 
+import HeaderBackdrop from "@/components/layout/HeaderBackdrop";
 import { Section } from "@/config/sections";
 
 interface PageHeaderProps {
   section: Section;
-  title?: string;
+  eyebrow?: ReactNode;
+  title?: ReactNode;
   description?: string;
   icon?: LucideIcon;
-  accent?: string;
   count?: number;
   backLink?: { href: string; label: string };
   children?: ReactNode;
 }
 
+// Die Farben kommen aus --accent und --accent-2 der umgebenden SectionTheme.
 export default function PageHeader({
   section,
+  eyebrow,
   title = section.name,
   description = section.description,
   icon: Icon = section.icon,
-  accent = section.accent,
   count,
   backLink,
   children,
 }: PageHeaderProps) {
   return (
-    <div className="px-4 pt-6">
-      {backLink && (
-        <Link href={backLink.href} className="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-white">
-          <ArrowLeft size={16} />
-          {backLink.label}
-        </Link>
-      )}
+    <header className="relative isolate overflow-hidden md:-mx-6">
+      <HeaderBackdrop />
 
-      <header
-        style={{ "--accent": accent } as CSSProperties}
-        className="
-          relative
-          isolate
-          overflow-hidden
-          rounded-3xl
-          border
-          border-white/5
-          bg-slate-900
-          bg-[radial-gradient(circle_at_top_right,color-mix(in_oklab,var(--accent)_28%,transparent),transparent_60%)]
-          p-5
-          shadow-lg
-          md:p-7
-        "
-      >
-        {/* Icon als Wasserzeichen */}
-        <Icon
-          aria-hidden
-          strokeWidth={1.5}
-          className="pointer-events-none absolute -right-6 -bottom-8 -z-10 size-36 text-white/5 md:size-44"
-        />
+      {/* Icon als Wasserzeichen */}
+      <Icon aria-hidden strokeWidth={1.25} className="pointer-events-none absolute -top-6 right-2 -z-10 size-44 text-white/10 mask-[linear-gradient(to_bottom,black_30%,transparent_90%)] md:right-10 md:size-60" />
 
-        <div className="flex items-center gap-4">
-          <div className="shrink-0 rounded-2xl bg-[color-mix(in_oklab,var(--accent)_18%,transparent)] p-3 text-(--accent)">
-            <Icon className="size-6 md:size-7" />
+      <div className="px-4 pt-6 pb-8 md:px-10 md:pt-10 md:pb-12">
+        {backLink && (
+          <Link
+            href={backLink.href}
+            className="
+              mb-6
+              inline-flex
+              items-center
+              gap-1.5
+              rounded-full
+              border
+              border-white/10
+              bg-white/10
+              px-3
+              py-1.5
+              text-sm
+              text-white/80
+              backdrop-blur-md
+              transition
+              hover:bg-white/20
+              hover:text-white
+            "
+          >
+            <ArrowLeft size={16} />
+            {backLink.label}
+          </Link>
+        )}
+
+        <div className="flex items-center gap-4 md:gap-6">
+          <div
+            className="
+              flex
+              size-14
+              shrink-0
+              items-center
+              justify-center
+              rounded-2xl
+              border
+              border-white/20
+              bg-[linear-gradient(135deg,var(--accent),var(--accent-2,var(--accent)))]
+              text-white
+              shadow-[0_10px_30px_-8px_var(--accent),inset_0_1px_0_rgb(255_255_255/0.3)]
+              md:size-18
+            "
+          >
+            <Icon className="size-7 md:size-9" />
           </div>
 
           <div className="min-w-0">
+            {eyebrow}
+
             <div className="flex items-center gap-3">
-              <h1 className="truncate text-2xl font-bold text-white md:text-4xl">{title}</h1>
+              <h1 className="text-3xl font-bold text-balance text-white md:text-5xl">{title}</h1>
 
               {count != null && (
-                <span className="rounded-full bg-[color-mix(in_oklab,var(--accent)_18%,transparent)] px-2.5 py-0.5 text-xs font-semibold text-(--accent)">
+                <span className="rounded-full border border-white/15 bg-white/10 px-3 py-0.5 text-sm font-semibold text-white backdrop-blur-md">
                   {count.toLocaleString("de-DE")}
                 </span>
               )}
             </div>
 
-            {description && <p className="mt-1 text-sm text-slate-400 md:text-base">{description}</p>}
+            {description && <p className="mt-1.5 text-sm text-white/70 md:text-lg">{description}</p>}
           </div>
         </div>
 
         {children}
-
-        <div aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-(--accent) opacity-70" />
-      </header>
-    </div>
+      </div>
+    </header>
   );
 }

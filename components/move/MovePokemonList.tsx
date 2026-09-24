@@ -31,9 +31,9 @@ export default function MovePokemonList({ state }: MovePokemonListProps) {
           <Link
             key={learner.id}
             href={`/pokemon/${learner.id}`}
-            className="flex items-center gap-3 rounded-2xl border border-white/5 bg-slate-800/40 p-2.5 transition hover:border-[color-mix(in_oklab,var(--accent)_45%,transparent)] hover:bg-slate-800/70"
+            className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-2.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.1)] transition hover:border-white/25 hover:bg-white/20"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_oklab,var(--accent)_15%,transparent)]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/20">
               <ItemImage src={learner.image} alt={learner.name} size={36} />
             </div>
 

@@ -1,12 +1,13 @@
-import type { CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { accentCard, accentGradient, accentIconBox } from "@/components/layout/cardStyles";
+import { glassCard, glassChip, glassIconBox, glassPanel } from "@/components/layout/cardStyles";
+import GlassBlobs from "@/components/layout/GlassBlobs";
 import PageHeader from "@/components/layout/PageHeader";
+import SectionTheme from "@/components/layout/SectionTheme";
 import { getItemGroupStyle } from "@/config/itemCategories";
-import { sections } from "@/config/sections";
+import { accentStyle, sections } from "@/config/sections";
 import { getItemGroupOverview } from "@/server/item/item.service";
 
 export const dynamic = "force-dynamic";
@@ -21,56 +22,58 @@ export default async function ItemsPage() {
   const groups = await getItemGroupOverview();
 
   return (
-    <div>
+    <SectionTheme accent={sections.items.accent} accent2={sections.items.accent2}>
       <PageHeader section={sections.items} />
 
       <div className="grid gap-4 px-4 py-6 sm:grid-cols-2 md:gap-6 xl:grid-cols-3">
         {groups.map((group) => {
-          const { icon: Icon, accent } = getItemGroupStyle(group.slug);
+          const { icon: Icon, accent, accent2 } = getItemGroupStyle(group.slug);
 
           return (
             <Link
               key={group.slug}
               href={`/items/${group.slug}`}
-              style={{ "--accent": accent } as CSSProperties}
-              className={`${accentCard} ${accentGradient} p-5 hover:-translate-y-1 md:p-6`}
+              style={accentStyle(accent, accent2)}
+              className={`${glassCard} flex flex-col gap-3 p-3 hover:-translate-y-1`}
             >
+              <GlassBlobs />
+
               {/* Icon als Wasserzeichen */}
               <Icon
                 aria-hidden
-                strokeWidth={1.5}
-                className="pointer-events-none absolute -right-4 -bottom-4 -z-10 size-28 text-white/5 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
+                strokeWidth={1.25}
+                className="pointer-events-none absolute -top-4 -right-4 -z-10 size-32 text-white/10 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
               />
 
-              <div className="flex items-start justify-between gap-2">
-                <div className={`${accentIconBox} p-3`}>
+              <div className="flex items-center justify-between gap-2 px-1 pt-1">
+                <div className={`${glassIconBox} p-3`}>
                   <Icon size={26} />
                 </div>
 
-                <ArrowRight size={18} className="text-slate-600 transition-all duration-300 group-hover:translate-x-1 group-hover:text-(--accent)" />
+                <ArrowRight size={20} className="text-white/60 transition-all duration-300 group-hover:translate-x-1 group-hover:text-white" />
               </div>
 
-              <div className="mt-5 flex items-baseline justify-between gap-3">
-                <h2 className="text-xl font-bold text-white">{group.name}</h2>
+              <div className={`${glassPanel} flex-1 p-4`}>
+                <div className="flex items-baseline justify-between gap-3">
+                  <h2 className="min-w-0 text-xl font-bold text-white">{group.name}</h2>
 
-                <span className="text-2xl font-bold text-white">{group.itemCount.toLocaleString("de-DE")}</span>
+                  <span className="shrink-0 text-2xl font-bold text-white">{group.itemCount.toLocaleString("de-DE")}</span>
+                </div>
+
+                <p className="mt-1 text-sm text-white/70">{group.categoryCount === 1 ? "1 Kategorie" : `${group.categoryCount} Kategorien`}</p>
+
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {group.categories.map((category) => (
+                    <span key={category.slug} className={`${glassChip} py-0.5`}>
+                      {category.name}
+                    </span>
+                  ))}
+                </div>
               </div>
-
-              <p className="mt-1 text-sm text-slate-400">{group.categoryCount === 1 ? "1 Kategorie" : `${group.categoryCount} Kategorien`}</p>
-
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {group.categories.map((category) => (
-                  <span key={category.slug} className="rounded-full bg-slate-800/80 px-2 py-0.5 text-xs text-slate-400">
-                    {category.name}
-                  </span>
-                ))}
-              </div>
-
-              <div aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-(--accent) opacity-70" />
             </Link>
           );
         })}
       </div>
-    </div>
+    </SectionTheme>
   );
 }

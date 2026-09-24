@@ -1,9 +1,8 @@
 "use client";
 
-import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import ItemCard from "@/components/item/ItemCard";
-import { getItemGroupStyle } from "@/config/itemCategories";
 import { ItemSort, MappedItem } from "@/server/item/item.service";
 
 const LIMIT = 60;
@@ -126,7 +125,7 @@ export default function ItemExplorer({
   }
 
   return (
-    <div style={{ "--accent": getItemGroupStyle(groupSlug).accent } as CSSProperties} className="space-y-10 px-4 py-6">
+    <div className="space-y-10 px-4 py-6">
       {groups.map((group) => (
         <section key={group.category}>
           {!hideHeader && (

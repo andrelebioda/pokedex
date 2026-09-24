@@ -30,32 +30,6 @@ export function getPokemonTypeIconPath(type: string) {
   return `/${type.toLowerCase()}.svg`;
 }
 
-// Gleiche Werte wie --color-pokemon-* in globals.css, für Stellen ohne CSS-Variablen (z. B. Chart.js)
-export const pokemonTypeHexColors: Record<keyof typeof pokemonTypeClasses, string> = {
-  normal: "#a8a77a",
-  fire: "#e8612c",
-  water: "#6390f0",
-  electric: "#f7d02c",
-  grass: "#7ac74c",
-  ice: "#96d9d6",
-  fighting: "#a8533a",
-  poison: "#a33ea1",
-  ground: "#e2bf65",
-  flying: "#a98ff3",
-  psychic: "#f95587",
-  bug: "#a6b91a",
-  rock: "#b6a136",
-  ghost: "#735797",
-  dragon: "#6f35fc",
-  dark: "#705746",
-  steel: "#b7b7ce",
-  fairy: "#d685ad",
-};
-
-export function getPokemonTypeHexColor(type?: string) {
-  return pokemonTypeHexColors[type?.toLowerCase() as keyof typeof pokemonTypeHexColors] ?? "#ef4444";
-}
-
 export function getPokemonTypeColorVar(type?: string) {
   if (!type || !(type.toLowerCase() in pokemonTypeClasses)) {
     return "#64748b";

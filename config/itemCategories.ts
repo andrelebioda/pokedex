@@ -126,19 +126,19 @@ export function formatItemCategoryLabel(slug: string) {
     .join(" ");
 }
 
-const itemGroupStyles: Record<string, { icon: LucideIcon; accent: string }> = {
-  balls: { icon: CircleDot, accent: "#ef4444" },
-  healing: { icon: HeartPulse, accent: "var(--color-pokemon-grass)" },
-  training: { icon: Dumbbell, accent: "var(--color-pokemon-fighting)" },
-  "battle-items": { icon: Swords, accent: "var(--color-pokemon-fire)" },
-  evolution: { icon: Sparkles, accent: "var(--color-pokemon-fairy)" },
-  flutes: { icon: Music, accent: "var(--color-pokemon-ice)" },
-  "held-items": { icon: Backpack, accent: "var(--color-pokemon-water)" },
-  picnic: { icon: UtensilsCrossed, accent: "var(--color-pokemon-ground)" },
-  collectibles: { icon: Trophy, accent: "var(--color-pokemon-electric)" },
-  other: { icon: Boxes, accent: "var(--color-pokemon-steel)" },
+const itemGroupStyles: Record<string, { icon: LucideIcon; accent: string; accent2: string }> = {
+  balls: { icon: CircleDot, accent: "#ef4444", accent2: "#f97316" },
+  healing: { icon: HeartPulse, accent: "var(--color-pokemon-grass)", accent2: "#14b8a6" },
+  training: { icon: Dumbbell, accent: "var(--color-pokemon-fighting)", accent2: "var(--color-pokemon-fire)" },
+  "battle-items": { icon: Swords, accent: "var(--color-pokemon-fire)", accent2: "var(--color-pokemon-electric)" },
+  evolution: { icon: Sparkles, accent: "var(--color-pokemon-fairy)", accent2: "#a855f7" },
+  flutes: { icon: Music, accent: "var(--color-pokemon-ice)", accent2: "var(--color-pokemon-water)" },
+  "held-items": { icon: Backpack, accent: "var(--color-pokemon-water)", accent2: "#22d3ee" },
+  picnic: { icon: UtensilsCrossed, accent: "var(--color-pokemon-ground)", accent2: "var(--color-pokemon-fire)" },
+  collectibles: { icon: Trophy, accent: "var(--color-pokemon-electric)", accent2: "var(--color-pokemon-ground)" },
+  other: { icon: Boxes, accent: "var(--color-pokemon-steel)", accent2: "#64748b" },
 };
 
 export function getItemGroupStyle(slug: string) {
-  return itemGroupStyles[slug] ?? { icon: CircleDot, accent: "var(--color-pokemon-water)" };
+  return itemGroupStyles[slug] ?? { icon: CircleDot, accent: "var(--color-pokemon-water)", accent2: "#22d3ee" };
 }

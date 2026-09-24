@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import PageHeader from "@/components/layout/PageHeader";
+import SectionTheme from "@/components/layout/SectionTheme";
 import StickyBar from "@/components/layout/StickyBar";
 import { sections } from "@/config/sections";
 import PokemonFilters from "@/components/pokemon/PokemonFilters";
@@ -43,7 +44,7 @@ export default async function PokemonPage({ searchParams }: PokemonPageProps) {
   ]);
 
   return (
-    <div>
+    <SectionTheme accent={sections.pokemon.accent} accent2={sections.pokemon.accent2}>
       <PageHeader section={sections.pokemon} />
 
       <StickyBar>
@@ -60,6 +61,6 @@ export default async function PokemonPage({ searchParams }: PokemonPageProps) {
           sort={sort}
         />
       </section>
-    </div>
+    </SectionTheme>
   );
 }
