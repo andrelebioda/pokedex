@@ -1,61 +1,36 @@
 import { prisma } from "@/server/db/prisma";
+import { findByLanguage, fetchJson, PokeApiList, POKEAPI_BASE } from "@/scripts/lib/pokeapi";
 
-const API = "https://pokeapi.co/api/v2";
-
-async function fetchJson(url: string) {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(url);
-  }
-
-  return response.json();
+interface PokeApiType {
+  id: number;
+  name: string;
+  names: { language: { name: string }; name: string }[];
 }
 
 async function syncTypes() {
-  const data = await fetchJson(`${API}/type`);
+  const data = await fetchJson<PokeApiList>(`${POKEAPI_BASE}/type`);
 
-  for (const type of data.results) {
-    const detail = await fetchJson(type.url);
+  for (const entry of data.results) {
+    const detail = await fetchJson<PokeApiType>(entry.url);
 
-    const germanName = detail.names.find((n: any) => n.language.name === "de")?.name ?? detail.name;
+    const germanName = findByLanguage(detail.names, "de")?.name ?? detail.name;
 
     await prisma.type.upsert({
-      where: {
-        id: detail.id,
-      },
-
-      update: {
-        apiName: detail.name,
-      },
-
-      create: {
-        id: detail.id,
-        apiName: detail.name,
-      },
+      where: { id: detail.id },
+      update: { apiName: detail.name },
+      create: { id: detail.id, apiName: detail.name },
     });
 
     await prisma.typeTranslation.upsert({
-      where: {
-        typeId_language: {
-          typeId: detail.id,
-          language: "de",
-        },
-      },
-
-      update: {
-        name: germanName,
-      },
-
-      create: {
-        typeId: detail.id,
-        language: "de",
-        name: germanName,
-      },
+      where: { typeId_language: { typeId: detail.id, language: "de" } },
+      update: { name: germanName },
+      create: { typeId: detail.id, language: "de", name: germanName },
     });
 
     console.log(`✅ ${germanName}`);
   }
 }
 
-syncTypes().finally(() => prisma.$disconnect());
+syncTypes()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());

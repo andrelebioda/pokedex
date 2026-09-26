@@ -1,82 +1,48 @@
 import { prisma } from "@/server/db/prisma";
+import { fetchJson, POKEAPI_BASE, runForEachPokemon } from "@/scripts/lib/pokeapi";
 
-const API = "https://pokeapi.co/api/v2";
-
-async function fetchJson(url: string) {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(url);
-  }
-
-  return response.json();
+interface PokeApiPokemon {
+  name: string;
+  stats: { stat: { name: string }; base_stat: number }[];
 }
 
+interface StatValues {
+  hp: number;
+  attack: number;
+  defense: number;
+  specialAttack: number;
+  specialDefense: number;
+  speed: number;
+}
+
+const STAT_KEY_BY_API_NAME: Record<string, keyof StatValues> = {
+  hp: "hp",
+  attack: "attack",
+  defense: "defense",
+  "special-attack": "specialAttack",
+  "special-defense": "specialDefense",
+  speed: "speed",
+};
+
 async function syncStats(id: number) {
-  const pokemon = await fetchJson(`${API}/pokemon/${id}`);
+  const pokemon = await fetchJson<PokeApiPokemon>(`${POKEAPI_BASE}/pokemon/${id}`);
 
-  const stats = pokemon.stats;
+  const values: StatValues = { hp: 0, attack: 0, defense: 0, specialAttack: 0, specialDefense: 0, speed: 0 };
 
-  const values: any = {};
-
-  for (const stat of stats) {
-    switch (stat.stat.name) {
-      case "hp":
-        values.hp = stat.base_stat;
-        break;
-
-      case "attack":
-        values.attack = stat.base_stat;
-        break;
-
-      case "defense":
-        values.defense = stat.base_stat;
-        break;
-
-      case "special-attack":
-        values.specialAttack = stat.base_stat;
-        break;
-
-      case "special-defense":
-        values.specialDefense = stat.base_stat;
-        break;
-
-      case "speed":
-        values.speed = stat.base_stat;
-        break;
-    }
+  for (const stat of pokemon.stats) {
+    const key = STAT_KEY_BY_API_NAME[stat.stat.name];
+    if (key) values[key] = stat.base_stat;
   }
 
   await prisma.pokemonStats.upsert({
-    where: {
-      pokemonId: id,
-    },
-
+    where: { pokemonId: id },
     update: values,
-
-    create: {
-      pokemonId: id,
-      ...values,
-    },
+    create: { pokemonId: id, ...values },
   });
 
   console.log(`✅ Stats synced ${pokemon.name}`);
 }
 
-async function main() {
-  const pokemon = await prisma.pokemon.findMany({
-    select: {
-      id: true,
-    },
-  });
-
-  for (const p of pokemon) {
-    try {
-      await syncStats(p.id);
-    } catch (error) {
-      console.error(`❌ Fehler bei ${p.id}`, error);
-    }
-  }
-}
-
-main().finally(() => prisma.$disconnect());
+runForEachPokemon(syncStats)
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());
