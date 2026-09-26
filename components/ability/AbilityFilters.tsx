@@ -87,8 +87,6 @@ export default function AbilityFilters({ search, selectedHidden, sort }: Ability
     setPendingHidden((prev) => (prev.includes(option) ? prev.filter((entry) => entry !== option) : [...prev, option]));
   }
 
-  const hasActiveFilters = search.length > 0 || selectedHidden.length > 0 || sort !== "name-asc";
-
   return (
     <div className="flex gap-3 flex-row items-center justify-between">
       <div className="flex items-center gap-2.5">

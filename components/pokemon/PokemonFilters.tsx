@@ -7,7 +7,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import FilterCheckboxGroup from "@/components/filters/FilterCheckboxGroup";
 import FilterModal from "@/components/filters/FilterModal";
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
-import ResetFiltersButton from "@/components/filters/ResetFiltersButton";
 import SortSelect from "@/components/filters/SortSelect";
 import { PokemonSort } from "@/server/pokemon/pokemon.service";
 
@@ -113,7 +112,6 @@ export default function PokemonFilters({ types, search, selectedTypes, selectedG
     setPendingGenerations((prev) => (prev.includes(generation) ? prev.filter((entry) => entry !== generation) : [...prev, generation]));
   }
 
-  const hasActiveFilters = search.length > 0 || selectedTypes.length > 0 || selectedGenerations.length > 0 || sort !== "number-asc";
   const activeFilterCount = selectedTypes.length + selectedGenerations.length;
 
   const sortedTypes = types.filter((option) => option.name !== "???").sort((a, b) => a.name.localeCompare(b.name));

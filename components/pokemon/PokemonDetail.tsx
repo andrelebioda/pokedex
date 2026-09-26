@@ -1,11 +1,11 @@
 "use client";
 
 import { ArrowLeft, Dna, Ruler, Tag, Weight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import AbilityGrid from "@/components/ability/AbilityGrid";
-import FilterSearchInput from "@/components/filters/FilterSearchInput";
 import { glassCard, glassPanel } from "@/components/layout/cardStyles";
 import GlassBlobs from "@/components/layout/GlassBlobs";
 import HeaderBackdrop from "@/components/layout/HeaderBackdrop";
@@ -276,7 +276,13 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
                     ${getPokemonTypeClass(type.slug)}
                   `}
                 >
-                  <img src={getPokemonTypeIconPath(type.slug)} alt="" className="size-7 rounded-full ring-2 ring-white/40" />
+                  <Image
+                    src={getPokemonTypeIconPath(type.slug)}
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="size-7 rounded-full ring-2 ring-white/40"
+                  />
                   {type.name}
                 </span>
               ))}

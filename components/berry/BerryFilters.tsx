@@ -6,7 +6,6 @@ import { useCallback, useEffect, useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import FilterCheckboxGroup from "@/components/filters/FilterCheckboxGroup";
 import FilterModal from "@/components/filters/FilterModal";
-import FilterRangeInput from "@/components/filters/FilterRangeInput";
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
 import SortSelect from "@/components/filters/SortSelect";
 import { TypeOption } from "@/components/pokemon/PokemonFilters";
