@@ -1,11 +1,56 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { LogOut, Menu, User, X } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { accentStyle, navigationSections } from "@/config/sections";
+
+function AccountStatus() {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <div className="h-[60px] animate-pulse rounded-2xl border border-white/10 bg-white/5" />;
+  }
+
+  if (!session) {
+    return (
+      <Link
+        href="/login"
+        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md transition hover:bg-white/10"
+      >
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10">
+          <User size={16} />
+        </span>
+
+        <p className="text-sm font-semibold">Anmelden</p>
+      </Link>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10 text-sm font-semibold uppercase">
+        {(session.user?.name ?? session.user?.email ?? "?").charAt(0)}
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold">{session.user?.name ?? session.user?.email}</p>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => signOut({ callbackUrl: "/" })}
+        aria-label="Abmelden"
+        className="shrink-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-white/10 hover:text-white"
+      >
+        <LogOut size={16} />
+      </button>
+    </div>
+  );
+}
 
 interface NavLinksProps {
   pathname: string;
@@ -143,7 +188,9 @@ export default function Navigation() {
         </nav>
 
         {/* Footer */}
-        <div className="p-4">
+        <div className="flex flex-col gap-3 p-4">
+          <AccountStatus />
+
           <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md">
             <span className="relative flex size-2.5">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-60" />
@@ -181,6 +228,10 @@ export default function Navigation() {
             <div aria-hidden className="absolute -bottom-24 -right-24 -z-10 size-64 rounded-full bg-orange-500 opacity-10 blur-3xl" />
 
             <NavLinks pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+
+            <div className="mt-4">
+              <AccountStatus />
+            </div>
           </nav>
         )}
       </div>
