@@ -1,4 +1,5 @@
 import { Users } from "lucide-react";
+import Image from "next/image";
 
 import { glassButton, glassCard, glassChip, glassPanel } from "@/components/layout/cardStyles";
 import GlassBlobs from "@/components/layout/GlassBlobs";
@@ -29,7 +30,13 @@ export default function MoveCard({ move, showLearnMethod = false, showPokemonInf
       <GlassBlobs />
 
       <div className="flex items-center gap-3 px-1 pt-1">
-        <img src={getPokemonTypeIconPath(move.typeSlug)} alt="" className="size-10 shrink-0 rounded-full shadow-lg ring-2 ring-white/40" />
+        <Image
+          src={getPokemonTypeIconPath(move.typeSlug)}
+          alt=""
+          width={40}
+          height={40}
+          className="size-10 shrink-0 rounded-full shadow-lg ring-2 ring-white/40"
+        />
 
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-lg font-bold text-white">{move.nameDe}</h3>

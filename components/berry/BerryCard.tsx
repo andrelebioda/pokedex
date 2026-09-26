@@ -1,4 +1,5 @@
 import { Timer } from "lucide-react";
+import Image from "next/image";
 
 import ItemImage from "@/components/item/ItemImage";
 import { glassCard, glassChip, glassPanel } from "@/components/layout/cardStyles";
@@ -38,7 +39,13 @@ export default function BerryCard({ berry }: BerryCardProps) {
               title="Beerenkräfte"
               className={`inline-flex h-7 items-center gap-1.5 rounded-full py-1 pr-3 pl-1 text-xs font-semibold text-white ring-1 ring-white/20 ${getPokemonTypeClass(berry.naturalGiftType)}`}
             >
-              <img src={getPokemonTypeIconPath(berry.naturalGiftType)} alt="" className="size-5 rounded-full ring-2 ring-white/40" />
+              <Image
+                src={getPokemonTypeIconPath(berry.naturalGiftType)}
+                alt=""
+                width={20}
+                height={20}
+                className="size-5 rounded-full ring-2 ring-white/40"
+              />
               {berry.naturalGiftTypeName} · {berry.naturalGiftPower}
             </span>
           )}

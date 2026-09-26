@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { glassCard, glassPanel } from "@/components/layout/cardStyles";
@@ -125,7 +126,13 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
                   ${getPokemonTypeClass(type.slug)}
                 `}
               >
-                <img src={getPokemonTypeIconPath(type.slug)} alt="" className="md:mr-1 size-5 shrink-0 rounded-full ring-2 ring-white/40" />
+                <Image
+                  src={getPokemonTypeIconPath(type.slug)}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="md:mr-1 size-5 shrink-0 rounded-full ring-2 ring-white/40"
+                />
                 <span className="truncate">{type.name}</span>
               </span>
             ))}
