@@ -1,14 +1,15 @@
+// Next.js: Typ für die Seiten-<head>-Metadaten
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+// Ausgelagerter Props-Typ dieser Seite (nur die dynamische Route-ID)
+import { PokemonDetailPageProps } from "@/app/pokemon/[id]/page.constants";
+// Tabs (Stats/Attacken/Fähigkeiten), lädt Attacken bei Bedarf per Server Action nach
 import PokemonDetail from "@/components/pokemon/PokemonDetail";
+// Lädt das einzelne Pokémon sowie die erste Seite seiner Attacken serverseitig
 import { getMovesForPokemon, getSinglePokemon } from "@/server/pokemon/pokemon.service";
 
 export const dynamic = "force-dynamic";
-
-interface PokemonDetailPageProps {
-  params: Promise<{ id: string }>;
-}
 
 export async function generateMetadata({ params }: PokemonDetailPageProps): Promise<Metadata> {
   const { id } = await params;

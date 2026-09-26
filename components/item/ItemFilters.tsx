@@ -1,29 +1,24 @@
 "use client";
 
+// Next.js: aktuelle Route lesen und URL-Query beim Filtern aktualisieren
 import { usePathname, useRouter } from "next/navigation";
+// React: Filter-State, Debounce-Effekt, stabile Callback-Referenz
 import { useCallback, useEffect, useState } from "react";
 
+// Aufklappbare Filter-Gruppe im Modal (Kategorien)
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+// Checkbox-Raster für die Kategorie-Optionen
 import FilterCheckboxGroup from "@/components/filters/FilterCheckboxGroup";
+// Modal-Hülle (Trigger-Button, Anwenden/Zurücksetzen) für alle Filter zusammen
 import FilterModal from "@/components/filters/FilterModal";
+// Freitext-Suchfeld mit Lösch-Icon
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
+// Separater Button, der Suche + alle Filter auf einmal zurücksetzt
 import ResetFiltersButton from "@/components/filters/ResetFiltersButton";
+// Sortier-Dropdown (Radio-Gruppen mit Trennlinien)
 import SortSelect from "@/components/filters/SortSelect";
-import { ItemCategoryOption, ItemSort } from "@/server/item/item.service";
-
-const SORT_GROUPS: { value: ItemSort; label: string }[][] = [
-  [
-    { value: "name-asc", label: "Name (A-Z)" },
-    { value: "name-desc", label: "Name (Z-A)" },
-  ],
-];
-
-interface ItemFiltersProps {
-  categories: ItemCategoryOption[];
-  search: string;
-  selectedCategories: string[];
-  sort: ItemSort;
-}
+// Ausgelagerte Sortier-Optionen und Props-Typ dieser Komponente
+import { ItemFiltersProps, SORT_GROUPS } from "@/components/item/ItemFilters.constants";
 
 export default function ItemFilters({ categories, search, selectedCategories, sort }: ItemFiltersProps) {
   const router = useRouter();
@@ -41,7 +36,7 @@ export default function ItemFilters({ categories, search, selectedCategories, so
   const [pendingCategories, setPendingCategories] = useState(selectedCategories);
 
   const updateFilters = useCallback(
-    (next: { search?: string; categories?: string[]; sort?: ItemSort }) => {
+    (next: { search?: string; categories?: string[]; sort?: ItemFiltersProps["sort"] }) => {
       const nextSearch = next.search ?? search;
       const nextCategories = next.categories ?? selectedCategories;
       const nextSort = next.sort ?? sort;

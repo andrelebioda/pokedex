@@ -1,54 +1,22 @@
 "use client";
 
+// Next.js: aktuelle Route lesen und URL-Query beim Filtern aktualisieren
 import { usePathname, useRouter } from "next/navigation";
+// React: Filter-State, Debounce-Effekt, stabile Callback-Referenz
 import { useCallback, useEffect, useState } from "react";
 
+// Aufklappbare Filter-Gruppen im Modal (Generationen, Typen)
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+// Checkbox-Raster für die Optionen innerhalb einer Accordion-Sektion
 import FilterCheckboxGroup from "@/components/filters/FilterCheckboxGroup";
+// Modal-Hülle (Trigger-Button, Anwenden/Zurücksetzen) für alle Filter zusammen
 import FilterModal from "@/components/filters/FilterModal";
+// Freitext-Suchfeld mit Lösch-Icon
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
+// Sortier-Dropdown (Radio-Gruppen mit Trennlinien)
 import SortSelect from "@/components/filters/SortSelect";
-import { PokemonSort } from "@/server/pokemon/pokemon.service";
-
-export interface TypeOption {
-  slug: string;
-  name: string;
-}
-
-const SORT_GROUPS: { value: PokemonSort; label: string }[][] = [
-  [
-    { value: "number-asc", label: "Nummer (↑)" },
-    { value: "number-desc", label: "Nummer (↓)" },
-  ],
-  [
-    { value: "name-asc", label: "Name (A-Z)" },
-    { value: "name-desc", label: "Name (Z-A)" },
-  ],
-  [
-    { value: "type-asc", label: "Typ (A-Z)" },
-    { value: "type-desc", label: "Typ (Z-A)" },
-  ],
-];
-
-const GENERATION_OPTIONS = [
-  { value: "1", label: "Gen. 1" },
-  { value: "2", label: "Gen. 2" },
-  { value: "3", label: "Gen. 3" },
-  { value: "4", label: "Gen. 4" },
-  { value: "5", label: "Gen. 5" },
-  { value: "6", label: "Gen. 6" },
-  { value: "7", label: "Gen. 7" },
-  { value: "8", label: "Gen. 8" },
-  { value: "9", label: "Gen. 9" },
-];
-
-interface PokemonFiltersProps {
-  types: TypeOption[];
-  search: string;
-  selectedTypes: string[];
-  selectedGenerations: number[];
-  sort: PokemonSort;
-}
+// Ausgelagerte Sortier-/Generationen-Optionen und Props-Typ dieser Komponente
+import { GENERATION_OPTIONS, PokemonFiltersProps, SORT_GROUPS } from "@/components/pokemon/PokemonFilters.constants";
 
 export default function PokemonFilters({ types, search, selectedTypes, selectedGenerations, sort }: PokemonFiltersProps) {
   const router = useRouter();
@@ -67,7 +35,7 @@ export default function PokemonFilters({ types, search, selectedTypes, selectedG
   const [pendingGenerations, setPendingGenerations] = useState(selectedGenerations);
 
   const updateFilters = useCallback(
-    (next: { search?: string; types?: string[]; generations?: number[]; sort?: PokemonSort }) => {
+    (next: { search?: string; types?: string[]; generations?: number[]; sort?: PokemonFiltersProps["sort"] }) => {
       const nextSearch = next.search ?? search;
       const nextTypes = next.types ?? selectedTypes;
       const nextGenerations = next.generations ?? selectedGenerations;

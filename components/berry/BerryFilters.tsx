@@ -1,39 +1,22 @@
 "use client";
 
+// Next.js: aktuelle Route lesen und URL-Query beim Filtern aktualisieren
 import { usePathname, useRouter } from "next/navigation";
+// React: Filter-State, Debounce-Effekt, stabile Callback-Referenz
 import { useCallback, useEffect, useState } from "react";
 
+// Aufklappbare Filter-Gruppe im Modal (Typen; Stärke aktuell pausiert, siehe unten)
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+// Checkbox-Raster für die Typ-Optionen
 import FilterCheckboxGroup from "@/components/filters/FilterCheckboxGroup";
+// Modal-Hülle (Trigger-Button, Anwenden/Zurücksetzen) für alle Filter zusammen
 import FilterModal from "@/components/filters/FilterModal";
+// Freitext-Suchfeld mit Lösch-Icon
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
+// Sortier-Dropdown (Radio-Gruppen mit Trennlinien)
 import SortSelect from "@/components/filters/SortSelect";
-import { TypeOption } from "@/components/pokemon/PokemonFilters";
-import { BerrySort } from "@/server/berry/berry.service";
-
-const SORT_GROUPS: { value: BerrySort; label: string }[][] = [
-  [
-    { value: "name-asc", label: "Name (A-Z)" },
-    { value: "name-desc", label: "Name (Z-A)" },
-  ],
-  [
-    { value: "growth-asc", label: "Wachstum (↑)" },
-    { value: "growth-desc", label: "Wachstum (↓)" },
-  ],
-  [
-    { value: "power-asc", label: "Stärke (↑)" },
-    { value: "power-desc", label: "Stärke (↓)" },
-  ],
-];
-
-interface BerryFiltersProps {
-  types: TypeOption[];
-  search: string;
-  selectedTypes: string[];
-  sort: BerrySort;
-  minPower?: number;
-  maxPower?: number;
-}
+// Ausgelagerte Sortier-Optionen und Props-Typ dieser Komponente
+import { BerryFiltersProps, SORT_GROUPS } from "@/components/berry/BerryFilters.constants";
 
 export default function BerryFilters({ types, search, selectedTypes, sort, minPower, maxPower }: BerryFiltersProps) {
   const router = useRouter();
@@ -53,7 +36,13 @@ export default function BerryFilters({ types, search, selectedTypes, sort, minPo
   const [pendingMaxPower, setPendingMaxPower] = useState(maxPower);
 
   const updateFilters = useCallback(
-    (next: { search?: string; types?: string[]; sort?: BerrySort; minPower?: number | null; maxPower?: number | null }) => {
+    (next: {
+      search?: string;
+      types?: string[];
+      sort?: BerryFiltersProps["sort"];
+      minPower?: number | null;
+      maxPower?: number | null;
+    }) => {
       const nextSearch = next.search ?? search;
       const nextTypes = next.types ?? selectedTypes;
       const nextSort = next.sort ?? sort;

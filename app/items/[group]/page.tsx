@@ -1,24 +1,27 @@
+// Next.js: Typ für die Seiten-<head>-Metadaten
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+// Infinite-Scroll-Grid der Items dieser Kategorie-Gruppe (gruppiert nach Kategorie)
 import ItemExplorer from "@/components/item/ItemExplorer";
+// Filter-Leiste (Kategorien-Modal, Sortierung, Suche)
 import ItemFilters from "@/components/item/ItemFilters";
+// Vollbreiter Gradient-Header mit Icon der aktuellen Sektion
 import PageHeader from "@/components/layout/PageHeader";
+// setzt --accent/--accent-2 (Farbverlauf) für diese Seite und ihre Portale (Filter-Modal, Dropdowns)
 import SectionTheme from "@/components/layout/SectionTheme";
+// Sticky Filterleiste unter dem Header
 import StickyBar from "@/components/layout/StickyBar";
+// Ausgelagerte Seitengröße, Sortier-Whitelist und Props-Typ dieser Seite
+import { ItemGroupPageProps, LIMIT, VALID_SORTS } from "@/app/items/[group]/page.constants";
+// Gruppen-Definition (welche Kategorien gehören zusammen) + Icon/Akzentfarbe je Gruppe
 import { getItemCategoryGroupBySlug, getItemGroupStyle } from "@/config/itemCategories";
+// Name/Icon/Farben der übergeordneten "Items"-Sektion für den Header
 import { sections } from "@/config/sections";
+// Lädt Kategorie-Optionen für den Filter sowie die erste Seite Items serverseitig
 import { getGroupCategoryOptions, getItemsForGroup, ItemSort } from "@/server/item/item.service";
 
 export const dynamic = "force-dynamic";
-
-const LIMIT = 60;
-const VALID_SORTS: ItemSort[] = ["name-asc", "name-desc"];
-
-interface ItemGroupPageProps {
-  params: Promise<{ group: string }>;
-  searchParams: Promise<{ search?: string; categories?: string; sort?: string }>;
-}
 
 export async function generateMetadata({ params }: ItemGroupPageProps): Promise<Metadata> {
   const { group: groupSlug } = await params;

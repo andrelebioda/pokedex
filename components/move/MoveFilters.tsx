@@ -1,40 +1,24 @@
 "use client";
 
+// Next.js: aktuelle Route lesen und URL-Query beim Filtern aktualisieren
 import { usePathname, useRouter } from "next/navigation";
+// React: Filter-State, Debounce-Effekt, stabile Callback-Referenz
 import { useCallback, useEffect, useState } from "react";
 
+// Aufklappbare Filter-Gruppen im Modal (Typen, Stärke)
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+// Checkbox-Raster für die Typ-Optionen
 import FilterCheckboxGroup from "@/components/filters/FilterCheckboxGroup";
+// Modal-Hülle (Trigger-Button, Anwenden/Zurücksetzen) für alle Filter zusammen
 import FilterModal from "@/components/filters/FilterModal";
+// Min/Max-Zahlenfelder für den Stärke-Filter
 import FilterRangeInput from "@/components/filters/FilterRangeInput";
+// Freitext-Suchfeld mit Lösch-Icon
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
+// Sortier-Dropdown (Radio-Gruppen mit Trennlinien)
 import SortSelect from "@/components/filters/SortSelect";
-import { TypeOption } from "@/components/pokemon/PokemonFilters";
-import { MoveSort } from "@/server/move/move.service";
-
-const SORT_GROUPS: { value: MoveSort; label: string }[][] = [
-  [
-    { value: "name-asc", label: "Name (A-Z)" },
-    { value: "name-desc", label: "Name (Z-A)" },
-  ],
-  [
-    { value: "type-asc", label: "Typ (A-Z)" },
-    { value: "type-desc", label: "Typ (Z-A)" },
-  ],
-  [
-    { value: "power-asc", label: "Stärke (↑)" },
-    { value: "power-desc", label: "Stärke (↓)" },
-  ],
-];
-
-interface MoveFiltersProps {
-  types: TypeOption[];
-  search: string;
-  selectedTypes: string[];
-  sort: MoveSort;
-  minPower?: number;
-  maxPower?: number;
-}
+// Ausgelagerte Sortier-Optionen und Props-Typ dieser Komponente
+import { MoveFiltersProps, SORT_GROUPS } from "@/components/move/MoveFilters.constants";
 
 export default function MoveFilters({ types, search, selectedTypes, sort, minPower, maxPower }: MoveFiltersProps) {
   const router = useRouter();
@@ -54,7 +38,13 @@ export default function MoveFilters({ types, search, selectedTypes, sort, minPow
   const [pendingMaxPower, setPendingMaxPower] = useState(maxPower);
 
   const updateFilters = useCallback(
-    (next: { search?: string; types?: string[]; sort?: MoveSort; minPower?: number | null; maxPower?: number | null }) => {
+    (next: {
+      search?: string;
+      types?: string[];
+      sort?: MoveFiltersProps["sort"];
+      minPower?: number | null;
+      maxPower?: number | null;
+    }) => {
       const nextSearch = next.search ?? search;
       const nextTypes = next.types ?? selectedTypes;
       const nextSort = next.sort ?? sort;

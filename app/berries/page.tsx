@@ -1,12 +1,23 @@
+// Next.js: Typ für die Seiten-<head>-Metadaten
 import type { Metadata } from "next";
 
+// Beeren-Karte mit Beerenkraft-Icon und Wachstumszeit
 import BerryCard from "@/components/berry/BerryCard";
+// Filter-Leiste (Typen/Stärke-Modal, Sortierung, Suche)
 import BerryFilters from "@/components/berry/BerryFilters";
+// Vollbreiter Gradient-Header mit Icon der aktuellen Sektion
 import PageHeader from "@/components/layout/PageHeader";
+// setzt --accent/--accent-2 (Farbverlauf) für diese Seite und ihre Portale (Filter-Modal, Dropdowns)
 import SectionTheme from "@/components/layout/SectionTheme";
+// Sticky Filterleiste unter dem Header
 import StickyBar from "@/components/layout/StickyBar";
+// Ausgelagerte Sortier-Whitelist und Props-Typ dieser Seite
+import { BerriesPageProps, VALID_SORTS } from "@/app/berries/page.constants";
+// Name/Icon/Farben dieser Sektion für Header und Theme
 import { sections } from "@/config/sections";
+// Lädt alle Beeren serverseitig (diese Seite paginiert noch nicht per Infinite Scroll)
 import { getAllBerries, BerrySort } from "@/server/berry/berry.service";
+// Typenliste für den Typ-Filter
 import { getAllTypes } from "@/server/type/type.service";
 
 export const dynamic = "force-dynamic";
@@ -16,12 +27,6 @@ export const metadata: Metadata = {
   description: "Alle Beeren mit ihren Beerenkräften, Wachstumszeit und weiteren Eigenschaften.",
   alternates: { canonical: "/berries" },
 };
-
-const VALID_SORTS: BerrySort[] = ["name-asc", "name-desc", "growth-asc", "growth-desc", "power-asc", "power-desc"];
-
-interface BerriesPageProps {
-  searchParams: Promise<{ search?: string; types?: string; sort?: string; minPower?: string; maxPower?: string }>;
-}
 
 export default async function BerriesPage({ searchParams }: BerriesPageProps) {
   const { search = "", types: typesParam = "", sort: sortParam, minPower: minPowerParam, maxPower: maxPowerParam } = await searchParams;

@@ -1,36 +1,23 @@
 "use client";
 
+// Next.js: aktuelle Route lesen und URL-Query beim Filtern aktualisieren
 import { usePathname, useRouter } from "next/navigation";
+// React: Filter-State, Debounce-Effekt, stabile Callback-Referenz
 import { useCallback, useEffect, useState } from "react";
 
+// Aufklappbare Filter-Gruppe im Modal (Sichtbarkeit)
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+// Checkbox-Raster für die Sichtbarkeits-Optionen
 import FilterCheckboxGroup from "@/components/filters/FilterCheckboxGroup";
+// Modal-Hülle (Trigger-Button, Anwenden/Zurücksetzen) für alle Filter zusammen
 import FilterModal from "@/components/filters/FilterModal";
+// Freitext-Suchfeld mit Lösch-Icon
 import FilterSearchInput from "@/components/filters/FilterSearchInput";
+// Sortier-Dropdown (Radio-Gruppen mit Trennlinien)
 import SortSelect from "@/components/filters/SortSelect";
-import { AbilityHiddenFilter, AbilitySort } from "@/server/ability/ability.service";
-
-const SORT_GROUPS: { value: AbilitySort; label: string }[][] = [
-  [
-    { value: "name-asc", label: "Name (A-Z)" },
-    { value: "name-desc", label: "Name (Z-A)" },
-  ],
-  [
-    { value: "count-asc", label: "Anzahl Pokémon (↑)" },
-    { value: "count-desc", label: "Anzahl Pokémon (↓)" },
-  ],
-];
-
-const HIDDEN_OPTIONS: { value: AbilityHiddenFilter; label: string }[] = [
-  { value: "hidden", label: "Versteckt möglich" },
-  { value: "visible", label: "Nicht versteckt" },
-];
-
-interface AbilityFiltersProps {
-  search: string;
-  selectedHidden: AbilityHiddenFilter[];
-  sort: AbilitySort;
-}
+// Ausgelagerte Sortier-/Sichtbarkeits-Optionen und Props-Typ dieser Komponente
+import { AbilityFiltersProps, HIDDEN_OPTIONS, SORT_GROUPS } from "@/components/ability/AbilityFilters.constants";
+import { AbilityHiddenFilter } from "@/server/ability/ability.service";
 
 export default function AbilityFilters({ search, selectedHidden, sort }: AbilityFiltersProps) {
   const router = useRouter();
@@ -48,7 +35,7 @@ export default function AbilityFilters({ search, selectedHidden, sort }: Ability
   const [pendingHidden, setPendingHidden] = useState(selectedHidden);
 
   const updateFilters = useCallback(
-    (next: { search?: string; hidden?: AbilityHiddenFilter[]; sort?: AbilitySort }) => {
+    (next: { search?: string; hidden?: AbilityHiddenFilter[]; sort?: AbilityFiltersProps["sort"] }) => {
       const nextSearch = next.search ?? search;
       const nextHidden = next.hidden ?? selectedHidden;
       const nextSort = next.sort ?? sort;

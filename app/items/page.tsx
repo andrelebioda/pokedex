@@ -1,13 +1,22 @@
+// Pfeil-Icon auf jeder Kategorie-Kachel
 import { ArrowRight } from "lucide-react";
+// Next.js: Typ für die Seiten-<head>-Metadaten
 import type { Metadata } from "next";
 import Link from "next/link";
 
+// Gemeinsame Glas-Card-Bausteine (Karte, Chip, Icon-Box, Panel)
 import { glassCard, glassChip, glassIconBox, glassPanel } from "@/components/layout/cardStyles";
+// Weiche Farbflecken im Hintergrund jeder Kachel
 import GlassBlobs from "@/components/layout/GlassBlobs";
+// Vollbreiter Gradient-Header mit Icon der aktuellen Sektion
 import PageHeader from "@/components/layout/PageHeader";
+// setzt --accent/--accent-2 (Farbverlauf) für diese Seite
 import SectionTheme from "@/components/layout/SectionTheme";
+// Icon + Akzentfarbe je Item-Kategorie-Gruppe
 import { getItemGroupStyle } from "@/config/itemCategories";
+// Name/Icon/Farben dieser Sektion; accentStyle baut daraus das --accent-Style-Objekt
 import { accentStyle, sections } from "@/config/sections";
+// Übersicht aller Item-Kategorie-Gruppen mit Anzahl je Gruppe
 import { getItemGroupOverview } from "@/server/item/item.service";
 
 export const dynamic = "force-dynamic";

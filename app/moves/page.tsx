@@ -1,12 +1,23 @@
+// Next.js: Typ für die Seiten-<head>-Metadaten
 import type { Metadata } from "next";
 
+// Vollbreiter Gradient-Header mit Icon der aktuellen Sektion
 import PageHeader from "@/components/layout/PageHeader";
+// setzt --accent/--accent-2 (Farbverlauf) für diese Seite und ihre Portale (Filter-Modal, Dropdowns)
 import SectionTheme from "@/components/layout/SectionTheme";
+// Sticky Filterleiste unter dem Header
 import StickyBar from "@/components/layout/StickyBar";
-import { sections } from "@/config/sections";
+// Infinite-Scroll-Grid der Attacken-Karten
 import MoveExplorer from "@/components/move/MoveExplorer";
+// Filter-Leiste (Typen/Stärke-Modal, Sortierung, Suche)
 import MoveFilters from "@/components/move/MoveFilters";
+// Ausgelagerte Seitengröße, Sortier-Whitelist und Props-Typ dieser Seite
+import { LIMIT, MovesPageProps, VALID_SORTS } from "@/app/moves/page.constants";
+// Name/Icon/Farben dieser Sektion für Header und Theme
+import { sections } from "@/config/sections";
+// Lädt die erste Seite Attacken serverseitig (für MoveExplorer als initialMoves)
 import { getMoveList, MoveSort } from "@/server/move/move.service";
+// Typenliste für den Typ-Filter
 import { getAllTypes } from "@/server/type/type.service";
 
 export const dynamic = "force-dynamic";
@@ -16,13 +27,6 @@ export const metadata: Metadata = {
   description: "Durchsuche alle Attacken mit Stärke, Genauigkeit, AP und den Pokémon, die sie erlernen können.",
   alternates: { canonical: "/moves" },
 };
-
-const LIMIT = 50;
-const VALID_SORTS: MoveSort[] = ["name-asc", "name-desc", "type-asc", "type-desc", "power-asc", "power-desc"];
-
-interface MovesPageProps {
-  searchParams: Promise<{ search?: string; types?: string; sort?: string; minPower?: string; maxPower?: string }>;
-}
 
 export default async function MovesPage({ searchParams }: MovesPageProps) {
   const { search = "", types: typesParam = "", sort: sortParam, minPower: minPowerParam, maxPower: maxPowerParam } = await searchParams;
