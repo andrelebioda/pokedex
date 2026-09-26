@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
 
 import PokemonCard, { PokemonListItem } from "@/components/pokemon/PokemonCard";
+import { useInfiniteList } from "@/hooks/useInfiniteList";
 import { getPokemonListAction } from "@/server/pokemon/pokemon.actions";
 import { PokemonSort } from "@/server/pokemon/pokemon.service";
 
@@ -25,79 +26,18 @@ export default function PokemonGrid({
   generations = [],
   sort = "number-asc",
 }: PokemonGridProps) {
-  const filterKey = `${search}::${types.join(",")}::${generations.join(",")}::${sort}`;
+  const fetchPage = useCallback(
+    (page: number) => getPokemonListAction(page, LIMIT, { search, types, generations, sort }).then((data) => ({ items: data.pokemon, hasMore: data.hasMore })),
+    [search, types, generations, sort],
+  );
 
-  const [pokemon, setPokemon] = useState(initialPokemon);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(initialHasMore);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  // Reset pagination when the active filters change, without remounting the
-  // grid — pokémon already rendered for both the old and new result set keep
-  // their component instance (matched by id), so their images don't reload.
-  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
-  if (filterKey !== prevFilterKey) {
-    setPrevFilterKey(filterKey);
-    setPokemon(initialPokemon);
-    setPage(1);
-    setHasMore(initialHasMore);
-    setLoading(false);
-    setError(false);
-  }
-
-  const loadingRef = useRef(loading);
-  const hasMoreRef = useRef(hasMore);
-
-  useEffect(() => {
-    loadingRef.current = loading;
-    hasMoreRef.current = hasMore;
-  }, [loading, hasMore]);
-
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  const loadNextPage = useCallback(async () => {
-    if (loadingRef.current || !hasMoreRef.current) return;
-
-    setLoading(true);
-    setError(false);
-
-    try {
-      const nextPage = page + 1;
-      const data = await getPokemonListAction(nextPage, LIMIT, { search, types, generations, sort });
-
-      setPage(nextPage);
-      setHasMore(data.hasMore);
-
-      setPokemon((prev) => {
-        const existingIds = new Set(prev.map((item) => item.id));
-        const newItems = data.pokemon.filter((item) => !existingIds.has(item.id));
-        return [...prev, ...newItems];
-      });
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, search, types, generations, sort]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadNextPage();
-        }
-      },
-      { rootMargin: "400px" },
-    );
-
-    observer.observe(sentinel);
-
-    return () => observer.disconnect();
-  }, [loadNextPage]);
+  const { items: pokemon, hasMore, loading, error, sentinelRef, retry } = useInfiniteList({
+    initialItems: initialPokemon,
+    initialHasMore,
+    filterKey: `${search}::${types.join(",")}::${generations.join(",")}::${sort}`,
+    getId: (item) => item.id,
+    fetchPage,
+  });
 
   if (pokemon.length === 0) {
     return <p className="text-center text-slate-500">Keine Pokémon gefunden.</p>;
@@ -117,7 +57,7 @@ export default function PokemonGrid({
 
           {error && (
             <button
-              onClick={loadNextPage}
+              onClick={retry}
               className="
                 rounded-xl
                 border

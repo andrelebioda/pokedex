@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
 
 import MoveGrid, { MoveGridItem } from "@/components/move/MoveGrid";
+import { useInfiniteList } from "@/hooks/useInfiniteList";
 import { getMoveListAction } from "@/server/move/move.actions";
 import { MoveSort } from "@/server/move/move.service";
 
@@ -27,74 +28,22 @@ export default function MoveExplorer({
   minPower,
   maxPower,
 }: MoveExplorerProps) {
-  const filterKey = `${search}::${types.join(",")}::${sort}::${minPower ?? ""}::${maxPower ?? ""}`;
+  const fetchPage = useCallback(
+    (page: number) =>
+      getMoveListAction(page, LIMIT, { search, types, sort, minPower, maxPower }).then((data) => ({
+        items: data.moves,
+        hasMore: data.hasMore,
+      })),
+    [search, types, sort, minPower, maxPower],
+  );
 
-  const [moves, setMoves] = useState(initialMoves);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(initialHasMore);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
-  if (filterKey !== prevFilterKey) {
-    setPrevFilterKey(filterKey);
-    setMoves(initialMoves);
-    setPage(1);
-    setHasMore(initialHasMore);
-    setLoading(false);
-    setError(false);
-  }
-
-  const loadingRef = useRef(loading);
-  const hasMoreRef = useRef(hasMore);
-
-  useEffect(() => {
-    loadingRef.current = loading;
-    hasMoreRef.current = hasMore;
-  }, [loading, hasMore]);
-
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  const loadNextPage = useCallback(async () => {
-    if (loadingRef.current || !hasMoreRef.current) return;
-
-    setLoading(true);
-    setError(false);
-
-    try {
-      const nextPage = page + 1;
-      const data = await getMoveListAction(nextPage, LIMIT, { search, types, sort, minPower, maxPower });
-
-      setPage(nextPage);
-      setHasMore(data.hasMore);
-
-      setMoves((prev) => {
-        const existingIds = new Set(prev.map((item) => item.id));
-        const newItems = data.moves.filter((item) => !existingIds.has(item.id));
-        return [...prev, ...newItems];
-      });
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, search, types, sort, minPower, maxPower]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadNextPage();
-      },
-      { rootMargin: "400px" },
-    );
-
-    observer.observe(sentinel);
-
-    return () => observer.disconnect();
-  }, [loadNextPage]);
+  const { items: moves, hasMore, loading, error, sentinelRef, retry } = useInfiniteList({
+    initialItems: initialMoves,
+    initialHasMore,
+    filterKey: `${search}::${types.join(",")}::${sort}::${minPower ?? ""}::${maxPower ?? ""}`,
+    getId: (item) => item.id,
+    fetchPage,
+  });
 
   if (moves.length === 0) {
     return <p className="text-center text-slate-500">Keine Attacken gefunden.</p>;
@@ -110,7 +59,7 @@ export default function MoveExplorer({
 
           {error && (
             <button
-              onClick={loadNextPage}
+              onClick={retry}
               className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-slate-300 hover:border-slate-700 hover:text-white"
             >
               Erneut versuchen

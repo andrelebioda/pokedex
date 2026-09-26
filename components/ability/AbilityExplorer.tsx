@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
 
 import AbilityGrid, { AbilityGridItem } from "@/components/ability/AbilityGrid";
+import { useInfiniteList } from "@/hooks/useInfiniteList";
 import { getAbilityListAction } from "@/server/ability/ability.actions";
 import { AbilityHiddenFilter, AbilitySort } from "@/server/ability/ability.service";
 
@@ -23,74 +24,19 @@ export default function AbilityExplorer({
   hidden = [],
   sort = "name-asc",
 }: AbilityExplorerProps) {
-  const filterKey = `${search}::${hidden.join(",")}::${sort}`;
+  const fetchPage = useCallback(
+    (page: number) =>
+      getAbilityListAction(page, LIMIT, { search, hidden, sort }).then((data) => ({ items: data.abilities, hasMore: data.hasMore })),
+    [search, hidden, sort],
+  );
 
-  const [abilities, setAbilities] = useState(initialAbilities);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(initialHasMore);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
-  if (filterKey !== prevFilterKey) {
-    setPrevFilterKey(filterKey);
-    setAbilities(initialAbilities);
-    setPage(1);
-    setHasMore(initialHasMore);
-    setLoading(false);
-    setError(false);
-  }
-
-  const loadingRef = useRef(loading);
-  const hasMoreRef = useRef(hasMore);
-
-  useEffect(() => {
-    loadingRef.current = loading;
-    hasMoreRef.current = hasMore;
-  }, [loading, hasMore]);
-
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  const loadNextPage = useCallback(async () => {
-    if (loadingRef.current || !hasMoreRef.current) return;
-
-    setLoading(true);
-    setError(false);
-
-    try {
-      const nextPage = page + 1;
-      const data = await getAbilityListAction(nextPage, LIMIT, { search, hidden, sort });
-
-      setPage(nextPage);
-      setHasMore(data.hasMore);
-
-      setAbilities((prev) => {
-        const existingIds = new Set(prev.map((item) => item.id));
-        const newItems = data.abilities.filter((item) => !existingIds.has(item.id));
-        return [...prev, ...newItems];
-      });
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, search, hidden, sort]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadNextPage();
-      },
-      { rootMargin: "400px" },
-    );
-
-    observer.observe(sentinel);
-
-    return () => observer.disconnect();
-  }, [loadNextPage]);
+  const { items: abilities, hasMore, loading, error, sentinelRef, retry } = useInfiniteList({
+    initialItems: initialAbilities,
+    initialHasMore,
+    filterKey: `${search}::${hidden.join(",")}::${sort}`,
+    getId: (item) => item.id,
+    fetchPage,
+  });
 
   if (abilities.length === 0) {
     return <p className="text-center text-slate-500">Keine Fähigkeiten gefunden.</p>;
@@ -106,7 +52,7 @@ export default function AbilityExplorer({
 
           {error && (
             <button
-              onClick={loadNextPage}
+              onClick={retry}
               className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-slate-300 hover:border-slate-700 hover:text-white"
             >
               Erneut versuchen

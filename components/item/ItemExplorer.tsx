@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 import ItemCard from "@/components/item/ItemCard";
+import { useInfiniteList } from "@/hooks/useInfiniteList";
 import { getItemsForGroupAction } from "@/server/item/item.actions";
 import { ItemSort, MappedItem } from "@/server/item/item.service";
 
@@ -27,75 +28,22 @@ export default function ItemExplorer({
   categories = [],
   sort = "name-asc",
 }: ItemExplorerProps) {
-  const filterKey = `${groupSlug}::${search}::${categories.join(",")}::${sort}`;
-
-  const [items, setItems] = useState(initialItems);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(initialHasMore);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
-  if (filterKey !== prevFilterKey) {
-    setPrevFilterKey(filterKey);
-    setItems(initialItems);
-    setPage(1);
-    setHasMore(initialHasMore);
-    setLoading(false);
-    setError(false);
-  }
-
-  const loadingRef = useRef(loading);
-  const hasMoreRef = useRef(hasMore);
-
-  useEffect(() => {
-    loadingRef.current = loading;
-    hasMoreRef.current = hasMore;
-  }, [loading, hasMore]);
-
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  const loadNextPage = useCallback(async () => {
-    if (loadingRef.current || !hasMoreRef.current) return;
-
-    setLoading(true);
-    setError(false);
-
-    try {
-      const nextPage = page + 1;
-      const data = await getItemsForGroupAction(groupSlug, nextPage, LIMIT, { search, categories, sort });
+  const fetchPage = useCallback(
+    async (page: number) => {
+      const data = await getItemsForGroupAction(groupSlug, page, LIMIT, { search, categories, sort });
       if (!data) throw new Error("Items konnten nicht geladen werden");
+      return { items: data.items, hasMore: data.hasMore };
+    },
+    [groupSlug, search, categories, sort],
+  );
 
-      setPage(nextPage);
-      setHasMore(data.hasMore);
-
-      setItems((prev) => {
-        const existingIds = new Set(prev.map((item) => item.id));
-        const newItems = data.items.filter((item) => !existingIds.has(item.id));
-        return [...prev, ...newItems];
-      });
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, search, categories, groupSlug, sort]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadNextPage();
-      },
-      { rootMargin: "400px" },
-    );
-
-    observer.observe(sentinel);
-
-    return () => observer.disconnect();
-  }, [loadNextPage]);
+  const { items, hasMore, loading, error, sentinelRef, retry } = useInfiniteList({
+    initialItems,
+    initialHasMore,
+    filterKey: `${groupSlug}::${search}::${categories.join(",")}::${sort}`,
+    getId: (item) => item.id,
+    fetchPage,
+  });
 
   const groups = useMemo(() => {
     const map = new Map<string, { category: string; categoryName: string; items: MappedItem[] }>();
@@ -146,7 +94,7 @@ export default function ItemExplorer({
 
           {error && (
             <button
-              onClick={loadNextPage}
+              onClick={retry}
               className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-slate-300 hover:border-slate-700 hover:text-white"
             >
               Erneut versuchen
