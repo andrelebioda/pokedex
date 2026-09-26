@@ -44,9 +44,9 @@ const STAT_LABELS: Record<keyof PokemonStats, string> = {
 
 const STAT_CHART: Record<keyof PokemonStats, string> = {
   hp: "KP",
-  attack: "Angriff",
-  defense: "Verteidigung",
-  speed: "Initiative",
+  attack: "Ang",
+  defense: "Vert",
+  speed: "Init",
   specialDefense: "Sp. Vert",
   specialAttack: "Sp. Ang",
 };
