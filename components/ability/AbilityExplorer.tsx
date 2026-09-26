@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import AbilityGrid, { AbilityGridItem } from "@/components/ability/AbilityGrid";
+import { getAbilityListAction } from "@/server/ability/ability.actions";
 import { AbilityHiddenFilter, AbilitySort } from "@/server/ability/ability.service";
 
 const LIMIT = 50;
@@ -58,22 +59,14 @@ export default function AbilityExplorer({
 
     try {
       const nextPage = page + 1;
-      const params = new URLSearchParams({ page: String(nextPage), limit: String(LIMIT) });
-      if (search) params.set("search", search);
-      if (hidden.length > 0) params.set("hidden", hidden.join(","));
-      if (sort !== "name-asc") params.set("sort", sort);
-
-      const response = await fetch(`/api/abilities?${params.toString()}`);
-      if (!response.ok) throw new Error("Fähigkeiten konnten nicht geladen werden");
-
-      const data = await response.json();
+      const data = await getAbilityListAction(nextPage, LIMIT, { search, hidden, sort });
 
       setPage(nextPage);
       setHasMore(data.hasMore);
 
       setAbilities((prev) => {
         const existingIds = new Set(prev.map((item) => item.id));
-        const newItems = (data.abilities as AbilityGridItem[]).filter((item) => !existingIds.has(item.id));
+        const newItems = data.abilities.filter((item) => !existingIds.has(item.id));
         return [...prev, ...newItems];
       });
     } catch {

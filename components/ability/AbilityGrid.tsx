@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import AbilityCard from "@/components/ability/AbilityCard";
 import AbilityPokemonModal from "@/components/ability/AbilityPokemonModal";
+import { getPokemonForAbilityAction } from "@/server/ability/ability.actions";
 import { AbilityPokemon } from "@/server/ability/ability.service";
 
 export interface AbilityGridItem {
@@ -34,12 +35,9 @@ export default function AbilityGrid({ abilities, showPokemonInfo = true }: Abili
     setCache((prev) => ({ ...prev, [ability.id]: { status: "loading" } }));
 
     try {
-      const response = await fetch(`/api/abilities/${ability.id}/pokemon`);
-      if (!response.ok) throw new Error("Fehler beim Laden");
+      const pokemon = await getPokemonForAbilityAction(ability.id);
 
-      const data = await response.json();
-
-      setCache((prev) => ({ ...prev, [ability.id]: { status: "ready", pokemon: data.pokemon } }));
+      setCache((prev) => ({ ...prev, [ability.id]: { status: "ready", pokemon } }));
     } catch {
       setCache((prev) => ({ ...prev, [ability.id]: { status: "error" } }));
     }

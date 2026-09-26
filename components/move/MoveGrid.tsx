@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import MoveCard from "@/components/move/MoveCard";
 import MovePokemonModal from "@/components/move/MovePokemonModal";
+import { getPokemonForMoveAction } from "@/server/move/move.actions";
 import { MoveLearner } from "@/server/move/move.service";
 
 export interface MoveGridItem {
@@ -41,12 +42,9 @@ export default function MoveGrid({ moves, showLearnMethod = false, showPokemonIn
     setLearnerCache((prev) => ({ ...prev, [move.id]: { status: "loading" } }));
 
     try {
-      const response = await fetch(`/api/moves/${move.id}/pokemon`);
-      if (!response.ok) throw new Error("Fehler beim Laden");
+      const learners = await getPokemonForMoveAction(move.id);
 
-      const data = await response.json();
-
-      setLearnerCache((prev) => ({ ...prev, [move.id]: { status: "ready", learners: data.pokemon } }));
+      setLearnerCache((prev) => ({ ...prev, [move.id]: { status: "ready", learners } }));
     } catch {
       setLearnerCache((prev) => ({ ...prev, [move.id]: { status: "error" } }));
     }

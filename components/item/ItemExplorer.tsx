@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import ItemCard from "@/components/item/ItemCard";
+import { getItemsForGroupAction } from "@/server/item/item.actions";
 import { ItemSort, MappedItem } from "@/server/item/item.service";
 
 const LIMIT = 60;
@@ -62,22 +63,15 @@ export default function ItemExplorer({
 
     try {
       const nextPage = page + 1;
-      const params = new URLSearchParams({ page: String(nextPage), limit: String(LIMIT) });
-      if (search) params.set("search", search);
-      if (categories.length > 0) params.set("categories", categories.join(","));
-      if (sort !== "name-asc") params.set("sort", sort);
-
-      const response = await fetch(`/api/items/${groupSlug}?${params.toString()}`);
-      if (!response.ok) throw new Error("Items konnten nicht geladen werden");
-
-      const data = await response.json();
+      const data = await getItemsForGroupAction(groupSlug, nextPage, LIMIT, { search, categories, sort });
+      if (!data) throw new Error("Items konnten nicht geladen werden");
 
       setPage(nextPage);
       setHasMore(data.hasMore);
 
       setItems((prev) => {
         const existingIds = new Set(prev.map((item) => item.id));
-        const newItems = (data.items as MappedItem[]).filter((item) => !existingIds.has(item.id));
+        const newItems = data.items.filter((item) => !existingIds.has(item.id));
         return [...prev, ...newItems];
       });
     } catch {

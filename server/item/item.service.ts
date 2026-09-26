@@ -28,7 +28,7 @@ export interface ItemGroupOverview {
 
 export type ItemSort = "name-asc" | "name-desc";
 
-interface ItemListFilters {
+export interface ItemListFilters {
   search?: string;
   categories?: string[];
   sort?: ItemSort;

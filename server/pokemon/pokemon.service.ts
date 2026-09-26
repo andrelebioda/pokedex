@@ -2,18 +2,23 @@ import type { Prisma } from "@prisma/client";
 import { cache } from "react";
 
 import { prisma } from "@/server/db/prisma";
-import { mapPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
+import { mapPokemon, MappedPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
 
 export type PokemonSort = "number-asc" | "number-desc" | "name-asc" | "name-desc" | "type-asc" | "type-desc";
 
-interface PokemonListFilters {
+export interface PokemonListFilters {
   search?: string;
   types?: string[];
   generations?: number[];
   sort?: PokemonSort;
 }
 
-export async function getPokemonList(page = 1, limit = 50, filters: PokemonListFilters = {}) {
+export interface PokemonListResult {
+  pokemon: MappedPokemon[];
+  hasMore: boolean;
+}
+
+export async function getPokemonList(page = 1, limit = 50, filters: PokemonListFilters = {}): Promise<PokemonListResult> {
   const { search, types, generations, sort = "number-asc" } = filters;
 
   const where: Prisma.PokemonWhereInput = {

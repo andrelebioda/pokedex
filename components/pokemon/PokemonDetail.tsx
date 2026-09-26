@@ -15,6 +15,7 @@ import PokemonStatsRadar from "@/components/pokemon/PokemonStatsRadar";
 import { getPokemonTypeClass, getPokemonTypeColorVar, getPokemonTypeIconPath } from "@/config/pokemonTypes";
 import { accentStyle } from "@/config/sections";
 import { mapPokemon, MappedPokemonMove } from "@/server/pokemon/pokemon.mapper";
+import { getMovesForPokemonAction } from "@/server/pokemon/pokemon.actions";
 
 type PokemonDetailData = NonNullable<ReturnType<typeof mapPokemon>>;
 type PokemonStats = NonNullable<PokemonDetailData["stats"]>;
@@ -87,13 +88,7 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
       setMovesError(false);
 
       try {
-        const params = new URLSearchParams({ page: String(pageToLoad), limit: String(MOVES_LIMIT) });
-        if (search) params.set("search", search);
-
-        const response = await fetch(`/api/pokemon/${pokemon.id}/moves?${params.toString()}`);
-        if (!response.ok) throw new Error("Fehler beim Laden");
-
-        const data = await response.json();
+        const data = await getMovesForPokemonAction(pokemon.id, pageToLoad, MOVES_LIMIT, { search: search || undefined });
 
         setMovesPage(pageToLoad);
         setMovesHasMore(data.hasMore);
@@ -101,7 +96,7 @@ export default function PokemonDetail({ pokemon, initialMoves, initialMovesHasMo
           if (!append) return data.moves;
 
           const existingIds = new Set(prev.map((move) => move.id));
-          const newItems = (data.moves as MappedPokemonMove[]).filter((move) => !existingIds.has(move.id));
+          const newItems = data.moves.filter((move) => !existingIds.has(move.id));
           return [...prev, ...newItems];
         });
       } catch {

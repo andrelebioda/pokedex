@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import PokemonCard, { PokemonListItem } from "@/components/pokemon/PokemonCard";
+import { getPokemonListAction } from "@/server/pokemon/pokemon.actions";
 import { PokemonSort } from "@/server/pokemon/pokemon.service";
 
 const LIMIT = 50;
@@ -63,26 +64,14 @@ export default function PokemonGrid({
 
     try {
       const nextPage = page + 1;
-      const params = new URLSearchParams({ page: String(nextPage), limit: String(LIMIT) });
-      if (search) params.set("search", search);
-      if (types.length > 0) params.set("types", types.join(","));
-      if (generations.length > 0) params.set("generations", generations.join(","));
-      if (sort !== "number-asc") params.set("sort", sort);
-
-      const response = await fetch(`/api/pokemon?${params.toString()}`);
-
-      if (!response.ok) {
-        throw new Error("Pokémon konnten nicht geladen werden");
-      }
-
-      const data = await response.json();
+      const data = await getPokemonListAction(nextPage, LIMIT, { search, types, generations, sort });
 
       setPage(nextPage);
       setHasMore(data.hasMore);
 
       setPokemon((prev) => {
         const existingIds = new Set(prev.map((item) => item.id));
-        const newItems = (data.pokemon as PokemonListItem[]).filter((item) => !existingIds.has(item.id));
+        const newItems = data.pokemon.filter((item) => !existingIds.has(item.id));
         return [...prev, ...newItems];
       });
     } catch {

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import MoveGrid, { MoveGridItem } from "@/components/move/MoveGrid";
+import { getMoveListAction } from "@/server/move/move.actions";
 import { MoveSort } from "@/server/move/move.service";
 
 const LIMIT = 50;
@@ -62,24 +63,14 @@ export default function MoveExplorer({
 
     try {
       const nextPage = page + 1;
-      const params = new URLSearchParams({ page: String(nextPage), limit: String(LIMIT) });
-      if (search) params.set("search", search);
-      if (types.length > 0) params.set("types", types.join(","));
-      if (sort !== "name-asc") params.set("sort", sort);
-      if (minPower != null) params.set("minPower", String(minPower));
-      if (maxPower != null) params.set("maxPower", String(maxPower));
-
-      const response = await fetch(`/api/moves?${params.toString()}`);
-      if (!response.ok) throw new Error("Attacken konnten nicht geladen werden");
-
-      const data = await response.json();
+      const data = await getMoveListAction(nextPage, LIMIT, { search, types, sort, minPower, maxPower });
 
       setPage(nextPage);
       setHasMore(data.hasMore);
 
       setMoves((prev) => {
         const existingIds = new Set(prev.map((item) => item.id));
-        const newItems = (data.moves as MoveGridItem[]).filter((item) => !existingIds.has(item.id));
+        const newItems = data.moves.filter((item) => !existingIds.has(item.id));
         return [...prev, ...newItems];
       });
     } catch {
