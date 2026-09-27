@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock, LogOut, Menu, User, X } from "lucide-react";
+import { Lock, LogIn, LogOut, Menu, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,7 +25,7 @@ function AccountStatus({ variant = "full" }: { variant?: "full" | "compact" }) {
           aria-label="Anmelden"
           className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white"
         >
-          <User size={18} />
+          <LogIn size={18} />
         </Link>
       );
     }
@@ -36,7 +36,7 @@ function AccountStatus({ variant = "full" }: { variant?: "full" | "compact" }) {
         className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md transition hover:bg-white/10"
       >
         <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10">
-          <User size={16} />
+          <LogIn size={16} />
         </span>
 
         <p className="text-sm font-semibold">Anmelden</p>
@@ -44,47 +44,33 @@ function AccountStatus({ variant = "full" }: { variant?: "full" | "compact" }) {
     );
   }
 
-  const initial = (session.user?.name ?? session.user?.email ?? "?").charAt(0);
-
   if (variant === "compact") {
     return (
       <button
         type="button"
         onClick={() => signOut({ callbackUrl: "/" })}
         aria-label="Abmelden"
-        className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/10 text-sm font-semibold text-white uppercase backdrop-blur-md transition hover:bg-white/20"
+        title={session.user?.name ?? session.user?.email ?? undefined}
+        className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white"
       >
-        {initial}
-
-        <span
-          aria-hidden
-          className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border border-white/20 bg-slate-900 text-white/70"
-        >
-          <LogOut size={9} />
-        </span>
+        <LogOut size={18} />
       </button>
     );
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10 text-sm font-semibold uppercase">
-        {initial}
+    <button
+      type="button"
+      onClick={() => signOut({ callbackUrl: "/" })}
+      title={session.user?.name ?? session.user?.email ?? undefined}
+      className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md transition hover:bg-white/10"
+    >
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10">
+        <LogOut size={16} />
       </span>
 
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold">{session.user?.name ?? session.user?.email}</p>
-      </div>
-
-      <button
-        type="button"
-        onClick={() => signOut({ callbackUrl: "/" })}
-        aria-label="Abmelden"
-        className="shrink-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-white/10 hover:text-white"
-      >
-        <LogOut size={16} />
-      </button>
-    </div>
+      <p className="text-sm font-semibold">Abmelden</p>
+    </button>
   );
 }
 
