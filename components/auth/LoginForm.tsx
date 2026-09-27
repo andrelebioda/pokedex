@@ -52,7 +52,6 @@ const oauthButtonClassName = `
 `;
 
 const errorMessages: Record<string, string> = {
-  CredentialsSignin: "E-Mail oder Passwort ist falsch.",
   OAuthAccountNotLinked: "Diese E-Mail-Adresse ist bereits mit einem anderen Anmeldeverfahren verknüpft.",
   EmailSignin: "Der Anmelde-Link konnte nicht versendet werden. Bitte versuche es erneut.",
   default: "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
@@ -92,27 +91,9 @@ export default function LoginForm() {
   const oauthError = searchParams.get("error");
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(oauthError ? (errorMessages[oauthError] ?? errorMessages.default) : null);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
-
-  async function handleCredentialsSubmit(event: FormEvent) {
-    event.preventDefault();
-    setError(null);
-    setLoadingProvider("credentials");
-
-    const result = await signIn("credentials", { email, password, redirect: false, callbackUrl });
-
-    setLoadingProvider(null);
-
-    if (result?.error) {
-      setError(errorMessages[result.error] ?? errorMessages.default);
-      return;
-    }
-
-    window.location.href = result?.url ?? callbackUrl;
-  }
 
   async function handleMagicLinkSubmit(event: FormEvent) {
     event.preventDefault();
@@ -144,76 +125,6 @@ export default function LoginForm() {
           {error}
         </div>
       )}
-
-      <form onSubmit={handleCredentialsSubmit} className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="email" className="text-xs font-semibold tracking-wide text-white/60 uppercase">
-            E-Mail
-          </label>
-          <input
-            id="email"
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="du@example.com"
-            className={inputClassName}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="password" className="text-xs font-semibold tracking-wide text-white/60 uppercase">
-            Passwort
-          </label>
-          <input
-            id="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="••••••••"
-            className={inputClassName}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loadingProvider !== null}
-          className="
-            mt-1
-            flex
-            w-full
-            items-center
-            justify-center
-            gap-2
-            rounded-xl
-            border
-            border-white/20
-            bg-[linear-gradient(135deg,var(--accent),var(--accent-2,var(--accent)))]
-            px-4
-            py-2.5
-            text-sm
-            font-semibold
-            text-white
-            shadow-[0_10px_30px_-12px_var(--accent),inset_0_1px_0_rgb(255_255_255/0.3)]
-            transition
-            hover:brightness-110
-            disabled:pointer-events-none
-            disabled:opacity-50
-          "
-        >
-          {loadingProvider === "credentials" && <Loader2 className="size-4 animate-spin" />}
-          Anmelden
-        </button>
-      </form>
-
-      <div className="flex items-center gap-3 text-xs text-white/40">
-        <div className="h-px flex-1 bg-white/10" />
-        oder
-        <div className="h-px flex-1 bg-white/10" />
-      </div>
 
       <div className="flex flex-col gap-2.5">
         <button type="button" onClick={() => handleOAuthSignIn("github")} disabled={loadingProvider !== null} className={oauthButtonClassName}>
