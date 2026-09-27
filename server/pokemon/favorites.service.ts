@@ -1,5 +1,6 @@
 import { prisma } from "@/server/db/prisma";
 import { mapPokemon, MappedPokemon } from "@/server/pokemon/pokemon.mapper";
+import { buildPokemonWhere, POKEMON_LIST_SELECT, PokemonListFilters, sortMappedPokemon } from "@/server/pokemon/pokemon.service";
 
 export async function getFavoritePokemonIds(userId: string): Promise<number[]> {
   const favorites = await prisma.favorite.findMany({
@@ -32,41 +33,13 @@ export async function toggleFavoritePokemon(userId: string, pokemonId: number): 
   return true;
 }
 
-export async function getFavoritePokemonList(userId: string): Promise<MappedPokemon[]> {
+export async function getFavoritePokemonList(userId: string, filters: PokemonListFilters = {}): Promise<MappedPokemon[]> {
   const favorites = await prisma.favorite.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    select: {
-      pokemon: {
-        select: {
-          id: true,
-          sprite: true,
-
-          translations: {
-            where: { language: "de" },
-            select: { name: true },
-          },
-
-          types: {
-            orderBy: { slot: "asc" },
-            select: {
-              type: {
-                select: {
-                  apiName: true,
-                  translations: {
-                    where: { language: "de" },
-                    select: { name: true },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-
+    where: { userId, pokemon: buildPokemonWhere(filters) },
+    select: { pokemon: { select: POKEMON_LIST_SELECT } },
     relationLoadStrategy: "join",
   });
 
-  return favorites.map((favorite) => mapPokemon(favorite.pokemon));
+  const mapped = favorites.map((favorite) => mapPokemon(favorite.pokemon));
+  return sortMappedPokemon(mapped, filters.sort);
 }

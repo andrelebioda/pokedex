@@ -18,10 +18,10 @@ export interface PokemonListResult {
   hasMore: boolean;
 }
 
-export async function getPokemonList(page = 1, limit = 50, filters: PokemonListFilters = {}): Promise<PokemonListResult> {
-  const { search, types, generations, sort = "number-asc" } = filters;
+export function buildPokemonWhere(filters: PokemonListFilters = {}): Prisma.PokemonWhereInput {
+  const { search, types, generations } = filters;
 
-  const where: Prisma.PokemonWhereInput = {
+  return {
     ...(search
       ? {
           translations: {
@@ -58,49 +58,10 @@ export async function getPokemonList(page = 1, limit = 50, filters: PokemonListF
         }
       : {}),
   };
+}
 
-  const pokemon = await prisma.pokemon.findMany({
-    where,
-
-    select: {
-      id: true,
-      sprite: true,
-
-      translations: {
-        where: {
-          language: "de",
-        },
-        select: {
-          name: true,
-        },
-      },
-
-      types: {
-        orderBy: { slot: "asc" },
-        select: {
-          type: {
-            select: {
-              apiName: true,
-              translations: {
-                where: {
-                  language: "de",
-                },
-                select: {
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-
-    relationLoadStrategy: "join",
-  });
-
-  const mapped = pokemon.map(mapPokemon);
-
-  mapped.sort((a, b) => {
+export function sortMappedPokemon(pokemon: MappedPokemon[], sort: PokemonSort = "number-asc"): MappedPokemon[] {
+  return pokemon.sort((a, b) => {
     if (sort === "name-asc") return a.name.localeCompare(b.name);
     if (sort === "name-desc") return b.name.localeCompare(a.name);
 
@@ -113,6 +74,51 @@ export async function getPokemonList(page = 1, limit = 50, filters: PokemonListF
 
     return sort === "number-desc" ? b.id - a.id : a.id - b.id;
   });
+}
+
+export const POKEMON_LIST_SELECT = {
+  id: true,
+  sprite: true,
+
+  translations: {
+    where: {
+      language: "de",
+    },
+    select: {
+      name: true,
+    },
+  },
+
+  types: {
+    orderBy: { slot: "asc" as const },
+    select: {
+      type: {
+        select: {
+          apiName: true,
+          translations: {
+            where: {
+              language: "de",
+            },
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  },
+} satisfies Prisma.PokemonSelect;
+
+export async function getPokemonList(page = 1, limit = 50, filters: PokemonListFilters = {}): Promise<PokemonListResult> {
+  const { sort = "number-asc" } = filters;
+
+  const pokemon = await prisma.pokemon.findMany({
+    where: buildPokemonWhere(filters),
+    select: POKEMON_LIST_SELECT,
+    relationLoadStrategy: "join",
+  });
+
+  const mapped = sortMappedPokemon(pokemon.map(mapPokemon), sort);
 
   const start = (page - 1) * limit;
   const pageItems = mapped.slice(start, start + limit);

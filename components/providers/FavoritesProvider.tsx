@@ -10,6 +10,9 @@ interface FavoritesContextValue {
   isFavorite: (pokemonId: number) => boolean;
   toggleFavorite: (pokemonId: number) => Promise<{ error?: string }>;
   isAuthenticated: boolean;
+  // true, sobald favoriteIds für den aktuellen Login-Status feststeht (verhindert ein kurzes Aufblitzen
+  // "keine Favoriten", solange der initiale Abruf nach dem Anmelden noch läuft).
+  ready: boolean;
 }
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
@@ -17,18 +20,25 @@ const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 export default function FavoritesProvider({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession();
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+  const [ready, setReady] = useState(false);
 
   // Beim Ab-/Anmelden sofort zurücksetzen, ohne auf den nächsten Effekt-Durchlauf zu warten.
   const [prevStatus, setPrevStatus] = useState(status);
   if (status !== prevStatus) {
     setPrevStatus(status);
-    if (status !== "authenticated") setFavoriteIds(new Set());
+    if (status !== "authenticated") {
+      setFavoriteIds(new Set());
+      setReady(status !== "loading");
+    }
   }
 
   useEffect(() => {
     if (status !== "authenticated") return;
 
-    getFavoriteIdsAction().then((ids) => setFavoriteIds(new Set(ids)));
+    getFavoriteIdsAction().then((ids) => {
+      setFavoriteIds(new Set(ids));
+      setReady(true);
+    });
   }, [status, session?.user?.id]);
 
   async function toggleFavorite(pokemonId: number) {
@@ -63,6 +73,7 @@ export default function FavoritesProvider({ children }: { children: ReactNode })
         isFavorite: (pokemonId) => favoriteIds.has(pokemonId),
         toggleFavorite,
         isAuthenticated: status === "authenticated",
+        ready,
       }}
     >
       {children}

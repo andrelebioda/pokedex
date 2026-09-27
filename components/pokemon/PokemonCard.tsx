@@ -33,7 +33,7 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
     <Link href={`/pokemon/${pokemon.id}`} style={typeColors} className={`${glassCard} flex p-2 hover:-translate-y-1 sm:flex-col sm:p-3`}>
       <GlassBlobs />
 
-      <FavoriteButton pokemonId={pokemon.id} className="absolute top-4 right-4 sm:top-3 sm:right-3" />
+      <FavoriteButton pokemonId={pokemon.id} className="absolute top-4 right-4 sm:top-3 sm:left-3 sm:right-0" />
 
       {/* Nummer als Wasserzeichen */}
       <span
