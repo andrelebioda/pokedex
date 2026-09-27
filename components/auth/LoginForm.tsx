@@ -149,7 +149,7 @@ export default function LoginForm() {
           Ein Anmelde-Link wurde an <span className="font-semibold text-white">{email}</span> gesendet. Bitte prüfe dein Postfach.
         </div>
       ) : (
-        <form onSubmit={handleMagicLinkSubmit} className="flex gap-2">
+        <form onSubmit={handleMagicLinkSubmit} className="flex flex-col gap-2">
           <input
             type="email"
             required
