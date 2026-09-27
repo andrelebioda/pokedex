@@ -1,9 +1,9 @@
 "use client";
 
 import { Loader2, Mail } from "lucide-react";
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { getSession, signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 
 import { glassPanel } from "@/components/layout/cardStyles";
 
@@ -86,6 +86,7 @@ function GoogleIcon() {
 }
 
 export default function LoginForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
   const oauthError = searchParams.get("error");
@@ -94,6 +95,24 @@ export default function LoginForm() {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(oauthError ? (errorMessages[oauthError] ?? errorMessages.default) : null);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+
+  // Der Magic-Link wird meist in einem neuen Tab bestätigt; dieser Tab merkt das sonst nie von selbst,
+  // da kein Broadcast stattfindet, wenn die Bestätigung über eine echte Seitennavigation läuft.
+  // Also im Hintergrund pollen und automatisch weiterleiten, sobald die Session (im selben Browser) da ist.
+  useEffect(() => {
+    if (!magicLinkSent) return;
+
+    const interval = setInterval(async () => {
+      const session = await getSession();
+      if (session) {
+        clearInterval(interval);
+        router.push(callbackUrl);
+        router.refresh();
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [magicLinkSent, callbackUrl, router]);
 
   async function handleMagicLinkSubmit(event: FormEvent) {
     event.preventDefault();
@@ -145,8 +164,12 @@ export default function LoginForm() {
       </div>
 
       {magicLinkSent ? (
-        <div className={`${glassPanel} px-4 py-3 text-sm text-white/80`}>
-          Ein Anmelde-Link wurde an <span className="font-semibold text-white">{email}</span> gesendet. Bitte prüfe dein Postfach.
+        <div className={`${glassPanel} flex items-start gap-3 px-4 py-3 text-sm text-white/80`}>
+          <Loader2 className="mt-0.5 size-4 shrink-0 animate-spin text-white/50" />
+          <p>
+            Ein Anmelde-Link wurde an <span className="font-semibold text-white">{email}</span> gesendet. Bitte prüfe dein Postfach — diese Seite
+            leitet automatisch weiter, sobald du den Link bestätigt hast.
+          </p>
         </div>
       ) : (
         <form onSubmit={handleMagicLinkSubmit} className="flex flex-col gap-2">
