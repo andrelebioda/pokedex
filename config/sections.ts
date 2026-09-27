@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Cherry, Dna, Home, LucideIcon, Package, Search, Swords } from "lucide-react";
+import { Cherry, Dna, Heart, Home, LucideIcon, Package, Search, Swords } from "lucide-react";
 
 export interface Section {
   name: string;
@@ -8,6 +8,7 @@ export interface Section {
   accent: string;
   accent2: string;
   description?: string;
+  authRequired?: boolean;
 }
 
 export const sections = {
@@ -58,9 +59,26 @@ export const sections = {
     accent2: "#a855f7",
     description: "Alle Fähigkeiten und die Pokémon, die sie besitzen können.",
   },
+  myPokemon: {
+    name: "Meine Pokémon",
+    href: "/meine-pokemon",
+    icon: Heart,
+    accent: "#ec4899",
+    accent2: "#f43f5e",
+    description: "Deine favorisierten Pokémon auf einen Blick.",
+    authRequired: true,
+  },
 } satisfies Record<string, Section>;
 
-export const navigationSections: Section[] = [sections.home, sections.pokemon, sections.items, sections.berries, sections.moves, sections.abilities];
+export const navigationSections: Section[] = [
+  sections.home,
+  sections.pokemon,
+  sections.items,
+  sections.berries,
+  sections.moves,
+  sections.abilities,
+  sections.myPokemon,
+];
 
 export function accentStyle(accent: string, accent2: string = accent) {
   return { "--accent": accent, "--accent-2": accent2 } as CSSProperties;

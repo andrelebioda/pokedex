@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Menu, User, X } from "lucide-react";
+import { Lock, LogOut, Menu, User, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -58,6 +58,9 @@ interface NavLinksProps {
 }
 
 function NavLinks({ pathname, onNavigate }: NavLinksProps) {
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
+
   return (
     <div className="space-y-1">
       {navigationSections.map((item) => {
@@ -94,6 +97,7 @@ function NavLinks({ pathname, onNavigate }: NavLinksProps) {
           >
             <span
               className={`
+                relative
                 flex
                 size-9
                 shrink-0
@@ -111,6 +115,15 @@ function NavLinks({ pathname, onNavigate }: NavLinksProps) {
               `}
             >
               <Icon size={18} />
+
+              {item.authRequired && !isAuthenticated && (
+                <span
+                  aria-hidden
+                  className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border border-white/20 bg-slate-900 text-white/70"
+                >
+                  <Lock size={10} />
+                </span>
+              )}
             </span>
 
             <span className="font-medium">{item.name}</span>
@@ -190,19 +203,6 @@ export default function Navigation() {
         {/* Footer */}
         <div className="flex flex-col gap-3 p-4">
           <AccountStatus />
-
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md">
-            <span className="relative flex size-2.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-60" />
-              <span className="relative inline-flex size-2.5 rounded-full bg-red-500" />
-            </span>
-
-            <div>
-              <p className="text-sm font-semibold">Pokédex v1.0</p>
-
-              <p className="text-xs text-slate-500">Pokémon Research Lab</p>
-            </div>
-          </div>
         </div>
       </aside>
 

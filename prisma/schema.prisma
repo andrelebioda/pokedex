@@ -21,6 +21,7 @@ model Pokemon {
   types        PokemonType[]
   moves        PokemonMove[]
   abilities    PokemonAbility[]
+  favoritedBy  Favorite[]
 }
 
 model PokemonTranslation {
@@ -205,20 +206,20 @@ model BerryFlavor {
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
+  id                       String  @id @default(cuid())
+  userId                   String  @map("user_id")
+  type                     String
+  provider                 String
+  providerAccountId        String  @map("provider_account_id")
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
   // GitHub liefert dieses Feld seit der Refresh-Token-Rotation zusätzlich mit; NextAuth reicht es unverändert durch.
   refresh_token_expires_in Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -246,8 +247,22 @@ model User {
   password      String?
   accounts      Account[]
   sessions      Session[]
+  favorites     Favorite[]
 
   @@map("users")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  pokemonId Int      @map("pokemon_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pokemonId])
+  @@map("favorites")
 }
 
 model VerificationToken {
@@ -257,4 +272,8 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model UserFavorites {
+  id Int @id @default(autoincrement())
 }

@@ -1,4 +1,4 @@
-import { ArrowRight, Calculator, Heart, Users } from "lucide-react";
+import { ArrowRight, Calculator, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -21,7 +21,6 @@ export const metadata: Metadata = {
 const plannedFeatures = [
   { title: "Team Builder", icon: Users },
   { title: "EVs/IVs-Rechner", icon: Calculator },
-  { title: "Meine Pokémon", description: "Sammle deine favorisierten Pokémon", icon: Heart },
 ];
 
 export default async function Dashboard() {
@@ -67,7 +66,6 @@ export default async function Dashboard() {
 
                   <div className="min-w-0">
                     <p className="font-semibold text-white">{feature.title}</p>
-                    {feature.description && <p className="truncate text-sm text-white/70">{feature.description}</p>}
                   </div>
                 </li>
               );

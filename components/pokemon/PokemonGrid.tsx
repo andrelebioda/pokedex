@@ -27,11 +27,19 @@ export default function PokemonGrid({
   sort = "number-asc",
 }: PokemonGridProps) {
   const fetchPage = useCallback(
-    (page: number) => getPokemonListAction(page, LIMIT, { search, types, generations, sort }).then((data) => ({ items: data.pokemon, hasMore: data.hasMore })),
+    (page: number) =>
+      getPokemonListAction(page, LIMIT, { search, types, generations, sort }).then((data) => ({ items: data.pokemon, hasMore: data.hasMore })),
     [search, types, generations, sort],
   );
 
-  const { items: pokemon, hasMore, loading, error, sentinelRef, retry } = useInfiniteList({
+  const {
+    items: pokemon,
+    hasMore,
+    loading,
+    error,
+    sentinelRef,
+    retry,
+  } = useInfiniteList({
     initialItems: initialPokemon,
     initialHasMore,
     filterKey: `${search}::${types.join(",")}::${generations.join(",")}::${sort}`,

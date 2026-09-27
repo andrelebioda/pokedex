@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { glassCard, glassPanel } from "@/components/layout/cardStyles";
 import GlassBlobs from "@/components/layout/GlassBlobs";
+import FavoriteButton from "@/components/pokemon/FavoriteButton";
 import PokemonImage from "@/components/pokemon/PokemonImage";
 import { getPokemonTypeClass, getPokemonTypeColorVar, getPokemonTypeIconPath } from "@/config/pokemonTypes";
 import { accentStyle } from "@/config/sections";
@@ -31,6 +32,8 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
   return (
     <Link href={`/pokemon/${pokemon.id}`} style={typeColors} className={`${glassCard} flex p-2 hover:-translate-y-1 sm:flex-col sm:p-3`}>
       <GlassBlobs />
+
+      <FavoriteButton pokemonId={pokemon.id} className="absolute top-2 left-2 sm:top-3 sm:left-3" />
 
       {/* Nummer als Wasserzeichen */}
       <span
