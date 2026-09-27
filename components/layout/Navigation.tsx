@@ -8,14 +8,28 @@ import { useEffect, useState } from "react";
 
 import { accentStyle, navigationSections } from "@/config/sections";
 
-function AccountStatus() {
+function AccountStatus({ variant = "full" }: { variant?: "full" | "compact" }) {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    return <div className="h-[60px] animate-pulse rounded-2xl border border-white/10 bg-white/5" />;
+    return (
+      <div className={variant === "compact" ? "size-9 animate-pulse rounded-xl border border-white/10 bg-white/5" : "h-[60px] animate-pulse rounded-2xl border border-white/10 bg-white/5"} />
+    );
   }
 
   if (!session) {
+    if (variant === "compact") {
+      return (
+        <Link
+          href="/login"
+          aria-label="Anmelden"
+          className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white"
+        >
+          <User size={18} />
+        </Link>
+      );
+    }
+
     return (
       <Link
         href="/login"
@@ -30,10 +44,32 @@ function AccountStatus() {
     );
   }
 
+  const initial = (session.user?.name ?? session.user?.email ?? "?").charAt(0);
+
+  if (variant === "compact") {
+    return (
+      <button
+        type="button"
+        onClick={() => signOut({ callbackUrl: "/" })}
+        aria-label="Abmelden"
+        className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/10 text-sm font-semibold text-white uppercase backdrop-blur-md transition hover:bg-white/20"
+      >
+        {initial}
+
+        <span
+          aria-hidden
+          className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border border-white/20 bg-slate-900 text-white/70"
+        >
+          <LogOut size={9} />
+        </span>
+      </button>
+    );
+  }
+
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur-md">
       <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/10 text-sm font-semibold uppercase">
-        {(session.user?.name ?? session.user?.email ?? "?").charAt(0)}
+        {initial}
       </span>
 
       <div className="min-w-0 flex-1">
@@ -69,13 +105,17 @@ function NavLinks({ pathname, onNavigate }: NavLinksProps) {
         const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(item.href + "/");
 
         return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            aria-current={active ? "page" : undefined}
-            style={accentStyle(item.accent, item.accent2)}
-            className={`
+          <div key={item.href}>
+            {item.groupLabel && (
+              <p className="mt-4 mb-1.5 px-2.5 text-xs font-semibold tracking-widest text-white/40 uppercase">{item.groupLabel}</p>
+            )}
+
+            <Link
+              href={item.href}
+              onClick={onNavigate}
+              aria-current={active ? "page" : undefined}
+              style={accentStyle(item.accent, item.accent2)}
+              className={`
                 group
                 relative
                 flex
@@ -94,9 +134,9 @@ function NavLinks({ pathname, onNavigate }: NavLinksProps) {
                     : "border-transparent text-slate-400 hover:border-white/10 hover:bg-white/5 hover:text-white"
                 }
               `}
-          >
-            <span
-              className={`
+            >
+              <span
+                className={`
                 relative
                 flex
                 size-9
@@ -113,23 +153,24 @@ function NavLinks({ pathname, onNavigate }: NavLinksProps) {
                     : "border-white/5 bg-white/5 group-hover:border-[color-mix(in_oklab,var(--accent)_40%,transparent)] group-hover:bg-[color-mix(in_oklab,var(--accent)_20%,transparent)] group-hover:text-(--accent)"
                 }
               `}
-            >
-              <Icon size={18} />
+              >
+                <Icon size={18} />
 
-              {item.authRequired && !isAuthenticated && (
-                <span
-                  aria-hidden
-                  className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border border-white/20 bg-slate-900 text-white/70"
-                >
-                  <Lock size={10} />
-                </span>
-              )}
-            </span>
+                {item.authRequired && !isAuthenticated && (
+                  <span
+                    aria-hidden
+                    className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border border-white/20 bg-slate-900 text-white/70"
+                  >
+                    <Lock size={10} />
+                  </span>
+                )}
+              </span>
 
-            <span className="font-medium">{item.name}</span>
+              <span className="font-medium">{item.name}</span>
 
-            {active && <span aria-hidden className="ml-auto size-1.5 rounded-full bg-white shadow-[0_0_8px_white]" />}
-          </Link>
+              {active && <span aria-hidden className="ml-auto size-1.5 rounded-full bg-white shadow-[0_0_8px_white]" />}
+            </Link>
+          </div>
         );
       })}
     </div>
@@ -211,15 +252,19 @@ export default function Navigation() {
         <div className="flex items-center justify-between px-4 py-3">
           {logo}
 
-          <button
-            type="button"
-            onClick={() => setMobileOpen((prev) => !prev)}
-            aria-expanded={mobileOpen}
-            aria-label={mobileOpen ? "Menü schließen" : "Menü öffnen"}
-            className="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white"
-          >
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center gap-2">
+            <AccountStatus variant="compact" />
+
+            <button
+              type="button"
+              onClick={() => setMobileOpen((prev) => !prev)}
+              aria-expanded={mobileOpen}
+              aria-label={mobileOpen ? "Menü schließen" : "Menü öffnen"}
+              className="rounded-xl border border-white/10 bg-white/5 p-2 text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white"
+            >
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {mobileOpen && (
@@ -228,10 +273,6 @@ export default function Navigation() {
             <div aria-hidden className="absolute -bottom-24 -right-24 -z-10 size-64 rounded-full bg-orange-500 opacity-10 blur-3xl" />
 
             <NavLinks pathname={pathname} onNavigate={() => setMobileOpen(false)} />
-
-            <div className="mt-4">
-              <AccountStatus />
-            </div>
           </nav>
         )}
       </div>

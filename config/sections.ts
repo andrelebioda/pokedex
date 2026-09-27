@@ -9,6 +9,7 @@ export interface Section {
   accent2: string;
   description?: string;
   authRequired?: boolean;
+  groupLabel?: string;
 }
 
 export const sections = {
@@ -67,6 +68,7 @@ export const sections = {
     accent2: "#f43f5e",
     description: "Deine favorisierten Pokémon auf einen Blick.",
     authRequired: true,
+    groupLabel: "Mein PokéLabs",
   },
 } satisfies Record<string, Section>;
 
