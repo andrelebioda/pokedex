@@ -13,7 +13,13 @@ function AccountStatus({ variant = "full" }: { variant?: "full" | "compact" }) {
 
   if (status === "loading") {
     return (
-      <div className={variant === "compact" ? "size-9 animate-pulse rounded-xl border border-white/10 bg-white/5" : "h-[60px] animate-pulse rounded-2xl border border-white/10 bg-white/5"} />
+      <div
+        className={
+          variant === "compact"
+            ? "size-9 animate-pulse rounded-xl border border-white/10 bg-white/5"
+            : "h-[60px] animate-pulse rounded-2xl border border-white/10 bg-white/5"
+        }
+      />
     );
   }
 
@@ -92,9 +98,7 @@ function NavLinks({ pathname, onNavigate }: NavLinksProps) {
 
         return (
           <div key={item.href}>
-            {item.groupLabel && (
-              <p className="mt-4 mb-1.5 px-2.5 text-xs font-semibold tracking-widest text-white/40 uppercase">{item.groupLabel}</p>
-            )}
+            {item.groupLabel && <p className="mt-4 mb-1.5 px-2.5 text-xs font-semibold tracking-widest text-white/40 uppercase">{item.groupLabel}</p>}
 
             <Link
               href={item.href}
@@ -154,7 +158,7 @@ function NavLinks({ pathname, onNavigate }: NavLinksProps) {
 
               <span className="font-medium">{item.name}</span>
 
-              {active && <span aria-hidden className="ml-auto size-1.5 rounded-full bg-white shadow-[0_0_8px_white]" />}
+              {active && <span aria-hidden className="ml-auto size-1.5 rounded-full bg-white shadow-[0_0_8px_white] absolute right-2.5" />}
             </Link>
           </div>
         );
